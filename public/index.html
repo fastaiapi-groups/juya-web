@@ -17,6 +17,9 @@
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/showcase.css" />
+    <link rel="stylesheet" href="/languages.css" />
+    <script src="/translations.js" defer></script>
+    <script src="/i18n.js" defer></script>
     <script src="/app.js" defer></script>
   </head>
   <body>
@@ -105,9 +108,23 @@
           <a href="#products">产品矩阵</a><a href="#juya">剧芽短剧</a
           ><a href="#workflow">创作流程</a><a href="#contact">联系我们</a>
         </nav>
-        <a class="nav-download" href="#downloads"
-          >下载剧芽 <svg><use href="#i-download" /></svg
+        <a class="nav-download" href="#downloads" aria-label="下载剧芽"
+          ><span class="nav-download-label">下载剧芽</span> <svg><use href="#i-download" /></svg
         ></a>
+        <div class="language-picker" id="language-picker">
+          <button class="language-trigger" id="language-trigger" type="button" aria-label="选择语言" aria-haspopup="menu" aria-expanded="false" aria-controls="language-menu">
+            <span class="language-flag" id="language-current-flag" aria-hidden="true"><img src="/assets/flags/zh-CN.svg" alt="" /></span>
+            <span id="language-current-label">中文</span>
+            <svg class="language-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <div class="language-menu" id="language-menu" role="menu" aria-label="选择语言" hidden>
+            <button type="button" role="menuitemradio" aria-checked="true" data-language="zh-CN"><svg class="language-check"><use href="#i-check" /></svg><span>中文</span><span class="language-flag" aria-hidden="true"><img src="/assets/flags/zh-CN.svg" alt="" /></span></button>
+            <button type="button" role="menuitemradio" aria-checked="false" data-language="en"><svg class="language-check"><use href="#i-check" /></svg><span>English</span><span class="language-flag" aria-hidden="true"><img src="/assets/flags/en.svg" alt="" /></span></button>
+            <button type="button" role="menuitemradio" aria-checked="false" data-language="ja"><svg class="language-check"><use href="#i-check" /></svg><span>日本語</span><span class="language-flag" aria-hidden="true"><img src="/assets/flags/ja.svg" alt="" /></span></button>
+            <button type="button" role="menuitemradio" aria-checked="false" data-language="ko"><svg class="language-check"><use href="#i-check" /></svg><span>한국어</span><span class="language-flag" aria-hidden="true"><img src="/assets/flags/ko.svg" alt="" /></span></button>
+            <button type="button" role="menuitemradio" aria-checked="false" data-language="zh-TW"><svg class="language-check"><use href="#i-check" /></svg><span>繁體中文</span><span class="language-flag traditional-mark" aria-hidden="true">繁</span></button>
+          </div>
+        </div>
         <button
           class="menu-toggle"
           aria-label="打开导航菜单"

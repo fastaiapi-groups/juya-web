@@ -1,4 +1,8 @@
 const $ = (selector) => document.querySelector(selector);
+const t = window.siteI18n.t;
+let currentConfig = null;
+let configFailed = false;
+let selectedScene = "sea";
 const fallbackContacts = [
   {
     label: "EMAIL",
@@ -19,6 +23,8 @@ const fallbackContacts = [
   },
   { label: "QQ 群", platform: "qq-group", value: "48878665" },
 ];
+
+let currentContacts = fallbackContacts;
 
 const contactPlatforms = {
   email: { icon: "mail", description: "产品咨询与商务合作" },
@@ -77,7 +83,7 @@ function renderContacts(contacts) {
     link.dataset.platform = platform;
     if (isGroup) {
       link.type = "button";
-      link.setAttribute("aria-label", `复制 QQ 群号 ${contact.value}`);
+      link.setAttribute("aria-label", t("复制 QQ 群号 {number}", { number: contact.value }));
     } else link.href = url;
     if (url?.startsWith("https:") && !isGroup) {
       link.target = "_blank";
@@ -90,22 +96,22 @@ function renderContacts(contacts) {
     badge.append(icon(details.icon));
     const label = document.createElement("span");
     label.className = "contact-label";
-    label.textContent = contact.label;
+    label.textContent = t(contact.label);
     row.append(badge, label, icon(isGroup ? "copy" : "external", "contact-arrow"));
     const value = document.createElement("strong");
     value.textContent = contact.value;
     const description = document.createElement("span");
     description.className = "contact-caption";
-    description.textContent = details.description;
+    description.textContent = t(details.description);
     if (isGroup) {
       description.setAttribute("role", "status");
       link.addEventListener("click", async () => {
         try {
           await navigator.clipboard.writeText(String(contact.value));
-          description.textContent = "群号已复制 · 打开 QQ 搜索加入";
+          description.textContent = t("群号已复制 · 打开 QQ 搜索加入");
           link.classList.add("is-copied");
         } catch {
-          description.textContent = `请在 QQ 搜索群号 ${contact.value} 加入`;
+          description.textContent = t("请在 QQ 搜索群号 {number} 加入", { number: contact.value });
         }
       });
     }
@@ -133,18 +139,37 @@ function formatSize(bytes) {
     : `${Math.round(bytes / 1024 ** 2)} MB`;
 }
 
+const installerChecks = new Map();
+function getInstallerSize(url) {
+  if (!installerChecks.has(url)) {
+    const check = (async () => {
+      const response = await fetch(url, {
+        method: "HEAD",
+        cache: "no-store",
+        signal: AbortSignal.timeout(10000),
+      });
+      const bytes = Number(response.headers.get("content-length"));
+      if (!response.ok || !bytes) throw new Error("Unavailable package");
+      return bytes;
+    })();
+    installerChecks.set(url, check);
+    check.catch(() => installerChecks.delete(url));
+  }
+  return installerChecks.get(url);
+}
+
 async function renderDownloads(config) {
   const container = $("#download-options");
   container.replaceChildren();
   const version = typeof config.version === "string" ? config.version : "";
   $(".release-version").textContent = version
-    ? `v${version} · 桌面客户端`
-    : "桌面客户端";
+    ? `v${version} · ${t("桌面客户端")}`
+    : t("桌面客户端");
   const downloads = Array.isArray(config.downloads) ? config.downloads : [];
   if (!downloads.length) {
     const message = document.createElement("p");
     message.className = "loading-text";
-    message.textContent = "安装包暂未上架，请联系管理员获取。";
+    message.textContent = t("安装包暂未上架，请联系管理员获取。");
     container.append(message);
     return;
   }
@@ -159,15 +184,15 @@ async function renderDownloads(config) {
     platform.append(icon(item.platform === "windows" ? "windows" : "apple"));
     const details = document.createElement("div");
     const title = document.createElement("strong");
-    title.textContent = item.label || "剧芽客户端";
+    title.textContent = t(item.label || "剧芽客户端");
     if (item.platform === "windows" && /Windows/i.test(navigator.userAgent)) {
       const tag = document.createElement("span");
       tag.className = "recommended";
-      tag.textContent = "适合你的设备";
+      tag.textContent = t("适合你的设备");
       title.append(tag);
     }
     const description = document.createElement("small");
-    description.textContent = "正在检查安装包…";
+    description.textContent = t("正在检查安装包…");
     details.append(title, description);
     link.append(platform, details, icon("download"));
     container.append(link);
@@ -175,18 +200,9 @@ async function renderDownloads(config) {
       (async () => {
         try {
           if (!url) throw new Error("Invalid filename");
-          const response = await fetch(url, {
-            method: "HEAD",
-            cache: "no-store",
-            signal: AbortSignal.timeout(10000),
-          });
-          if (!response.ok || !Number(response.headers.get("content-length")))
-            throw new Error("Unavailable package");
-          const size = formatSize(
-            Number(response.headers.get("content-length")),
-          );
+          const size = formatSize(await getInstallerSize(url));
           description.textContent = [
-            item.requirement,
+            item.requirement && t(item.requirement),
             version && `v${version}`,
             size,
           ]
@@ -197,15 +213,15 @@ async function renderDownloads(config) {
           link.removeAttribute("aria-disabled");
           link.setAttribute(
             "aria-label",
-            `下载 ${item.label || "剧芽客户端"} ${version}`,
+            t("下载 {name} {version}", { name: t(item.label || "剧芽客户端"), version }),
           );
         } catch {
-          description.textContent = "暂未上架 · 联系管理员获取";
+          description.textContent = t("暂未上架 · 联系管理员获取");
           link.setAttribute("role", "link");
           link.setAttribute("tabindex", "0");
           const showUnavailable = (event) => {
             event.preventDefault();
-            showToast("此安装包暂未上架，请通过下方联系方式联系管理员。");
+            showToast(t("此安装包暂未上架，请通过下方联系方式联系管理员。"));
           };
           link.addEventListener("click", showUnavailable);
           link.addEventListener("keydown", (event) => {
@@ -218,10 +234,10 @@ async function renderDownloads(config) {
   }
   const help = document.createElement("p");
   help.className = "download-help";
-  help.append("Mac 请选择对应芯片版本。需要帮助？");
+  help.append(t("Mac 请选择对应芯片版本。需要帮助？") + " ");
   const contact = document.createElement("a");
   contact.href = "#contact";
-  contact.textContent = "联系我们";
+  contact.textContent = t("联系我们");
   help.append(contact);
   container.append(help);
   await Promise.allSettled(checks);
@@ -239,13 +255,13 @@ function showToast(message) {
 const menu = $(".menu-toggle");
 function closeMenu() {
   menu.setAttribute("aria-expanded", "false");
-  menu.setAttribute("aria-label", "打开导航菜单");
+  menu.setAttribute("aria-label", t("打开导航菜单"));
   $("#navigation").classList.remove("open");
 }
 menu.addEventListener("click", () => {
   const open = menu.getAttribute("aria-expanded") !== "true";
   menu.setAttribute("aria-expanded", String(open));
-  menu.setAttribute("aria-label", open ? "关闭导航菜单" : "打开导航菜单");
+  menu.setAttribute("aria-label", t(open ? "关闭导航菜单" : "打开导航菜单"));
   $("#navigation").classList.toggle("open", open);
 });
 $("#navigation").addEventListener("click", (event) => {
@@ -283,22 +299,40 @@ const scenes = {
     position: "center 35%",
   },
 };
+function renderScene() {
+  const scene = scenes[selectedScene];
+  const image = $("#stage-image");
+  image.src = scene.image;
+  image.alt = t(scene.alt);
+  image.style.objectPosition = scene.position;
+  $("#stage-title").textContent = t(scene.title);
+  $("#stage-description").textContent = t(scene.description);
+  document.querySelectorAll(".scene-option").forEach((option) => {
+    const selected = option.dataset.scene === selectedScene;
+    option.classList.toggle("selected", selected);
+    option.setAttribute("aria-pressed", String(selected));
+  });
+}
 document.querySelectorAll(".scene-option").forEach((button) => {
   button.addEventListener("click", () => {
-    const scene = scenes[button.dataset.scene];
-    if (!scene) return;
-    const image = $("#stage-image");
-    image.src = scene.image;
-    image.alt = scene.alt;
-    image.style.objectPosition = scene.position;
-    $("#stage-title").textContent = scene.title;
-    $("#stage-description").textContent = scene.description;
-    document.querySelectorAll(".scene-option").forEach((option) => {
-      const selected = option === button;
-      option.classList.toggle("selected", selected);
-      option.setAttribute("aria-pressed", String(selected));
-    });
+    if (!scenes[button.dataset.scene]) return;
+    selectedScene = button.dataset.scene;
+    renderScene();
   });
+});
+renderScene();
+window.addEventListener("site:languagechange", () => {
+  closeMenu();
+  renderScene();
+  renderContacts(currentContacts);
+  $("#toast").classList.remove("visible");
+  if (currentConfig) void renderDownloads(currentConfig);
+  else {
+    const loading = $("#download-options .loading-text");
+    if (loading) loading.textContent = t(configFailed
+      ? "暂时无法获取下载信息，请刷新页面或联系管理员。"
+      : "正在获取最新版本…");
+  }
 });
 
 if (
@@ -349,8 +383,10 @@ document
     });
     if (!response.ok) throw new Error("Configuration unavailable");
     const config = await response.json();
+    currentConfig = config;
     if (Array.isArray(config.contacts) && config.contacts.length)
-      renderContacts(config.contacts);
+      currentContacts = config.contacts;
+    renderContacts(currentContacts);
     const email = safeURL(`mailto:${config.email || "fastaiapis@gmail.com"}`);
     if (email) $("#contact-email").href = email;
     for (const key of ["api", "design"]) {
@@ -369,10 +405,11 @@ document
     }
     await renderDownloads(config);
   } catch {
+    configFailed = true;
     $("#download-options").replaceChildren();
     const message = document.createElement("p");
     message.className = "loading-text";
-    message.textContent = "暂时无法获取下载信息，请刷新页面或联系管理员。";
+    message.textContent = t("暂时无法获取下载信息，请刷新页面或联系管理员。");
     $("#download-options").append(message);
   }
 })();

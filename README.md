@@ -87,6 +87,10 @@ Compose 将 `DOWNLOADS_DIR` 以只读方式映射到容器 `/srv/downloads`。�
 
 ## 修改版本、下载链接与联系方式
 
+官网提供简体中文、English、日本語、한국어与繁體中文五种语言，顶部语言菜单可切换，浏览器会记住所选语言。默认简体中文。
+
+完整文案在 `public/translations.js`，以原始简体中文为键，分别维护 `en`、`ja`、`ko`、`zh-TW` 四份翻译。`public/i18n.js` 更新静态文字、页面标题、说明和无障碍标签；`public/app.js` 使用 `siteI18n.t()` 更新分镜、下载状态、联系卡片和复制提示。修改原始文案时，同步修改四份翻译中的对应键。菜单与响应式样式在 `public/languages.css`，图标在 `public/assets/flags/`。
+
 编辑 `config/site.json`，例如：
 
 ```json
