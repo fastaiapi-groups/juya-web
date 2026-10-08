@@ -1,5 +1,5 @@
 # Merge this block into the existing Caddyfile on the deployment server.
 # Assumes Caddy runs directly on the same host as the website container.
-web.fastaiapi.cloud {
-    reverse_proxy 127.0.0.1:6668
+ui.fastaiapi.cloud {
+    reverse_proxy 127.0.0.1:6660
 }

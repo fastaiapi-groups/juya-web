@@ -4,7 +4,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6668}:80"
+      - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6660}:80"
     volumes:
       - type: bind
         source: ${DOWNLOADS_DIR:-/opt/fastaiapi-groups/juya-web/download}
