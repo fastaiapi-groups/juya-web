@@ -2,7 +2,7 @@
 
 面向 AIGC 业务的独立品牌官网，介绍剧芽短剧、AI 模型中转站与在线设计平台，并提供桌面安装包下载和商务联系方式。
 
-源码仓库：[fastaiapi-groups/juya-web](https://github.com/fastaiapi-groups/juya-web)。部署域名：`ui.fastaiapi.cloud`，Docker 宿主机端口：`6660`。
+源码仓库：[fastaiapi-groups/juya-web](https://github.com/fastaiapi-groups/juya-web)。部署域名：`web.fastaiapi.cloud`，Docker 宿主机端口：`6668`。
 
 采用深色背景、薄荷绿光效、轨道线条和创作工作台展示，支持桌面、平板与手机。首屏突出「把你的故事，拍成 AI 短剧」，并提供可切换的三组 AI 分镜。产品矩阵通过绿色、蓝色、紫色区分剧芽、中转站和在线设计，展示真实产品能力、使用人群与直接入口；其后为剧芽工作台示意、四步创作流程、Windows / macOS 下载以及联系区。页面资源均在本地，不依赖外部字体、图片 CDN 或前端框架。使用原生 HTML / CSS / JavaScript 和 Nginx，运行不需要 Node.js、数据库或 API 密钥。
 
@@ -12,9 +12,13 @@
 
 ## 本机已启动
 
-打开 **http://127.0.0.1:6660**。
+本机 HTTP 服务监听 `http://127.0.0.1:6668`。6668 属于 Chromium 等浏览器限制直连的端口，请通过部署后的 **https://web.fastaiapi.cloud** 访问；本机检查可使用：
 
-当前本地 `.env` 将下载目录设为 `../fastai-drama/desktop/release`，直接读取已有的 4.0.10 安装包，不复制大文件。Docker 映射为 `0.0.0.0:6660:80`，官网域名为 `ui.fastaiapi.cloud`。此 `.env` 的下载目录适用于当前工作区，不提交到 Git；迁移到服务器时按照下方步骤重新配置。
+```sh
+curl http://127.0.0.1:6668/healthz
+```
+
+当前本地 `.env` 将下载目录设为 `../fastai-drama/desktop/release`，直接读取已有的 4.0.10 安装包，不复制大文件。Docker 映射为 `0.0.0.0:6668:80`，官网域名为 `web.fastaiapi.cloud`。此 `.env` 的下载目录适用于当前工作区，不提交到 Git；迁移到服务器时按照下方步骤重新配置。
 
 ## Docker 启动
 
@@ -28,7 +32,7 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-默认访问 **http://localhost:6660**。首次构建需要拉取 `nginx:1.28-alpine`。修改网页源码后运行相同命令即可更新。
+默认绑定 `0.0.0.0:6668:80`。浏览器访问使用反向代理后的 **https://web.fastaiapi.cloud**，域名部署方式见下文。首次构建需要拉取 `nginx:1.28-alpine`。修改网页源码后运行相同命令即可更新。
 
 ```sh
 docker compose ps
@@ -49,7 +53,7 @@ mkdir -p /opt/fastai/releases
 将安装包放入该目录，并编辑 `.env`：
 
 ```dotenv
-WEBSITE_PORT=6660
+WEBSITE_PORT=6668
 WEBSITE_BIND=0.0.0.0
 DOWNLOADS_DIR=/opt/fastai/releases
 ```
@@ -113,23 +117,23 @@ Compose 将 `DOWNLOADS_DIR` 以只读方式映射到容器 `/srv/downloads`。�
 
 ## 域名部署
 
-官网域名为 **https://ui.fastaiapi.cloud**，页面 canonical 与分享链接均使用该域名。容器提供 HTTP 服务，宿主机绑定 **6660** 端口。将域名 DNS 指向部署服务器，由现有 Nginx / Caddy 管理 HTTPS 证书并转发到官网。
+官网域名为 **https://web.fastaiapi.cloud**，页面 canonical 与分享链接均使用该域名。容器提供 HTTP 服务，宿主机绑定 **6668** 端口。将域名 DNS 指向部署服务器，由现有 Nginx / Caddy 管理 HTTPS 证书并转发到官网。
 
 如果 Caddy 直接运行在与官网容器相同的宿主机，将 [docker/Caddyfile.example](docker/Caddyfile.example) 的以下配置合入服务器上现有的 Caddyfile，然后校验并重载 Caddy：
 
 ```caddyfile
-ui.fastaiapi.cloud {
-    reverse_proxy 127.0.0.1:6660
+web.fastaiapi.cloud {
+    reverse_proxy 127.0.0.1:6668
 }
 ```
 
-如果 Caddy 自身运行在另一个容器中，`127.0.0.1` 指向 Caddy 容器自身。此时应代理到可访问的宿主机地址的 `6660` 端口，或将两者接入同一 Docker 网络后代理到 `website:80`。
+如果 Caddy 自身运行在另一个容器中，`127.0.0.1` 指向 Caddy 容器自身。此时应代理到可访问的宿主机地址的 `6668` 端口，或将两者接入同一 Docker 网络后代理到 `website:80`。
 
-使用现有 Nginx 时，在 `server_name ui.fastaiapi.cloud;` 的域名 `server` 块中配置：
+使用现有 Nginx 时，在 `server_name web.fastaiapi.cloud;` 的域名 `server` 块中配置：
 
 ```nginx
 location / {
-    proxy_pass http://127.0.0.1:6660;
+    proxy_pass http://127.0.0.1:6668;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
