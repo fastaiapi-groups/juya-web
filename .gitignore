@@ -1,5 +1,6 @@
 .env
+download/*
+!download/.gitkeep
+!download/README.md
 downloads/*
-!downloads/.gitkeep
-!downloads/README.md
 .DS_Store

@@ -7,7 +7,7 @@ services:
       - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6668}:80"
     volumes:
       - type: bind
-        source: ${DOWNLOADS_DIR:-./downloads}
+        source: ${DOWNLOADS_DIR:-/opt/fastaiapi-groups/juya-web/download}
         target: /srv/downloads
         read_only: true
         bind:

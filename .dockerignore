@@ -1,5 +1,6 @@
 .git
 .env
+download
 downloads
 *.log
 README.md

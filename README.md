@@ -28,7 +28,8 @@ curl http://127.0.0.1:6668/healthz
 git clone git@github.com:fastaiapi-groups/juya-web.git
 cd juya-web
 cp .env.example .env
-# 编辑 .env，设置端口和宿主机安装包目录
+# 默认安装包目录为 /opt/fastaiapi-groups/juya-web/download
+mkdir -p /opt/fastaiapi-groups/juya-web/download
 docker compose up -d --build
 ```
 
@@ -44,10 +45,10 @@ docker compose down
 
 ## 配置下载目录
 
-例如服务器安装包存放在 `/opt/fastai/releases`：
+服务器安装包固定存放在 `/opt/fastaiapi-groups/juya-web/download`，Compose 默认将该目录只读映射到容器 `/srv/downloads`：
 
 ```sh
-mkdir -p /opt/fastai/releases
+mkdir -p /opt/fastaiapi-groups/juya-web/download
 ```
 
 将安装包放入该目录，并编辑 `.env`：
@@ -55,15 +56,27 @@ mkdir -p /opt/fastai/releases
 ```dotenv
 WEBSITE_PORT=6668
 WEBSITE_BIND=0.0.0.0
-DOWNLOADS_DIR=/opt/fastai/releases
+DOWNLOADS_DIR=/opt/fastaiapi-groups/juya-web/download
 ```
 
 Compose 将 `DOWNLOADS_DIR` 以只读方式映射到容器 `/srv/downloads`。宿主机目录必须事先存在。生产部署建议使用绝对路径；如果使用本机 Nginx / Caddy 反向代理，将 `WEBSITE_BIND` 设为 `127.0.0.1`。
 
 配置文件 `config/site.json` 同样以只读目录映射到容器 `/etc/fastai`。公开地址 `/site-config.json` 读取该文件。**此文件的内容会公开展示，只放版本、链接与公开联系方式。**
 
+通过服务器面板的「文件」管理器进入 `/opt/fastaiapi-groups/juya-web/download`，使用「上传」将以下三个安装包放入目录根层，保留文件名：
+
+| 系统 | 安装包 |
+| --- | --- |
+| Windows | `JuyaDrama Setup 4.0.10.exe` |
+| macOS Apple 芯片 | `JuyaDrama-4.0.10-arm64.dmg` |
+| macOS Intel 芯片 | `JuyaDrama-4.0.10.dmg` |
+
+服务器 `.env` 中的 `DOWNLOADS_DIR` 必须设为 `/opt/fastaiapi-groups/juya-web/download`。若原先映射到其他目录，更新后运行 `docker compose up -d --build`。前端继续使用 `/downloads/文件名`，网址中的复数 `downloads` 与宿主机目录名 `download` 各自有明确用途。
+
+三个安装包的 SHA-256 与大小记录在 `config/installers-checksums.json`，可在上传后比对服务器的 `sha256sum` 输出。安装包不提交到 Git，也不复制进 Docker 镜像。
+
 ```text
-宿主机 /opt/fastai/releases/安装包.dmg
+宿主机 /opt/fastaiapi-groups/juya-web/download/安装包.dmg
            ↓ 只读挂载
 容器 /srv/downloads/安装包.dmg
            ↓ Nginx
@@ -155,7 +168,7 @@ fastai-website/
 │   └── assets/            品牌图标与本地示例画面
 ├── config/site.json       可热更新的公开网站配置
 ├── docker/nginx.conf      静态站、下载与健康检查配置
-├── downloads/             默认宿主机安装包目录
+├── download/              宿主机安装包目录（不提交安装包）
 ├── Dockerfile
 ├── compose.yaml
 └── .env.example
