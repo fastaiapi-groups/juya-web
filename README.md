@@ -33,6 +33,8 @@ mkdir -p /opt/fastaiapi-groups/juya-web/download
 docker compose up -d --build
 ```
 
+小皮面板服务器若提示 `docker: 'compose' is not a docker command`，使用面板自带的 `docker-compose up -d --build`（其余命令同样替换为 `docker-compose`）。
+
 默认绑定 `0.0.0.0:6668:80`。浏览器访问使用反向代理后的 **https://web.fastaiapi.cloud**，域名部署方式见下文。首次构建需要拉取 `nginx:1.28-alpine`。修改网页源码后运行相同命令即可更新。
 
 ```sh

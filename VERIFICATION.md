@@ -1,6 +1,6 @@
 # 验证记录
 
-日期：2026-10-09（Asia/Shanghai）。本机验证，尚未部署到公网域名。
+日期：2026-10-09（Asia/Shanghai）。已完成本机验证和小皮面板服务器部署；公网域名代理尚待切换。
 
 官网端口已更新为 6668，Nginx `server_name`、canonical 和 Open Graph 地址已设为 `web.fastaiapi.cloud`。带该 Host 的本地首页、健康检查与三个安装包 HEAD 请求均通过。公网访问由服务器反向代理负责，对应配置见 `docker/Caddyfile.example`。
 
@@ -47,3 +47,15 @@
 - 实际重建并重启容器后，使用 Host `web.fastaiapi.cloud` 访问本地 6668 首页返回 HTTP 200，canonical 正确；健康检查、Nginx 配置校验及三个安装包 HEAD 均通过。
 - 浏览器直连 `http://127.0.0.1:6668` 返回 `net::ERR_UNSAFE_PORT`。使用用户指定的端口部署，通过标准 HTTPS 域名反向代理访问，不修改浏览器限制。
 - 公网 `https://web.fastaiapi.cloud` 返回 HTTP 200，但标题为 `DeepTrade X GPU-NFT - 产品需求原型`，并非此官网。项目内域名配置已更新，服务器上的代理与部署仍需切换到官网服务。
+
+## 面板上传与服务器部署
+
+- 通过小皮面板文件管理器创建 `/opt/fastaiapi-groups/juya-web/download`，使用「选择文件」「开始上传」上传三个 4.0.10 安装包；面板全部显示「已上传」。未使用 SCP 替代面板上传。
+- 三个服务器文件的大小和完整 SHA-256 与 `config/installers-checksums.json` 完全一致。
+- 服务器代码同步到 `a459870`，通过面板终端执行 `docker-compose up -d --build`。该服务器使用面板提供的独立 Compose 命令。
+- `fastai-website-website-1` 为 healthy，端口 `0.0.0.0:6668->80/tcp`；下载目录只读挂载到 `/srv/downloads`，公开配置只读挂载到 `/etc/fastai`。
+- 服务器 `http://127.0.0.1:6668/` 返回剧芽官网标题，`/healthz` 返回 `ok`，容器 `nginx -t` 通过。
+- 三个安装包 HEAD 均为 HTTP 200，`Content-Disposition: attachment`；Content-Length 分别为 462426538、469839316、500595004 字节。
+- 三个安装包请求前 64 字节，响应内容 SHA-256 均与本地文件首段一致；未重复下载完整安装包。下载目录根路径及校验 JSON 返回 404。
+- 公网域名仍返回 DeepTrade 页面，响应经过 Caddy；当前面板服务器未发现该域名的代理配置或 Caddy 进程。已请求域名代理的管理入口，尚未验证公网官网前端下载，不能视为公网发布完成。
+- 上传证明：`docs/panel-upload-complete.png`；实际目录：`docs/panel-download-directory.png`。
