@@ -29,28 +29,38 @@
   "contacts": [
     {
       "label": "EMAIL",
+      "platform": "email",
       "value": "fastaiapis@gmail.com",
       "url": "mailto:fastaiapis@gmail.com"
     },
     {
       "label": "TELEGRAM",
+      "platform": "telegram",
       "value": "@Jackson2388",
       "url": "https://t.me/Jackson2388"
     },
     {
       "label": "WHATSAPP",
+      "platform": "whatsapp",
       "value": "+44 7549400160",
       "url": "https://wa.me/447549400160"
     },
     {
       "label": "X / TWITTER",
+      "platform": "x",
       "value": "@FastAiApi",
       "url": "https://x.com/FastAiApi"
     },
     {
       "label": "QQ",
+      "platform": "qq",
       "value": "450587470",
       "url": "https://wpa.qq.com/msgrd?v=3&uin=450587470&site=qq&menu=yes"
+    },
+    {
+      "label": "QQ 群",
+      "platform": "qq-group",
+      "value": "48878665"
     }
   ]
 }

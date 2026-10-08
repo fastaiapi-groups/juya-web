@@ -1317,42 +1317,97 @@ h2 {
 }
 .contact-grid {
   display: grid;
-  grid-template-columns: repeat(var(--contact-columns, 5), 1fr);
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  overflow: hidden;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
 .contact-item {
-  padding: 24px 22px;
-  border-right: 1px solid var(--line);
-  transition: background 0.2s;
+  --contact-color: #8bf2cb;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #151e23a6, #0d1319);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
   min-width: 0;
 }
-.contact-item:last-child {
-  border-right: none;
+.contact-item[data-platform="telegram"] {
+  --contact-color: #65bfff;
 }
-.contact-item:hover {
-  background: #8bf2cb08;
+.contact-item[data-platform="whatsapp"] {
+  --contact-color: #65e3a0;
 }
-.contact-item > div {
+.contact-item[data-platform="x"] {
+  --contact-color: #e5eaf0;
+}
+.contact-item[data-platform="qq"] {
+  --contact-color: #72c9fa;
+}
+.contact-item[data-platform="qq-group"] {
+  --contact-color: #b5a0ff;
+}
+.contact-item:hover,
+.contact-item:focus-visible {
+  border-color: var(--contact-color);
+  background: linear-gradient(135deg, #1b272ee0, #111a22);
+  transform: translateY(-3px);
+}
+.contact-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-size: 9px;
-  letter-spacing: 0.6px;
-  color: #6b8378;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 22px;
 }
-.contact-item svg {
-  width: 12px;
-  height: 12px;
-  color: #6b8378;
+.contact-brand {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  color: var(--contact-color);
+  background: color-mix(in srgb, var(--contact-color) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--contact-color) 18%, transparent);
+}
+.contact-brand svg {
+  width: 24px;
+  height: 24px;
+}
+.contact-label {
+  color: #bdcbd2;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.contact-arrow {
+  margin-left: auto;
+  width: 16px;
+  height: 16px;
+  color: #7c909b;
+}
+.contact-item:hover .contact-arrow,
+.contact-item.is-copied .contact-arrow {
+  color: var(--contact-color);
 }
 .contact-item strong {
-  font-size: 12px;
-  font-weight: 400;
-  color: #c0d0c9;
+  font-size: 19px;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: #edf4f2;
   overflow-wrap: anywhere;
+}
+.contact-caption {
+  margin-top: 7px;
+  color: #8c9ca6;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.contact-item.is-copied .contact-caption {
+  color: var(--contact-color);
 }
 .contact-note {
   font-size: 10px;
@@ -1530,10 +1585,10 @@ footer {
     gap: 40px;
   }
   .contact-item {
-    padding: 21px 16px;
+    padding: 22px;
   }
   .contact-item strong {
-    font-size: 10px;
+    font-size: 17px;
   }
   .footer-top {
     gap: 20px;
@@ -1801,22 +1856,10 @@ footer {
     margin-bottom: 21px;
   }
   .contact-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .contact-item {
-    border-bottom: 1px solid var(--line);
-  }
-  .contact-item:nth-child(3) {
-    border-right: none;
-  }
-  .contact-item:nth-child(n + 4) {
-    border-bottom: none;
-  }
-  .contact-item:last-child {
-    border-right: 1px solid var(--line);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .contact-item strong {
-    font-size: 11px;
+    font-size: 16px;
   }
   .footer-top {
     flex-wrap: wrap;
@@ -2187,26 +2230,17 @@ footer {
     font-size: 38px;
   }
   .contact-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
   }
   .contact-item {
-    padding: 21px 16px;
-  }
-  .contact-item:nth-child(3) {
-    border-right: 1px solid var(--line);
-  }
-  .contact-item:nth-child(even) {
-    border-right: none;
-  }
-  .contact-item:nth-child(4) {
-    border-bottom: 1px solid var(--line);
+    padding: 22px;
   }
   .contact-item strong {
-    font-size: 10px;
+    font-size: 18px;
   }
-  .contact-item:last-child {
-    grid-column: 1/-1;
-    border-right: none;
+  .contact-heading {
+    margin-bottom: 16px;
   }
   .contact-note {
     font-size: 9px;

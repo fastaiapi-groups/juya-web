@@ -17,7 +17,32 @@ const fallbackContacts = [
     value: "450587470",
     url: "https://wpa.qq.com/msgrd?v=3&uin=450587470&site=qq&menu=yes",
   },
+  { label: "QQ 群", platform: "qq-group", value: "48878665" },
 ];
+
+const contactPlatforms = {
+  email: { icon: "mail", description: "产品咨询与商务合作" },
+  telegram: { icon: "telegram", description: "随时聊聊你的创意" },
+  whatsapp: { icon: "whatsapp", description: "连接你的下一步" },
+  x: { icon: "x", description: "关注产品动态与灵感" },
+  qq: { icon: "qq", description: "在线咨询与使用支持" },
+  "qq-group": { icon: "qq", description: "点击复制群号 · 在 QQ 搜索加入" },
+};
+
+function contactPlatform(contact) {
+  if (Object.hasOwn(contactPlatforms, contact.platform)) return contact.platform;
+  const label = String(contact.label).toUpperCase();
+  if (label.includes("QQ") && label.includes("群")) return "qq-group";
+  return (
+    {
+      EMAIL: "email",
+      TELEGRAM: "telegram",
+      WHATSAPP: "whatsapp",
+      "X / TWITTER": "x",
+      QQ: "qq",
+    }[label] || "email"
+  );
+}
 
 function icon(name, className = "") {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -42,28 +67,51 @@ function renderContacts(contacts) {
   const container = $("#contact-options");
   container.replaceChildren();
   for (const contact of contacts) {
+    const platform = contactPlatform(contact);
+    const details = contactPlatforms[platform];
+    const isGroup = platform === "qq-group";
     const url = safeURL(contact.url);
-    if (!url || !contact.label || !contact.value) continue;
-    const link = document.createElement("a");
+    if ((!url && !isGroup) || !contact.label || !contact.value) continue;
+    const link = document.createElement(isGroup ? "button" : "a");
     link.className = "contact-item";
-    link.href = url;
-    if (url.startsWith("https:")) {
+    link.dataset.platform = platform;
+    if (isGroup) {
+      link.type = "button";
+      link.setAttribute("aria-label", `复制 QQ 群号 ${contact.value}`);
+    } else link.href = url;
+    if (url?.startsWith("https:") && !isGroup) {
       link.target = "_blank";
       link.rel = "noopener noreferrer";
     }
     const row = document.createElement("div");
+    row.className = "contact-heading";
+    const badge = document.createElement("span");
+    badge.className = "contact-brand";
+    badge.append(icon(details.icon));
     const label = document.createElement("span");
+    label.className = "contact-label";
     label.textContent = contact.label;
-    row.append(label, icon("external"));
+    row.append(badge, label, icon(isGroup ? "copy" : "external", "contact-arrow"));
     const value = document.createElement("strong");
     value.textContent = contact.value;
-    link.append(row, value);
+    const description = document.createElement("span");
+    description.className = "contact-caption";
+    description.textContent = details.description;
+    if (isGroup) {
+      description.setAttribute("role", "status");
+      link.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(String(contact.value));
+          description.textContent = "群号已复制 · 打开 QQ 搜索加入";
+          link.classList.add("is-copied");
+        } catch {
+          description.textContent = `请在 QQ 搜索群号 ${contact.value} 加入`;
+        }
+      });
+    }
+    link.append(row, value, description);
     container.append(link);
   }
-  container.style.setProperty(
-    "--contact-columns",
-    String(Math.min(container.children.length || 1, 5)),
-  );
 }
 
 function fileURL(filename) {

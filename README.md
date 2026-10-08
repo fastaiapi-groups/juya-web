@@ -122,9 +122,12 @@ Compose 将 `DOWNLOADS_DIR` 以只读方式映射到容器 `/srv/downloads`。�
 | `platforms.design`        | 在线设计平台地址                                           |
 | `email`                   | “聊聊你的想法”按钮的收件邮箱                               |
 | `contacts`                | 联系卡片的名称、显示账号和链接，`url` 支持 HTTPS 或 mailto |
+| `contacts[].platform`     | 平台图标：`email`、`telegram`、`whatsapp`、`x`、`qq`、`qq-group`；不填时按名称识别 |
 | `icp`                     | 备案号；留空隐藏，填写后链接到工信部备案网站               |
 
 下载 URL 自动拼接为 `/downloads/` 加经过编码的文件名。前端通过 HEAD 检查文件存在性，并显示真实文件大小；不存在或无法获取时显示“暂未上架”，不提供失效下载链接。
+
+QQ 群卡片使用 `{"label":"QQ 群","platform":"qq-group","value":"48878665"}`，点击复制群号后在 QQ 搜索加入，无需配置邀请链接。
 
 下载端点支持 `EXE / DMG / ZIP / AppImage / DEB / RPM`，文件名大小写应与实际文件一致。不开放目录列表、子目录、符号链接和其他格式，避免把发行目录中的配置、校验记录等一并暴露。Nginx 提供附件响应和 Range 支持，可续传大文件。
 
