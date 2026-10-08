@@ -1,0 +1,7 @@
+.git
+.env
+downloads
+*.log
+README.md
+VERIFICATION.md
+docs

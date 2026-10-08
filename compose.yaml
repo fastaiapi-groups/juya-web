@@ -1,0 +1,25 @@
+name: fastai-website
+services:
+  website:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6660}:80"
+    volumes:
+      - type: bind
+        source: ${DOWNLOADS_DIR:-./downloads}
+        target: /srv/downloads
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./config
+        target: /etc/fastai
+        read_only: true
+        bind:
+          create_host_path: false
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

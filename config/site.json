@@ -1,0 +1,56 @@
+{
+  "version": "4.0.10",
+  "email": "fastaiapis@gmail.com",
+  "icp": "",
+  "platforms": {
+    "api": "https://newapi.fastaiapi.cloud",
+    "design": "https://design.fastaiapi.cloud"
+  },
+  "downloads": [
+    {
+      "platform": "windows",
+      "label": "Windows",
+      "requirement": "64 位安装程序 · EXE",
+      "filename": "JuyaDrama Setup 4.0.10.exe"
+    },
+    {
+      "platform": "mac",
+      "label": "macOS · Apple 芯片",
+      "requirement": "M 系列芯片 · DMG",
+      "filename": "JuyaDrama-4.0.10-arm64.dmg"
+    },
+    {
+      "platform": "mac",
+      "label": "macOS · Intel 芯片",
+      "requirement": "Intel 处理器 · DMG",
+      "filename": "JuyaDrama-4.0.10.dmg"
+    }
+  ],
+  "contacts": [
+    {
+      "label": "EMAIL",
+      "value": "fastaiapis@gmail.com",
+      "url": "mailto:fastaiapis@gmail.com"
+    },
+    {
+      "label": "TELEGRAM",
+      "value": "@Jackson2388",
+      "url": "https://t.me/Jackson2388"
+    },
+    {
+      "label": "WHATSAPP",
+      "value": "+44 7549400160",
+      "url": "https://wa.me/447549400160"
+    },
+    {
+      "label": "X / TWITTER",
+      "value": "@FastAiApi",
+      "url": "https://x.com/FastAiApi"
+    },
+    {
+      "label": "QQ",
+      "value": "450587470",
+      "url": "https://wpa.qq.com/msgrd?v=3&uin=450587470&site=qq&menu=yes"
+    }
+  ]
+}

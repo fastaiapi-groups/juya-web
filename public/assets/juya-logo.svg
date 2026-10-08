@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <title>剧芽短剧 · Juya Shorts</title>
+  <rect x="4" y="4" width="120" height="120" rx="30" fill="#6366F1"/>
+  <g stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 53H98V91C98 97 94 101 88 101H40C34 101 30 97 30 91V53Z"/>
+    <path d="M30 53L27 39C26 35 28 32 32 31L91 21L95 42L30 53Z"/>
+    <path d="M46 29L59 47M70 25L83 43"/>
+    <path d="M58 67L77 78L58 89V67Z"/>
+  </g>
+  <path d="M94 34C94 21 102 16 112 16C112 26 105 33 94 34Z" fill="#C7D2FE"/>
+</svg>
