@@ -1,8 +1,8 @@
 # 验证记录
 
-日期：2026-10-09（Asia/Shanghai）。已完成本机验证和小皮面板服务器部署；公网域名代理尚待切换。
+日期：2026-10-09（Asia/Shanghai）。已恢复 `0.0.0.0:6660` 和 `https://ui.fastaiapi.cloud`，本机、服务器及公网下载验证均通过。
 
-官网端口已更新为 6668，Nginx `server_name`、canonical 和 Open Graph 地址已设为 `web.fastaiapi.cloud`。带该 Host 的本地首页、健康检查与三个安装包 HEAD 请求均通过。公网访问由服务器反向代理负责，对应配置见 `docker/Caddyfile.example`。
+当前 Nginx `server_name`、canonical、Open Graph 和代理示例均使用 `ui.fastaiapi.cloud`。以下保留先前 `6668` / `web.fastaiapi.cloud` 的验证历史；最新公网结果见末尾「恢复原端口与 ui 域名」。
 
 ## 容器与下载
 
@@ -79,3 +79,13 @@
 - 切换语言复用安装包检查结果，文件名、版本号、账号和链接保持原配置，不重复请求已经确认的安装包信息。
 - JavaScript、Compose 配置与 Git diff 检查通过。
 - 截图：`docs/languages-menu.png`、`docs/languages-english.png`、`docs/languages-mobile.png`。
+
+## 恢复原端口与 ui 域名
+
+- Compose 默认端口、本地与服务器 `.env` 改回 `6660`，绑定 `0.0.0.0`；Nginx、canonical、Open Graph 和代理示例统一为 `ui.fastaiapi.cloud`。
+- 面板目录 `/opt/fastaiapi-groups/juya-web` 已拉取代码，通过 `docker-compose up -d --build --force-recreate website` 重建并重启官网。
+- 服务器 `http://127.0.0.1:6660/healthz` 与公网 `https://ui.fastaiapi.cloud/healthz` 均返回 `ok`；公网首页标题、canonical 正确。
+- 公网三个安装包 HEAD 均返回 HTTP 200，Content-Length 与校验记录一致，Content-Disposition 为 attachment；Range 请求均返回 HTTP 206，前 64 字节与本地原文件一致。
+- 公网浏览器三个下载卡片均显示 4.0.10、正确大小和有效下载链接；五语言菜单、六个联系方式及 QQ 群号保持正常。
+- 下载目录继续映射 `/opt/fastaiapi-groups/juya-web/download`。无需重复上传安装包。
+- 公网下载区截图：`docs/live-ui-downloads.png`。
