@@ -1,0 +1,217 @@
+/* Keep reading sizes consistent across product, language and device styles. */
+:root {
+  --reading-body: 16px;
+  --reading-caption: 14px;
+  --reading-label: 13px;
+  --reading-muted: #afc0b8;
+}
+.hero-supporting,
+.hero-platforms,
+.capability-rail small,
+.ecosystem-footnote > span,
+.ecosystem-footnote p,
+.release-info,
+.download-heading > .download-note,
+.download-card small,
+.download-help,
+.contact-caption,
+.contact-note,
+.footer-top > p,
+.footer-top > div a,
+.footer-bottom,
+.footer-bottom > span:last-child {
+  font-size: var(--reading-caption);
+  line-height: 1.8;
+  color: var(--reading-muted);
+}
+.hero-description,
+.ecosystem-heading > p,
+.product-card > p,
+.juya-intro > p,
+.feature-grid p,
+.workflow-grid p,
+.download-heading > p:not(.download-note),
+.contact-description > p,
+.loading-text,
+.toast {
+  font-size: var(--reading-body);
+  line-height: 1.85;
+  color: #c3d0ca;
+}
+.product-card.api-card > p { color: #bfccdd; }
+.product-card.design-card > p { color: #ccc4dd; }
+.eyebrow,
+.hero-eyebrow,
+.product-index,
+.product-badge,
+.product-title-row > div > span,
+.product-tags > span,
+.product-address,
+.contact-label,
+.step-tag,
+.download-card .recommended {
+  font-size: var(--reading-label);
+  line-height: 1.6;
+  letter-spacing: .5px;
+  opacity: 1;
+}
+.product-tags > span { color: #b8c7bf; padding: 6px 10px; }
+.product-address { overflow-wrap: anywhere; }
+.product-features { font-size: 15px; line-height: 1.7; }
+.capability-rail strong { font-size: 16px; line-height: 1.65; white-space: normal; }
+.capability-rail > div { min-width: 0; }
+.feature-grid h3 { font-size: 20px; }
+.feature-grid > div > span { font-size: 14px; color: #9cbaa9; }
+.workflow-grid h3 { font-size: 22px; }
+.button,
+.hero-actions .button,
+.product-actions .button,
+.text-link,
+.product-actions .text-link,
+.nav-download,
+.nav-row nav a { font-size: 15px; line-height: 1.6; }
+.download-card strong { font-size: 18px; line-height: 1.6; }
+.download-card > div { min-width: 0; }
+.download-card small { overflow-wrap: anywhere; }
+.download-help a { color: #c0ead3; }
+.release-info { flex-wrap: wrap; }
+.contact-item strong { font-size: 20px; }
+.contact-caption { margin-top: 10px; }
+.contact-note { margin-top: 22px; }
+.footer-bottom { flex-wrap: wrap; gap: 14px; }
+.brand small { font-size: 10px; letter-spacing: 1.6px; }
+.language-trigger { font-size: 14px; }
+.traditional-mark { font-size: 13px; }
+
+/* Give the illustrative workspaces room for legible captions as well. */
+.stage-caption,
+.stage-bottom,
+.studio-toolbar > span:nth-child(2),
+.studio-tag,
+.studio-image-heading > span:first-child,
+.studio-image-heading > span:last-child,
+.canvas-tag,
+.scene-option small,
+.stage-float small {
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: .3px;
+  color: #c3d6cb;
+}
+.scene-option,
+.stage-float strong { font-size: 13px; line-height: 1.6; }
+.scene-option > span { min-width: 0; overflow-wrap: anywhere; }
+.scene-option small { color: #adc5b7; }
+.scene-option.selected small { color: #bce9d0; }
+.studio-toolbar { height: auto; min-height: 44px; padding-block: 8px; }
+.creative-stage { min-height: 520px; }
+.stage-float { max-width: 70%; }
+.product-demo { height: 300px; }
+.product-demo .demo-topline,
+.product-demo .demo-topline > span:last-child,
+.film-demo-images figcaption,
+.demo-bottomline,
+.gateway-entry > span,
+.gateway-types small,
+.canvas-node > span,
+.canvas-node small,
+.canvas-cursor small,
+.canvas-demo-bottom {
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: #bacac2;
+}
+.product-demo .demo-topline { flex-wrap: wrap; }
+.film-demo-images img { height: 170px; }
+.film-demo-images figcaption { overflow-wrap: anywhere; }
+.gateway-demo .gateway-entry { flex-wrap: wrap; margin-top: 20px; }
+.gateway-entry strong,
+.gateway-types strong,
+.canvas-node strong { font-size: 14px; line-height: 1.6; }
+.gateway-types > div { min-width: 0; padding: 12px 5px; }
+.gateway-types small { color: #b0c4df; }
+.gateway-types strong { overflow-wrap: anywhere; }
+.canvas-demo .canvas-node { top: 68px; padding: 10px; }
+.canvas-demo .image-node { top: 90px; }
+.canvas-node small { color: #d0c3e4; }
+.canvas-demo .canvas-cursor { top: 207px; }
+.canvas-cursor small { top: 16px; }
+.canvas-demo-bottom { color: #c5b9d7; }
+.workspace-bar { height: auto; min-height: 48px; gap: 12px; padding-block: 10px; flex-wrap: wrap; }
+.workspace-bar > span,
+.workspace-bar small,
+.workspace aside > span,
+.workspace aside > .sidebar-caption,
+.workspace-project,
+.sidebar-bottom,
+.workspace-title small,
+.mock-pill,
+.workspace-shots figcaption,
+.workspace-shots figcaption > i,
+.workspace-timeline > span,
+.workspace-timeline small {
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: #b9c8c2;
+}
+.workspace aside { width: 160px; }
+.workspace-title h3 { font-size: 19px; }
+.workspace-title { gap: 14px; flex-wrap: wrap; }
+.workspace-shots figcaption { white-space: normal; flex-wrap: wrap; align-items: start; }
+.workspace-timeline { flex-wrap: wrap; gap: 6px; }
+.workspace-shots figure { min-width: 0; }
+
+@media (max-width: 800px) {
+  :root { --reading-body: 15px; }
+  .creative-stage { min-height: 560px; }
+  .scene-option img { display: none; }
+  .stage-float { max-width: 70%; }
+  .workspace aside { display: none; }
+  .workspace-main { padding: 20px 16px; }
+  .capability-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; }
+  .capability-rail > a { grid-column: auto; }
+  .ecosystem-footnote { flex-wrap: wrap; }
+}
+@media (max-width: 480px) {
+  .nav-row > .brand small { display: none; }
+  .language-trigger { font-size: 13px; }
+  .nav-row { gap: 6px; }
+  .hero-product-name { gap: 8px; justify-content: center; }
+  .hero-product-name > span:first-of-type { font-size: 15px; }
+  .hero-product-name > span:last-child { font-size: 14px; flex-basis: 100%; }
+  .hero-product-name i { display: none; }
+  .hero-eyebrow { font-size: 12px; letter-spacing: .4px; }
+  .hero-platforms { flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .hero-platforms > span:last-child { flex-basis: 100%; justify-content: center; }
+  .hero-platforms > i { display: none; }
+  .hero-actions .button { font-size: 14px; min-height: 48px; }
+  .creative-stage { min-height: 530px; }
+  .creative-stage .studio-window { transform: none; left: 0; right: 0; top: 36px; }
+  .studio-canvas { height: 250px; }
+  .studio-toolbar .window-dots { display: none; }
+  .studio-toolbar > span:nth-child(2) { flex: 1; min-width: 0; }
+  .studio-tag { display: none; }
+  .studio-image-heading strong { font-size: 21px; }
+  .scene-option { padding: 8px 5px; font-size: 12px; }
+  .scene-option small { font-size: 11px; }
+  .stage-caption { left: 0; right: 0; font-size: 11px; }
+  .stage-bottom { display: none; }
+  .creative-stage .float-script { top: auto; bottom: 0; left: 0; max-width: 100%; transform: none; }
+  .creative-stage .float-asset { display: none; }
+  .product-card .card-top { flex-wrap: wrap; gap: 10px; }
+  .product-index, .product-badge { font-size: 13px; }
+  .product-card > p { min-height: 0; }
+  .download-shell { padding: 28px 18px; }
+  .download-card { padding: 16px 12px; gap: 10px; }
+  .download-card .platform-icon { width: 32px; height: 36px; }
+  .download-card strong { font-size: 17px; }
+  .download-card > svg { width: 16px; }
+  .workspace-shots { grid-template-columns: minmax(0, 1fr); }
+  .workspace-shots img { height: 190px; }
+  .workspace-shots figcaption { font-size: 14px; padding: 10px; }
+  .workspace-timeline > div { display: none; }
+  .footer-top > div { flex-wrap: wrap; row-gap: 14px; }
+  .footer-bottom { line-height: 1.8; }
+}
