@@ -1,0 +1,16 @@
+(()=>{'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+let toastTimer;const toast=t=>{const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)};
+$$('pre').forEach(pre=>{const code=$('code',pre);if(!code)return;const button=document.createElement('button');button.type='button';button.className='copy-code';button.textContent='复制';button.setAttribute('aria-label','复制这段命令或示例');button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(code.textContent);button.textContent='已复制';setTimeout(()=>button.textContent='复制',1800)}catch{const range=document.createRange();range.selectNodeContents(code);const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);toast('已选中内容，请按 Ctrl+C / Command+C 复制')}});pre.append(button)});
+const viewer=$('#image-viewer'),large=$('img',viewer);let lastZoom;
+const closeViewer=()=>viewer.close();
+$('.close-viewer',viewer).addEventListener('click',closeViewer);
+viewer.addEventListener('click',e=>{if(e.target===viewer){const r=viewer.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeViewer()}});
+viewer.addEventListener('close',()=>{document.body.classList.remove('viewer-open');lastZoom?.focus()});
+$$('a.zoom').forEach(a=>a.addEventListener('click',e=>{if(!viewer.showModal)return;e.preventDefault();lastZoom=a;const im=$('img',a);large.src=a.href;large.alt=im.alt;$('p',viewer).textContent=im.alt;$('a',viewer).href=a.href;viewer.showModal();document.body.classList.add('viewer-open')}));
+const search=$('input[type=search]');if(search)search.addEventListener('input',()=>{const terms=search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);let visible=0;$$('.guide-card').forEach(card=>{const hay=(card.dataset.search+' '+card.textContent).toLowerCase();card.hidden=!terms.every(term=>hay.includes(term));if(!card.hidden)visible++});$('#empty-search').hidden=visible!==0});
+const headings=$$('.prose h2,.prose h3'),links=$$('.desktop-toc nav a');
+let scheduled=false;const update=()=>{scheduled=false;const max=document.documentElement.scrollHeight-innerHeight;$('.progress').style.width=(max>0?Math.min(100,scrollY/max*100):0)+'%';let active=headings[0];for(const h of headings){if(h.getBoundingClientRect().top<=150)active=h;else break}links.forEach(a=>a.classList.toggle('active',a.hash==='#'+active?.id))};
+addEventListener('scroll',()=>{if(!scheduled){requestAnimationFrame(update);scheduled=true}},{passive:true});addEventListener('resize',update);addEventListener('load',update);update();
+$$('.mobile-toc a').forEach(a=>a.addEventListener('click',()=>$('.mobile-toc').open=false));
+})();

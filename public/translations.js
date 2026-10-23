@@ -1,6 +1,7 @@
 // Complete website translations. Keys are the original Simplified Chinese copy.
 window.siteTranslations = {
   "en": {
+    "帮助文档": "Help docs",
     "FastAI · 剧芽短剧与 AI 创作生态": "FastAI · Juya Shorts & AI Creation",
     "用剧芽短剧，把你的故事拍成 AI 短剧。剧本规划、角色管理、漫画分镜与视频制作，配合 FastAI 模型中转站和在线设计平台，构建完整的 AIGC 创作生态。": "Turn your stories into AI shorts with Juya. Plan scripts, manage characters, create storyboards and videos with FastAI API and Design.",
     "跳转到内容": "Skip to content",
@@ -209,6 +210,7 @@ window.siteTranslations = {
     "03 / 神鸟 · 细节特写": "03 / Bird · Details in focus"
   },
   "ja": {
+    "帮助文档": "ヘルプドキュメント",
     "FastAI · 剧芽短剧与 AI 创作生态": "FastAI · Juya Shorts と AI 創作",
     "用剧芽短剧，把你的故事拍成 AI 短剧。剧本规划、角色管理、漫画分镜与视频制作，配合 FastAI 模型中转站和在线设计平台，构建完整的 AIGC 创作生态。": "Juya で物語を AI ショートドラマに。脚本、キャラクター、絵コンテ、動画制作を FastAI API と Design が支えます。",
     "跳转到内容": "本文へスキップ",
@@ -417,6 +419,7 @@ window.siteTranslations = {
     "03 / 神鸟 · 细节特写": "03 / 神鳥 · 細部のクローズアップ"
   },
   "ko": {
+    "帮助文档": "도움말 문서",
     "FastAI · 剧芽短剧与 AI 创作生态": "FastAI · Juya Shorts와 AI 창작",
     "用剧芽短剧，把你的故事拍成 AI 短剧。剧本规划、角色管理、漫画分镜与视频制作，配合 FastAI 模型中转站和在线设计平台，构建完整的 AIGC 创作生态。": "Juya로 이야기를 AI 숏드라마로 만드세요. 대본, 캐릭터, 스토리보드와 영상 제작을 FastAI API와 Design이 지원합니다.",
     "跳转到内容": "본문으로 이동",
@@ -625,6 +628,7 @@ window.siteTranslations = {
     "03 / 神鸟 · 细节特写": "03 / 신조 · 세부 클로즈업"
   },
   "zh-TW": {
+    "帮助文档": "說明文件",
     "FastAI · 剧芽短剧与 AI 创作生态": "FastAI · 劇芽短劇與 AI 創作生態",
     "用剧芽短剧，把你的故事拍成 AI 短剧。剧本规划、角色管理、漫画分镜与视频制作，配合 FastAI 模型中转站和在线设计平台，构建完整的 AIGC 创作生态。": "用劇芽短劇，把你的故事拍成 AI 短劇。劇本規劃、角色管理、漫畫分鏡與影片製作，配合 FastAI 模型中轉站和線上設計平台，構建完整的 AIGC 創作生態。",
     "跳转到内容": "跳轉到內容",
