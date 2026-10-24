@@ -1,31 +1,13 @@
 {
-  "version": "4.0.10",
+  "version": "",
   "email": "fastaiapis@gmail.com",
   "icp": "",
   "platforms": {
     "api": "https://newapi.fastaiapi.cloud",
-    "design": "https://design.fastaiapi.cloud"
+    "design": "https://canvas.fastaiapi.cloud",
+    "codexplus": "https://fastaiapi.cloud/fastaiui/downloads/codexplus"
   },
-  "downloads": [
-    {
-      "platform": "windows",
-      "label": "Windows",
-      "requirement": "64 位安装程序 · EXE",
-      "filename": "JuyaDrama Setup 4.0.10.exe"
-    },
-    {
-      "platform": "mac",
-      "label": "macOS · Apple 芯片",
-      "requirement": "M 系列芯片 · DMG",
-      "filename": "JuyaDrama-4.0.10-arm64.dmg"
-    },
-    {
-      "platform": "mac",
-      "label": "macOS · Intel 芯片",
-      "requirement": "Intel 处理器 · DMG",
-      "filename": "JuyaDrama-4.0.10.dmg"
-    }
-  ],
+  "downloads": [],
   "contacts": [
     {
       "label": "EMAIL",

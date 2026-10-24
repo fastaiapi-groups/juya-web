@@ -1,0 +1,12 @@
+(() => {
+  const root = document.getElementById('download-options');
+  const downloadPage = 'https://fastaiapi.cloud/fastaiui/downloads/codexplus';
+  const platformName = asset => asset.platform === 'windows' ? 'Windows' : 'macOS';
+  const archName = asset => asset.arch === 'universal' ? 'Apple 芯片与 Intel 通用' : asset.arch === 'arm64' ? 'Apple 芯片' : '64 位';
+  const fallback = () => { root.replaceChildren(); const link=document.createElement('a');link.className='download-option';link.href=downloadPage; const text=document.createElement('div');const title=document.createElement('b');title.textContent='前往官方客户端下载页';const hint=document.createElement('small');hint.textContent='查看可用平台、最新版本与安装说明';text.append(title,hint);link.append(text);root.append(link); };
+  fetch('https://fastaiapi.cloud/fastaiapi/api/client-updates/public',{credentials:'omit',signal:AbortSignal.timeout(12000)})
+    .then(response=>{if(!response.ok)throw Error('unavailable');return response.json()})
+    .then(payload=>{const release=payload.data?.release;if(!release?.assets?.length)return fallback();root.replaceChildren();for(const asset of release.assets){const url=new URL(asset.url);if(url.origin!=='https://fastaiapi.cloud'||!url.pathname.startsWith('/fastaiapi/downloads/codexplus/'))continue;const link=document.createElement('a');link.className='download-option';link.href=url.href;const icon=document.createElement('span');icon.className='download-os-icon';icon.textContent=asset.platform==='windows'?'⊞':'⌘';const content=document.createElement('div'),title=document.createElement('b'),meta=document.createElement('small');title.textContent=platformName(asset);meta.textContent=`${archName(asset)} · v${release.version} · ${(asset.size_bytes/1024/1024).toFixed(1)} MB`;content.append(title,meta);const arrow=document.createElement('span');arrow.className='download-arrow';arrow.textContent='↓';link.append(icon,content,arrow);root.append(link)}if(!root.childElementCount)fallback()}).catch(fallback);
+  document.getElementById('year').textContent=String(new Date().getFullYear());
+  document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{const status=document.getElementById('copy-status');try{await navigator.clipboard.writeText(button.dataset.copy);status.textContent='复制成功';button.querySelector('span').textContent='已复制 ✓'}catch{status.textContent='复制失败，请手动复制上方联系方式。'}}));
+})();
