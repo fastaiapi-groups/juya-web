@@ -14,8 +14,8 @@ function string(value, label, max = 200, min = 1) {
   if (typeof value !== 'string' || value.trim().length < min || value.length > max) fail(400, `${label}格式不正确`);
   return value.trim();
 }
-function password(value) {
-  if (typeof value !== 'string' || value.length < 12 || value.length > 128) fail(400, '密码须为 12–128 位');
+function password(value, min = 12) {
+  if (typeof value !== 'string' || value.length < min || value.length > 128) fail(400, `密码须为 ${min}–128 位`);
   return value;
 }
 function integer(value, label, min, max) {
@@ -286,6 +286,7 @@ export function createApp(store, options = {}) {
         await rateLimit(`register:${ip}`, 5, 3_600_000);
         const body = await readJson(req);
         const username = string(body.username, '登录账号', 40).toLowerCase();
+        if (username === 'admin') fail(409, '该账号为内置管理员账号');
         if (!/^[a-z0-9_.-]{3,40}$/.test(username)) fail(400, '账号须为 3–40 位字母、数字、_.-');
         const name = string(body.display_name, '名称', 60);
         const passwordHash = await hashPassword(password(body.password));
@@ -349,8 +350,8 @@ export function createApp(store, options = {}) {
       if (req.method === 'POST' && path === '/api/merchant/password') {
         await rateLimit(`password:${account.id}`, 6, 15 * 60_000);
         const hash = account.password_hash;
-        if (!await verifyPassword(password(body.current_password), hash)) fail(400, '原密码不正确');
-        const replacement = await hashPassword(password(body.password));
+        if (!await verifyPassword(password(body.current_password, 1), hash)) fail(400, '原密码不正确');
+        const replacement = await hashPassword(password(body.password, account.role === 'admin' ? 8 : 12));
         await authorizedWrite(account, req, async () => {
           // A concurrent administrator reset takes precedence over this request.
           if ((await db.one(`SELECT password_hash FROM accounts WHERE id = $1`, account.id))?.password_hash !== hash) fail(409, '密码已变更，请重新登录');

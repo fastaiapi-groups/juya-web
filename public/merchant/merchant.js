@@ -73,6 +73,8 @@
     $('#role-badge').textContent = roles[state.user.role];
     const admin = state.user.role === 'admin';
     const merchant = state.user.role === 'merchant';
+    for (const name of ['password', 'confirm_password']) $('#password-form').elements[name].minLength = admin ? 8 : 12;
+    $('#password-form').elements.password.placeholder = `${admin ? 8 : 12}–128 位`;
     $('#workspace-title').textContent = admin ? '商户管理' : `${state.user.display_name}的工作台`;
     $('#workspace-description').textContent = admin ? '审批注册申请，管理商户和各级代理。' : '管理每一张卡密，连接每一位创作者。';
     $('#generate-section').hidden = !merchant;

@@ -140,11 +140,44 @@ export async function bootstrapAdmin(store, env = process.env) {
     if (await store.db.one("SELECT id FROM accounts WHERE role = 'admin'")) return;
     const username = env.MERCHANT_ADMIN_USERNAME;
     const password = env.MERCHANT_ADMIN_PASSWORD;
-    if (!username || !/^[a-zA-Z0-9_.-]{3,40}$/.test(username) || !password || password.length < 12 || password.length > 128) {
-      throw new Error('首次启动请设置 MERCHANT_ADMIN_USERNAME（3–40 位字母、数字、_.-）和 MERCHANT_ADMIN_PASSWORD（12–128 位），管理员创建后可移除这两个环境变量。');
+    if (!username || !/^[a-zA-Z0-9_.-]{3,40}$/.test(username) || !password || password.length < 8 || password.length > 128) {
+      throw new Error('首次启动请设置 MERCHANT_ADMIN_USERNAME（3–40 位字母、数字、_.-）和 MERCHANT_ADMIN_PASSWORD（8–128 位），管理员创建后可移除这两个环境变量。');
     }
     await store.db.exec(`INSERT INTO accounts
       (id, username, password_hash, display_name, role, merchant_id, created_at)
       VALUES ($1, $2, $3, $4, 'admin', NULL, $5)`, id(), username.toLowerCase(), await hashPassword(password), '平台管理员', Date.now());
+  });
+}
+
+// Explicit operator action; normal startup never resets an existing administrator.
+export async function setAdminCredentials(store, { username, password, previous_username: previousUsername } = {}) {
+  if (typeof username !== 'string' || !/^[a-zA-Z0-9_.-]{3,40}$/.test(username)) throw new Error('管理员账号格式不正确');
+  if (typeof password !== 'string' || password.length < 8 || password.length > 128) throw new Error('管理员密码须为 8–128 位');
+  const normalized = username.toLowerCase();
+  const passwordHash = await hashPassword(password);
+  return transaction(store.db, async () => {
+    await store.db.exec("SELECT pg_advisory_xact_lock(hashtextextended('fastai-merchant-bootstrap', 0))");
+    let account = await store.db.one('SELECT * FROM accounts WHERE username = $1', normalized);
+    if (account && account.role !== 'admin') throw new Error('目标账号已由商户或代理使用，不能覆盖');
+    if (!account && previousUsername) {
+      if (typeof previousUsername !== 'string') throw new Error('原管理员账号格式不正确');
+      account = await store.db.one("SELECT * FROM accounts WHERE username = $1 AND role = 'admin'", previousUsername.toLowerCase());
+      if (!account) throw new Error('指定的原管理员账号不存在');
+    }
+    if (!account) {
+      const admins = await store.db.all("SELECT * FROM accounts WHERE role = 'admin'");
+      if (admins.length > 1) throw new Error('存在多个管理员，请指定 previous_username');
+      account = admins[0];
+    }
+    const accountId = account?.id || id();
+    await lockTenant(store.db, accountId);
+    if (account) {
+      await store.db.exec("UPDATE accounts SET username = $1, password_hash = $2, enabled = TRUE, approval_status = 'approved' WHERE id = $3", normalized, passwordHash, accountId);
+      await store.db.exec('DELETE FROM sessions WHERE account_id = $1', accountId);
+    } else {
+      await store.db.exec(`INSERT INTO accounts (id, username, password_hash, display_name, role, merchant_id, created_at)
+        VALUES ($1, $2, $3, '平台管理员', 'admin', NULL, $4)`, accountId, normalized, passwordHash, Date.now());
+    }
+    return { id: accountId, username: normalized };
   });
 }

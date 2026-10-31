@@ -44,7 +44,7 @@ settings = {
     'POSTGRES_USER': lambda: 'merchant',
     'POSTGRES_DB': lambda: 'merchant',
     'POSTGRES_PASSWORD': lambda: secrets.token_hex(32),
-    'MERCHANT_ADMIN_USERNAME': lambda: 'platform_admin',
+    'MERCHANT_ADMIN_USERNAME': lambda: 'admin',
     'MERCHANT_ADMIN_PASSWORD': lambda: secrets.token_urlsafe(32),
     'MERCHANT_SECURE_COOKIES': lambda: 'true',
     'MERCHANT_PUBLIC_ORIGIN': lambda: 'https://home.fastaiapi.cloud',

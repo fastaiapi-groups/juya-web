@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { once } from 'node:events';
-import { openStore, bootstrapAdmin, transaction } from '../server/store.mjs';
+import { openStore, bootstrapAdmin, transaction, setAdminCredentials } from '../server/store.mjs';
 import { createApp } from '../server/app.mjs';
 
 const PASS = 'test-password-2026';
@@ -84,6 +84,37 @@ test('first boot has no default credentials; supplied bootstrap credentials neve
     await bootstrapAdmin(store, { MERCHANT_ADMIN_USERNAME: 'different', MERCHANT_ADMIN_PASSWORD: 'different-password' });
     assert.deepEqual((await store.db.one(`SELECT * FROM accounts WHERE role = 'admin'`)), initial);
   } finally { await store.close(); }
+});
+
+test('explicit administrator setup preserves identity and data and accepts a ten-character password', async (t) => {
+  const f = await fixture(t);
+  const merchant = await f.account(f.admin, 'existing_shop');
+  const [card] = await f.generate(merchant.session);
+  const configured = await setAdminCredentials(f.store, { username: 'admin', password: 'admin-pass', previous_username: 'platform_admin' });
+  assert.equal(configured.id, f.admin.user.id);
+  assert.equal(configured.username, 'admin');
+  assert.equal((await f.api('/session', { session: f.admin })).status, 401);
+  assert.equal((await f.api('/cards', { session: merchant.session })).data.items[0].id, card.id);
+  const logged = await f.api('/login', { body: { username: 'admin', password: 'admin-pass' } });
+  assert.equal(logged.status, 200);
+  assert.equal(logged.data.user.role, 'admin');
+  const session = { cookie: logged.headers.get('set-cookie').split(';')[0], csrf: logged.data.csrf };
+  assert.equal((await f.api('/password', { session, body: { current_password: 'admin-pass', password: 'new-pass' } })).status, 200);
+  assert.equal((await f.api('/session', { session })).status, 401);
+  await bootstrapAdmin(f.store, { MERCHANT_ADMIN_USERNAME: 'admin', MERCHANT_ADMIN_PASSWORD: 'admin-pass' });
+  assert.equal((await f.api('/login', { body: { username: 'admin', password: 'new-pass' } })).status, 200);
+  assert.equal((await f.api('/login', { body: { username: 'admin', password: 'admin-pass' } })).status, 401);
+  assert.equal((await f.store.db.one("SELECT COUNT(*) AS n FROM accounts WHERE role = 'admin'")).n, 1);
+});
+
+test('administrator setup cannot overwrite a merchant and registration cannot claim admin', async (t) => {
+  const f = await fixture(t);
+  const merchant = await f.account(f.admin, 'existing_name');
+  await assert.rejects(setAdminCredentials(f.store, { username: 'existing_name', password: 'admin-pass' }), /不能覆盖/);
+  await assert.rejects(setAdminCredentials(f.store, { username: 'admin', password: 'short' }), /8–128/);
+  assert.equal((await f.api('/session', { session: f.admin })).status, 200);
+  assert.equal((await f.api('/session', { session: merchant.session })).data.user.role, 'merchant');
+  assert.equal((await f.api('/register', { body: { username: 'admin', display_name: 'reserved', password: PASS } })).status, 409);
 });
 
 test('self-registered merchants stay pending until an administrator approves them', async (t) => {
