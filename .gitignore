@@ -1,6 +1,17 @@
 .env
+.env.*
+!.env.example
 download/*
 !download/.gitkeep
 !download/README.md
 downloads/*
 .DS_Store
+data/
+node_modules/
+test-results/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+backups/
+.restart.lock/
+__pycache__/

@@ -1,8 +1,16 @@
 .git
 .env
+.env.*
 download
 downloads
 *.log
 README.md
 VERIFICATION.md
 docs
+data
+node_modules
+test-results
+*.sqlite*
+backups
+.restart.lock
+**/__pycache__

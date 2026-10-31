@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>卡密公开验证 API · FastAiApi</title><link rel="stylesheet" href="/merchant/merchant.css"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"></head>
+<body><main class="api-doc"><a class="brand" href="/merchant/"><span class="brand-icon">F</span>FastAiApi · 商户中心</a><span class="eyebrow purple">PUBLIC API REFERENCE</span><h1>卡密公开验证接口</h1><p>使用当前站点域名作为基础地址。以下三个接口无需商户登录、Cookie 或 Authorization 请求头，支持跨域 POST。请求须使用 <code>Content-Type: application/json</code>。</p><p>本项目生成的卡密在本项目验证。旧 xiaoxiao 后台的卡密及 License Token 不会自动导入，也不能直接在这里验证。</p>
+<section class="panel"><h2>1. 检查卡密，不激活、不绑定设备</h2><pre>POST /api/cards/check
+{ "code": "YOUR_CARD_CODE" }</pre><p>成功响应：</p><pre>{
+  "ok": true,
+  "reason": "",
+  "code": "YOUR_CARD_CODE",
+  "product": "漫剧 VIP",
+  "expiresAt": null,
+  "maxUses": 1,
+  "usedDevices": 0,
+  "canActivate": true
+}</pre><p><code>ok</code> 表示卡密本身有效；<code>canActivate</code> 表示还有新设备名额。已达上限的有效卡密仍可供已绑定设备使用。检查不会创建授权凭证、绑定设备或改变销售状态。</p><p>无效卡密：<code>{ "ok": false, "reason": "该卡密已过期" }</code>。接口不会返回商户、代理、登录账号、备注等后台信息。</p></section>
+<section class="panel"><h2>2. 激活卡密并绑定设备</h2><pre>POST /api/activate
+{ "code": "YOUR_CARD_CODE", "deviceId": "client-installation-id" }</pre><p><code>code</code> 自动去除首尾空白并转为大写。<code>deviceId</code> 必须由客户端生成并持久保存，最长 200 字符；兼容 <code>device_fingerprint</code> 字段，非空 <code>deviceId</code> 优先。</p><pre>{
+  "code": 0,
+  "message": "ok",
+  "data": {
+    "access_token": "YOUR_LICENSE_TOKEN",
+    "token": "YOUR_LICENSE_TOKEN",
+    "refresh_token": "YOUR_LICENSE_TOKEN",
+    "expires_in": 0,
+    "user": { "username": "card-example", "email": "" }
+  }
+}</pre><ul><li>以 <code>code === 0</code> 判断业务成功。失败返回 <code>{ "code": 1, "message": "失败原因" }</code>。</li><li>同一设备重复激活同一卡密不会增加设备数；同一设备不能同时绑定另一张有效卡密。</li><li>三个 Token 字段均为同一份 License Token；没有单独的刷新接口，也没有在此创建账号会话。</li><li><code>expires_in</code> 单位为秒，永久卡为 0。限时卡从生成时开始计时，激活不延长有效期。</li></ul></section>
+<section class="panel"><h2>3. 校验已激活的授权凭证</h2><pre>POST /api/verify
+{ "license": "YOUR_LICENSE_TOKEN" }</pre><p><code>license</code> 必须是激活响应中的 <code>data.access_token</code> 或 <code>data.token</code>，不能直接传卡密字符串。License Token 不是标准 JWT；客户端以服务器返回结果为准。</p><pre>{
+  "ok": true,
+  "reason": "",
+  "expiresAt": null,
+  "code": "YOUR_CARD_CODE"
+}</pre><p>以 <code>ok === true</code> 判断有效。<code>expiresAt</code> 为 Unix 毫秒时间戳，<code>null</code> 表示永久。失败示例：<code>{ "ok": false, "reason": "授权凭证无效" }</code>。</p><p>卡密被禁用、过期或删除，或所属商户被停用后，检查、激活和授权校验均立即拒绝；标记售出不影响授权有效性。校验不占用新设备名额，可能每小时更新一次最近访问时间。</p></section>
+<section class="panel"><h2>调用示例</h2><p>将下面的 <code>https://YOUR_WEBSITE_DOMAIN</code> 替换为部署域名：</p><pre>curl 'https://YOUR_WEBSITE_DOMAIN/api/cards/check' \
+  -H 'Content-Type: application/json' \
+  --data '{"code":"YOUR_CARD_CODE"}'</pre><pre>async function verifyLicense(baseUrl, license) {
+  const response = await fetch(`${baseUrl}/api/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ license })
+  });
+  if (!response.ok) throw new Error(`授权服务请求失败：HTTP ${response.status}`);
+  const result = await response.json();
+  if (result.ok !== true) throw new Error(result.reason || '授权无效');
+  return result;
+}</pre><p>正常业务失败使用 HTTP 200。非法 JSON / 参数返回 400，不支持的格式返回 415，过大请求返回 413，频率超限返回 429。每个来源 IP 的三个公开接口合计限额为每分钟 120 次；429 可读取 <code>Retry-After</code> 后重试。</p><p>网络或服务错误应与卡密无效分别处理。卡密和 Token 是凭证，请通过 HTTPS 传输并妥善保存，勿放入 URL、日志或公开页面。</p></section>
+<a class="button" href="/merchant/">← 返回商户中心</a></main></body></html>

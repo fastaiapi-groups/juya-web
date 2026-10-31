@@ -3,6 +3,9 @@ services:
   website:
     build: .
     restart: unless-stopped
+    depends_on:
+      merchant:
+        condition: service_healthy
     ports:
       - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6660}:80"
     volumes:
@@ -23,3 +26,60 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+  merchant:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-development}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: ${POSTGRES_USER:-merchant}
+      PGDATABASE: ${POSTGRES_DB:-merchant}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?请通过 restart.sh 初始化 PostgreSQL 配置}
+      MERCHANT_ADMIN_USERNAME: ${MERCHANT_ADMIN_USERNAME:-}
+      MERCHANT_ADMIN_PASSWORD: ${MERCHANT_ADMIN_PASSWORD:-}
+      MERCHANT_SECURE_COOKIES: ${MERCHANT_SECURE_COOKIES:-true}
+      MERCHANT_PUBLIC_ORIGIN: ${MERCHANT_PUBLIC_ORIGIN:-}
+      MERCHANT_TRUST_PROXY: "true"
+    networks:
+      - default
+      - merchant-db
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-merchant}
+      POSTGRES_DB: ${POSTGRES_DB:-merchant}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请通过 restart.sh 初始化 PostgreSQL 配置}
+    volumes:
+      - merchant-postgres-data:/var/lib/postgresql
+    networks:
+      - merchant-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  merchant-postgres-data:
+
+networks:
+  merchant-db:
+    internal: true

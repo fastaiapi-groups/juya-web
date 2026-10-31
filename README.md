@@ -2,9 +2,9 @@
 
 面向 AIGC 业务的独立品牌官网，介绍剧芽短剧、AI 模型中转站与在线设计平台，并提供桌面安装包下载和商务联系方式。
 
-源码仓库：[fastaiapi-groups/juya-web](https://github.com/fastaiapi-groups/juya-web)。部署域名：`ui.fastaiapi.cloud`，Docker 宿主机端口：`6660`。
+源码仓库：[fastaiapi-groups/juya-web](https://github.com/fastaiapi-groups/juya-web)。部署域名：`home.fastaiapi.cloud`，Docker 宿主机端口：`6660`。
 
-采用深色背景、薄荷绿光效、轨道线条和创作工作台展示，支持桌面、平板与手机。首屏突出「把你的故事，拍成 AI 短剧」，并提供可切换的三组 AI 分镜。产品矩阵通过绿色、蓝色、紫色区分剧芽、中转站和在线设计，展示真实产品能力、使用人群与直接入口；其后为剧芽工作台示意、四步创作流程、Windows / macOS 下载以及联系区。页面资源均在本地，不依赖外部字体、图片 CDN 或前端框架。使用原生 HTML / CSS / JavaScript 和 Nginx，运行不需要 Node.js、数据库或 API 密钥。
+官网使用原生 HTML / CSS / JavaScript 和 Nginx，页面资源均在本地，不依赖外部字体、图片 CDN 或前端框架。新增的漫剧商户中心使用独立 Node.js 24 服务和 PostgreSQL 18 数据库，提供多商户卡密分销、代理管理和公开验证 API；Compose 内置独立 PostgreSQL 服务，不需要第三方 API 密钥。
 
 ![官网首屏预览](docs/preview-desktop.png)
 
@@ -12,13 +12,13 @@
 
 ## 本机已启动
 
-本机可通过 **http://127.0.0.1:6660** 访问，生产域名为 **https://ui.fastaiapi.cloud**。健康检查可使用：
+本机可通过 **http://127.0.0.1:6660** 访问，生产域名为 **https://home.fastaiapi.cloud**。健康检查可使用：
 
 ```sh
 curl http://127.0.0.1:6660/healthz
 ```
 
-当前本地 `.env` 将下载目录设为 `../fastai-drama/desktop/release`，直接读取已有的 4.0.10 安装包，不复制大文件。Docker 映射为 `0.0.0.0:6660:80`，官网域名为 `ui.fastaiapi.cloud`。此 `.env` 的下载目录适用于当前工作区，不提交到 Git；迁移到服务器时按照下方步骤重新配置。
+当前本地 `.env` 将下载目录设为 `../fastai-drama/desktop/release`，直接读取已有的 4.0.10 安装包，不复制大文件。Docker 映射为 `0.0.0.0:6660:80`，官网域名为 `home.fastaiapi.cloud`。此 `.env` 的下载目录适用于当前工作区，不提交到 Git；迁移到服务器时按照下方步骤重新配置。
 
 ## Docker 启动
 
@@ -28,14 +28,16 @@ curl http://127.0.0.1:6660/healthz
 git clone git@github.com:fastaiapi-groups/juya-web.git
 cd juya-web
 cp .env.example .env
+# 按需编辑 .env；留空的数据库和管理员初始密码由 restart.sh 安全生成
+# HTTPS 保留 MERCHANT_SECURE_COOKIES=true；本机 HTTP 调试请设为 false
 # 默认安装包目录为 /opt/fastaiapi-groups/juya-web/download
 mkdir -p /opt/fastaiapi-groups/juya-web/download
-docker compose up -d --build
+./restart.sh
 ```
 
-小皮面板服务器若提示 `docker: 'compose' is not a docker command`，使用面板自带的 `docker-compose up -d --build`（其余命令同样替换为 `docker-compose`）。
+`restart.sh` 自动识别 Docker Compose 插件和小皮面板的独立 `docker-compose` 路径；手动查看日志等操作可使用服务器的 `/xp/server/docker/docker-compose`。
 
-默认绑定 `0.0.0.0:6660:80`。浏览器访问使用反向代理后的 **https://ui.fastaiapi.cloud**，域名部署方式见下文。首次构建需要拉取 `nginx:1.28-alpine`。修改网页源码后运行相同命令即可更新。
+默认绑定 `0.0.0.0:6660:80`。浏览器访问使用反向代理后的 **https://home.fastaiapi.cloud**，域名部署方式见下文。首次构建需要拉取 `nginx:1.28-alpine`、`node:24-alpine` 和 `postgres:18-alpine`。修改网页或商户服务源码后运行相同命令即可更新。
 
 ```sh
 docker compose ps
@@ -44,6 +46,22 @@ docker compose down
 ```
 
 停止容器不会删除宿主机上的安装包或配置。容器包含 `/healthz` 健康检查。
+
+## 漫剧多商户卡密中心
+
+入口为 `/merchant/`，官网导航和页脚均有「商户中心」链接。公开接口文档为 `/merchant/api.html`，无需登录即可查看。
+
+- 公开注册入口 `/merchant/register.html`，商户自助申请或通过上级邀请链接注册代理，待管理员审批通过后才可登录。平台管理员审批、停用账号及重置密码；首次启动从 `.env` 的 `MERCHANT_ADMIN_USERNAME` / `MERCHANT_ADMIN_PASSWORD` 创建管理员，没有默认密码。管理员存在后这两个变量不再修改账号，可从 `.env` 移除。
+- 商户生成永久卡或限时卡，设置设备上限，按页查询、搜索、筛选、复制和导出自己的卡密，并标记销售状态、启用、禁用或删除卡密。
+- 商户和代理均可创建或邀请下级代理；下级注册后由平台管理员审批。代理可向自己的下级分配卡密，查看、导出自己及下级范围内的卡密并标记售出，各分销分支和商户之间强制隔离。
+- 后台可复制专属入口 `/merchant/?shop=<商户ID>`。商户与代理可自行修改密码，修改或重置密码会撤销该账号的所有会话。
+- 卡密验证无需后台登录：`POST /api/cards/check` 只检查不激活；`POST /api/activate` 绑定设备并获取 License Token；`POST /api/verify` 校验已激活授权。激活与校验请求/响应兼容用户提供的 xiaoxiao 接口文档。旧后台的卡密和凭证属于独立数据源，不会自动同步。
+
+卡密管理支持「商户 → 一级代理 → 二级代理 → 更多下级」的多级账号与卡密分发，保留上级对下级的管理权限。采用线下销售和代理分发流程，售出标记用于记录交付情况，未接入支付网关。限时卡自生成时开始计时，激活不延长到期时间。
+
+商户、代理、卡密、会话、设备绑定及授权签名密钥统一存储到 PostgreSQL，数据卷为 `merchant-postgres-data`。常规重启、重建与 `docker compose down` 保留数据；不要删除生产数据卷。PostgreSQL 只连接项目专用的内部网络，不发布数据库公网端口，商户 API 由现有 Nginx 统一代理 `/api/`。
+
+后续更新统一运行 `./restart.sh`：快进拉取当前分支、补齐首次配置、构建、备份 PostgreSQL、启动服务并检查健康；已有密码不会被重置。已手动更新到指定提交或本机调试时可用 `./restart.sh --no-pull`。数据库备份和环境配置副本保存到私有 `backups/`，源码更新失败或存在未提交改动时不会覆盖工作区。详细配置、备份与恢复见 [商户服务说明](docs/MERCHANTS.md)。
 
 ## 配置下载目录
 
@@ -73,7 +91,7 @@ Compose 将 `DOWNLOADS_DIR` 以只读方式映射到容器 `/srv/downloads`。�
 | macOS Apple 芯片 | `JuyaDrama-4.0.10-arm64.dmg` |
 | macOS Intel 芯片 | `JuyaDrama-4.0.10.dmg` |
 
-服务器 `.env` 中的 `DOWNLOADS_DIR` 必须设为 `/opt/fastaiapi-groups/juya-web/download`。若原先映射到其他目录，更新后运行 `docker compose up -d --build`。前端继续使用 `/downloads/文件名`，网址中的复数 `downloads` 与宿主机目录名 `download` 各自有明确用途。
+服务器 `.env` 中的 `DOWNLOADS_DIR` 必须设为 `/opt/fastaiapi-groups/juya-web/download`。若原先映射到其他目录，更新后运行 `./restart.sh`。前端继续使用 `/downloads/文件名`，网址中的复数 `downloads` 与宿主机目录名 `download` 各自有明确用途。
 
 三个安装包的 SHA-256 与大小记录在 `config/installers-checksums.json`，可在上传后比对服务器的 `sha256sum` 输出。安装包不提交到 Git，也不复制进 Docker 镜像。
 
@@ -139,19 +157,19 @@ QQ 群卡片使用 `{"label":"QQ 群","platform":"qq-group","value":"48878665"}`
 
 ## 域名部署
 
-官网域名为 **https://ui.fastaiapi.cloud**，页面 canonical 与分享链接均使用该域名。容器提供 HTTP 服务，宿主机绑定 **6660** 端口。将域名 DNS 指向部署服务器，由现有 Nginx / Caddy 管理 HTTPS 证书并转发到官网。
+官网域名为 **https://home.fastaiapi.cloud**，页面 canonical 与分享链接均使用该域名。容器提供 HTTP 服务，宿主机绑定 **6660** 端口。将域名 DNS 指向部署服务器，由现有 Nginx / Caddy 管理 HTTPS 证书并转发到官网。
 
 如果 Caddy 直接运行在与官网容器相同的宿主机，将 [docker/Caddyfile.example](docker/Caddyfile.example) 的以下配置合入服务器上现有的 Caddyfile，然后校验并重载 Caddy：
 
 ```caddyfile
-ui.fastaiapi.cloud {
+home.fastaiapi.cloud {
     reverse_proxy 127.0.0.1:6660
 }
 ```
 
 如果 Caddy 自身运行在另一个容器中，`127.0.0.1` 指向 Caddy 容器自身。此时应代理到可访问的宿主机地址的 `6660` 端口，或将两者接入同一 Docker 网络后代理到 `website:80`。
 
-使用现有 Nginx 时，在 `server_name ui.fastaiapi.cloud;` 的域名 `server` 块中配置：
+使用现有 Nginx 时，在 `server_name home.fastaiapi.cloud;` 的域名 `server` 块中配置：
 
 ```nginx
 location / {
@@ -174,10 +192,15 @@ fastai-website/
 │   ├── styles.css         视觉样式与响应式布局
 │   ├── showcase.css       首屏、分镜交互与产品矩阵样式
 │   ├── app.js             配置读取、下载检查和导航交互
+│   ├── merchant/          商户中心与公开 API 文档
 │   └── assets/            品牌图标与本地示例画面
 ├── config/site.json       可热更新的公开网站配置
 ├── docker/nginx.conf      静态站、下载与健康检查配置
 ├── download/              宿主机安装包目录（不提交安装包）
+├── server/                PostgreSQL 商户服务
+├── scripts/               首次环境初始化
+├── test/                  PostgreSQL 集成测试
+├── restart.sh             一键拉取、备份、更新与启动
 ├── Dockerfile
 ├── compose.yaml
 └── .env.example
