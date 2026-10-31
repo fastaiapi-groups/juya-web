@@ -87,7 +87,7 @@ backup_dir=$(mktemp -d "backups/$(date -u +%Y%m%dT%H%M%SZ)-${APP_VERSION:0:8}-XX
 cp "$env_file" "$backup_dir/environment.env"
 backup_database() {
   echo '正在备份 PostgreSQL…'
-  "${compose[@]}" exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom' > "$backup_dir/merchant.dump.tmp"
+  "${compose[@]}" exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom' </dev/null > "$backup_dir/merchant.dump.tmp"
   mv "$backup_dir/merchant.dump.tmp" "$backup_dir/merchant.dump"
   echo "数据库备份完成：$backup_dir/merchant.dump"
 }
@@ -121,7 +121,7 @@ wait_healthy merchant
 # Recreate Nginx after the API is ready so its upstream resolves the new container address.
 "${compose[@]}" up -d --no-deps --force-recreate website
 wait_healthy website
-"${compose[@]}" exec -T website wget -q -O /dev/null http://127.0.0.1/healthz
-"${compose[@]}" exec -T website wget -q -O - http://127.0.0.1/api/merchant/healthz
+"${compose[@]}" exec -T website wget -q -O /dev/null http://127.0.0.1/healthz </dev/null
+"${compose[@]}" exec -T website wget -q -O - http://127.0.0.1/api/merchant/healthz </dev/null
 echo
 echo "更新完成：${APP_VERSION:0:12}；管理员初始凭据见 ${env_file}。"
