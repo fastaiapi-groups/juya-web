@@ -31,7 +31,8 @@ if ! "$no_pull"; then
   merge_ref=$(git config --get "branch.$branch.merge") || { echo '当前分支没有上游分支。' >&2; exit 1; }
   echo "正在快进更新 ${branch}…"
   previous_script=$(git hash-object restart.sh)
-  git pull --ff-only "$remote" "$merge_ref"
+  # Git source files must remain readable to container users; keep private files under umask 077.
+  (umask 022; git pull --ff-only "$remote" "$merge_ref")
   if [[ "$(git hash-object restart.sh)" != "$previous_script" ]]; then
     echo '更新脚本已变化，重新加载新入口…'
     rmdir .restart.lock
