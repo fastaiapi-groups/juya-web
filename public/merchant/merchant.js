@@ -57,6 +57,8 @@
     state.request++;
     state.user = null;
     state.csrf = '';
+    state.cards = state.accounts = state.agents = [];
+    for (const selector of ['#cards-body', '#accounts-body', '#summary']) $(selector).replaceChildren();
     $('#dashboard').hidden = true;
     $('#startup').hidden = true;
     $('#login-view').hidden = false;
@@ -75,32 +77,43 @@
     const merchant = state.user.role === 'merchant';
     for (const name of ['password', 'confirm_password']) $('#password-form').elements[name].minLength = admin ? 8 : 12;
     $('#password-form').elements.password.placeholder = `${admin ? 8 : 12}–128 位`;
-    $('#workspace-title').textContent = admin ? '商户管理' : `${state.user.display_name}的工作台`;
-    $('#workspace-description').textContent = admin ? '审批注册申请，管理商户和各级代理。' : '管理每一张卡密，连接每一位创作者。';
+    $('#workspace-title').textContent = admin ? '平台管理' : `${state.user.display_name}的工作台`;
+    $('#workspace-description').textContent = admin ? '查看全部商户的卡密情况，审批商户和各级代理。' : '管理每一张卡密，连接每一位创作者。';
     $('#generate-section').hidden = !merchant;
     $('#copy-entry').hidden = admin;
-    $('#summary').hidden = admin;
-    $('[data-tab="cards"]').hidden = admin;
+    $('[data-tab="cards"]').textContent = admin ? '全部商户卡密' : '卡密管理';
+    $('#cards-merchant-heading').hidden = !admin;
+    $('#cards-actions-heading').hidden = admin;
+    $('#cards-description').textContent = admin ? '查看所属商户、代理、有效期、设备使用及销售状态；概览统计随商户筛选。' : '查看卡密状态与销售进度。';
     $('#accounts-tab').hidden = false;
     $('#accounts-tab').textContent = admin ? '注册审批' : '下级代理';
     $('#accounts-heading').textContent = admin ? '商户与代理账号' : '下级代理';
     $('#accounts-description').textContent = admin ? '审核商户与各级代理的注册申请，通过后即可使用。' : '可继续创建或邀请下级代理，分配卡密；新账号需管理员审批。';
     $('#create-account').textContent = admin ? '＋ 开通商户' : '＋ 注册代理';
     $('#filter-agent-label').hidden = admin;
+    $('#filter-agent').disabled = admin;
+    $('#filter-merchant-label').hidden = !admin;
+    $('#filter-merchant').disabled = !admin;
     $('#copy-invite').hidden = admin;
     state.page = state.accountPage = 1;
     resetFilters();
-    await switchTab(admin ? 'accounts' : 'cards');
+    await switchTab('cards');
   }
   function agentOptions(selected = '', includeDisabled = false) {
     return state.agents.filter((item) => includeDisabled || (item.enabled && item.approval_status === 'approved')).map((item) => `<option value="${esc(item.id)}" ${item.id === selected ? 'selected' : ''}>${esc(item.display_name)}${item.enabled ? '' : '（已停用）'}</option>`).join('');
   }
   async function loadAgents() {
+    const admin = state.user.role === 'admin';
     const agents = [];
     for (let page = 1; ; page++) {
-      const data = await api(`/accounts?page=${page}&page_size=100`);
+      const data = await api(`/accounts?page=${page}&page_size=100${admin ? '&role=merchant' : ''}`);
       agents.push(...data.items);
       if (agents.length >= data.total) break;
+    }
+    if (admin) {
+      const selected = $('#filter-merchant').value;
+      $('#filter-merchant').innerHTML = '<option value="">全部商户</option>' + agents.map((item) => `<option value="${esc(item.id)}" ${item.id === selected ? 'selected' : ''}>${esc(item.display_name)} · ${esc(item.username)}${item.enabled ? '' : '（已停用）'}</option>`).join('');
+      return;
     }
     state.agents = agents;
     const selected = $('#generate-agent').value;
@@ -128,14 +141,21 @@
     const params = filters();
     params.set('page', state.page);
     params.set('page_size', state.pageSize);
-    const [data, summary] = await Promise.all([api(`/cards?${params}`), api('/summary')]);
+    const summaryParams = new URLSearchParams();
+    if (params.has('merchant')) summaryParams.set('merchant', params.get('merchant'));
+    const [data, summary] = await Promise.all([api(`/cards?${params}`), api(`/summary?${summaryParams}`)]);
     if (version !== state.request || !state.user) return;
     if (state.page > 1 && !data.items.length) { state.page = Math.max(1, Math.ceil(data.total / state.pageSize)); await loadCards(); return; }
     state.cards = data.items;
     $('#card-total').textContent = data.total;
     $('#summary').innerHTML = [['卡密总量', summary.total, '▦'], ['可售卡密', summary.available, '◇'], ['已售出', summary.sold, '↗'], ['已激活', summary.activated, '✓']].map(([label, count, symbol]) => `<div class="stat"><div><p>${label}</p><strong>${count}</strong></div><span class="stat-icon" aria-hidden="true">${symbol}</span></div>`).join('');
     const merchant = state.user.role === 'merchant';
-    $('#cards-body').innerHTML = data.items.map((card) => `<tr><td><div class="code-cell"><code>${esc(card.code)}</code><button class="icon-button copy-code" data-copy="${esc(card.code)}" title="复制卡密" aria-label="复制卡密 ${esc(card.code)}">⧉</button></div><span class="cell-sub">${esc(card.product)}</span></td><td class="date-cell">${esc(date(card.expires_at))}</td><td>${esc(card.agent_name || '商户自售')}</td><td>${card.used_devices}<span class="muted"> / ${card.max_devices}</span></td><td><span class="chip ${card.status}">${statusLabels[card.status]}</span></td><td><span class="chip ${card.sold_at ? 'sold' : ''}">${card.sold_at ? '已售出' : '未售出'}</span></td><td><div class="row-actions"><button class="button" data-card-action="sale" data-id="${card.id}">${card.sold_at ? '设为未售' : '标记售出'}</button><button class="button" data-card-action="assign" data-id="${card.id}">分配</button>${merchant ? `<button class="button" data-card-action="toggle" data-id="${card.id}">${card.enabled ? '禁用' : '启用'}</button><button class="button danger" data-card-action="delete" data-id="${card.id}">删除</button>` : ''}</div></td></tr>`).join('') || empty('暂无卡密', merchant ? '生成第一批卡密，或调整筛选条件。' : '请联系所属商户分配卡密，或调整筛选条件。', 7);
+    const admin = state.user.role === 'admin';
+    $('#cards-body').innerHTML = data.items.map((card) => {
+      const owner = admin ? `<td><strong>${esc(card.merchant_name)}</strong><span class="cell-sub">${esc(card.merchant_username)}</span>${!card.merchant_enabled ? '<span class="chip disabled">商户已停用</span>' : card.merchant_approval_status !== 'approved' ? '<span class="chip pending">商户未通过审批</span>' : ''}</td>` : '';
+      const actions = admin ? '' : `<td><div class="row-actions"><button class="button" data-card-action="sale" data-id="${card.id}">${card.sold_at ? '设为未售' : '标记售出'}</button><button class="button" data-card-action="assign" data-id="${card.id}">分配</button>${merchant ? `<button class="button" data-card-action="toggle" data-id="${card.id}">${card.enabled ? '禁用' : '启用'}</button><button class="button danger" data-card-action="delete" data-id="${card.id}">删除</button>` : ''}</div></td>`;
+      return `<tr><td><div class="code-cell"><code>${esc(card.code)}</code><button class="icon-button copy-code" data-copy="${esc(card.code)}" title="复制卡密" aria-label="复制卡密 ${esc(card.code)}">⧉</button></div><span class="cell-sub">${esc(card.product)}</span></td>${owner}<td class="date-cell">${esc(date(card.expires_at))}</td><td>${esc(card.agent_name || '商户自售')}</td><td>${card.used_devices}<span class="muted"> / ${card.max_devices}</span></td><td><span class="chip ${card.status}">${statusLabels[card.status]}</span></td><td><span class="chip ${card.sold_at ? 'sold' : ''}">${card.sold_at ? '已售出' : '未售出'}</span></td>${actions}</tr>`;
+    }).join('') || empty('暂无卡密', admin ? '当前范围内没有卡密，请调整商户或筛选条件。' : merchant ? '生成第一批卡密，或调整筛选条件。' : '请联系所属商户分配卡密，或调整筛选条件。', 7);
     pagination('#cards-pagination', data, 'cards');
   }
   async function loadAccounts() {
@@ -150,19 +170,25 @@
     $('#accounts-body').innerHTML = data.items.map((account) => {
       const pending = account.approval_status === 'pending';
       const status = account.approval_status === 'approved' && !account.enabled ? '已停用' : approvalLabels[account.approval_status];
-      return `<tr><td><strong>${esc(account.display_name)}</strong><span class="cell-sub">${esc(account.username)} · ${roles[account.role]}${account.parent_name ? ` · 上级：${esc(account.parent_name)}` : ''}</span>${account.rejection_reason ? `<span class="cell-sub">${esc(account.rejection_reason)}</span>` : ''}</td><td>${account.card_count}</td><td>${esc(date(account.created_at))}</td><td><span class="chip ${account.approval_status === 'approved' && account.enabled ? 'valid' : pending ? 'pending' : 'disabled'}">${status}</span></td><td><div class="row-actions">${admin && account.approval_status !== 'approved' ? `<button class="button" data-account-action="approve" data-id="${account.id}">通过</button>` : ''}${admin && pending ? `<button class="button danger" data-account-action="reject" data-id="${account.id}">拒绝</button>` : ''}${admin && account.role === 'merchant' && account.approval_status === 'approved' ? `<button class="button" data-account-action="entry" data-id="${account.id}">登录入口</button>` : ''}<button class="button" data-account-action="reset" data-id="${account.id}">重置密码</button><button class="button ${account.enabled ? 'danger' : ''}" data-account-action="toggle" data-id="${account.id}">${account.enabled ? '停用' : '启用'}</button></div></td></tr>`;
+      return `<tr><td><strong>${esc(account.display_name)}</strong><span class="cell-sub">${esc(account.username)} · ${roles[account.role]}${account.parent_name ? ` · 上级：${esc(account.parent_name)}` : ''}</span>${account.rejection_reason ? `<span class="cell-sub">${esc(account.rejection_reason)}</span>` : ''}</td><td>${account.card_count}</td><td>${esc(date(account.created_at))}</td><td><span class="chip ${account.approval_status === 'approved' && account.enabled ? 'valid' : pending ? 'pending' : 'disabled'}">${status}</span></td><td><div class="row-actions">${admin && account.role === 'merchant' ? `<button class="button" data-account-action="cards" data-id="${account.id}">查看卡密</button>` : ''}${admin && account.approval_status !== 'approved' ? `<button class="button" data-account-action="approve" data-id="${account.id}">通过</button>` : ''}${admin && pending ? `<button class="button danger" data-account-action="reject" data-id="${account.id}">拒绝</button>` : ''}${admin && account.role === 'merchant' && account.approval_status === 'approved' ? `<button class="button" data-account-action="entry" data-id="${account.id}">登录入口</button>` : ''}<button class="button" data-account-action="reset" data-id="${account.id}">重置密码</button><button class="button ${account.enabled ? 'danger' : ''}" data-account-action="toggle" data-id="${account.id}">${account.enabled ? '停用' : '启用'}</button></div></td></tr>`;
     }).join('') || empty('暂无账号', '新的注册申请或下级代理会显示在这里。', 5);
     pagination('#accounts-pagination', data, 'accounts');
   }
-  async function switchTab(tab) {
+  async function switchTab(tab, merchantId = null) {
     state.tab = tab;
-    state.request++;
+    const version = ++state.request;
     $('#page-error').hidden = true;
+    $('#summary').hidden = tab !== 'cards';
     for (const name of ['cards', 'accounts', 'api', 'settings']) {
       $(`#${name}-panel`).hidden = name !== tab;
       $(`[data-tab="${name}"]`).classList.toggle('active', name === tab);
     }
-    if (tab === 'cards') { await loadAgents(); await loadCards(); }
+    if (tab === 'cards') {
+      await loadAgents();
+      if (version !== state.request || !state.user) return;
+      if (merchantId !== null) { resetFilters(); $('#filter-merchant').value = merchantId; state.page = 1; }
+      await loadCards();
+    }
     if (tab === 'accounts') await loadAccounts();
   }
   function openModal(title, content, action, confirm = '确认') {
@@ -227,7 +253,7 @@
     const copyButton = event.target.closest('[data-copy]');
     if (copyButton) { copy(copyButton.dataset.copy); return; }
     const button = event.target.closest('[data-card-action]');
-    if (!button) return;
+    if (!button || state.user.role === 'admin') return;
     const card = state.cards.find((item) => item.id === button.dataset.id);
     const action = button.dataset.cardAction;
     if (!card) return;
@@ -259,6 +285,7 @@
     const account = state.accounts.find((item) => item.id === button.dataset.id);
     if (!account) return;
     const action = button.dataset.accountAction;
+    if (action === 'cards') { switchTab('cards', account.id).catch(pageError); return; }
     if (action === 'entry') { copy(entry(account.id)); return; }
     const update = async (body) => { await api(`/accounts/${account.id}`, { method: 'PATCH', body }); closeModal(); toast('账号已更新'); await loadAccounts(); };
     if (action === 'approve') openModal('通过注册申请', `<p>${esc(account.display_name)} · ${esc(account.username)}</p><p>通过后，账号即可登录并使用所属分销权限。</p>`, () => update({ approval_status: 'approved' }), '确认通过');

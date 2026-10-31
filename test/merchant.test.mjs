@@ -162,12 +162,74 @@ test('list, export, summary and mutations enforce independent merchant boundarie
   assert.equal((await f.api(`/cards/${privateCard.id}`, { method: 'DELETE', session: a.session })).status, 404);
   assert.equal((await f.api(`/cards/${card.id}`, { method: 'PATCH', body: { sold: true }, session: a.session })).status, 200);
   assert.equal((await f.api('/summary', { session: a.session })).data.sold, 1);
-  assert.equal((await f.api('/cards', { session: f.admin })).status, 403);
+  assert.equal((await f.api('/cards', { session: f.admin })).data.total, 2);
   assert.equal((await f.api('/cards')).status, 401);
   const accounts = (await f.api('/accounts?page_size=1', { session: f.admin })).data;
   assert.equal(accounts.total, 2);
   assert.equal(accounts.items.length, 1);
   assert.equal((await f.api('/login', { body: { username: 'shop_b', password: PASS, shop: a.user.id } })).status, 401);
+});
+
+test('administrators can inspect all merchants and filtered exports without gaining card write permissions', async (t) => {
+  const f = await fixture(t);
+  const a = await f.account(f.admin, 'overview_a', '商户甲');
+  const b = await f.account(f.admin, 'overview_b', '商户乙');
+  const agent = await f.account(b.session, 'overview_agent');
+  const [disabled, expired, active, deleted] = await f.generate(a.session, { count: 4, product: '甲的漫剧' });
+  const foreign = await f.generate(b.session, { count: 2, agent_id: agent.user.id, product: '乙的漫剧' });
+  await f.api(`/cards/${disabled.id}`, { method: 'PATCH', session: a.session, body: { enabled: false, sold: true } });
+  await f.store.db.exec('UPDATE cards SET expires_at = $1 WHERE id = $2', Date.now() - 1000, expired.id);
+  await f.api(`/cards/${deleted.id}`, { method: 'DELETE', session: a.session });
+  await f.request('/api/activate', { body: { code: active.code, deviceId: 'overview-device' } });
+
+  for (const path of ['/cards', '/summary', '/cards/export']) {
+    assert.equal((await f.api(`${path}?merchant=${b.user.id}`, { session: a.session })).status, 403);
+    assert.equal((await f.api(`${path}?merchant=${a.user.id}`, { session: agent.session })).status, 403);
+    assert.equal((await f.api(`${path}?merchant=${agent.user.id}`, { session: f.admin })).status, 400);
+    assert.equal((await f.api(path)).status, 401);
+  }
+  assert.equal((await f.api('/accounts?role=merchant&page_size=1', { session: f.admin })).data.total, 2);
+  assert.equal((await f.api('/accounts?role=agent', { session: f.admin })).data.total, 1);
+  assert.equal((await f.api('/accounts?role=merchant', { session: a.session })).data.total, 0);
+  assert.equal((await f.api('/accounts?role=admin', { session: f.admin })).status, 400);
+  assert.equal((await f.api(`/cards?agent=${agent.user.id}`, { session: f.admin })).data.total, 2);
+  assert.equal((await f.api('/cards?agent=unassigned', { session: f.admin })).data.total, 3);
+  assert.equal((await f.api(`/cards?agent=${a.user.id}`, { session: f.admin })).status, 400);
+
+  // Disabled merchants remain visible to administrators, but their inventory is not available for sale.
+  await f.api(`/accounts/${b.user.id}`, { method: 'PATCH', session: f.admin, body: { enabled: false } });
+  const overview = (await f.api('/summary', { session: f.admin })).data;
+  assert.deepEqual(overview, { total: 5, available: 1, sold: 1, activated: 1 });
+  assert.deepEqual((await f.api(`/summary?merchant=${b.user.id}`, { session: f.admin })).data,
+    { total: 2, available: 0, sold: 0, activated: 0 });
+  const pages = await Promise.all([1, 2, 3].map(async (page) => (await f.api(`/cards?page=${page}&page_size=2`, { session: f.admin })).data));
+  const cards = pages.flatMap((page) => page.items);
+  assert.equal(pages[0].total, 5);
+  assert.equal(new Set(cards.map((card) => card.id)).size, 5);
+  assert.equal(cards.find((card) => card.id === active.id).used_devices, 1);
+  assert.equal(cards.find((card) => card.id === disabled.id).status, 'disabled');
+  assert.equal(cards.find((card) => card.id === expired.id).status, 'expired');
+  assert.equal(cards.find((card) => card.id === foreign[0].id).merchant_enabled, false);
+  assert.equal(cards.find((card) => card.id === foreign[0].id).merchant_name, '商户乙');
+  assert.equal(cards.find((card) => card.id === foreign[0].id).merchant_username, 'overview_b');
+  assert.equal(cards.some((card) => card.id === deleted.id), false);
+  const filtered = await f.api(`/cards?merchant=${a.user.id}&status=disabled&sale=sold&q=甲的`, { session: f.admin });
+  assert.equal(filtered.data.total, 1);
+  assert.equal(filtered.data.items[0].id, disabled.id);
+  const csv = await f.api(`/cards/export?merchant=${a.user.id}&status=disabled&sale=sold`, { session: f.admin });
+  assert.match(csv.data, /所属商户/);
+  assert.match(csv.data, /商户甲/);
+  assert.ok(csv.data.includes(disabled.code));
+  assert.ok(!csv.data.includes(foreign[0].code));
+  assert.ok(!csv.data.includes(deleted.code));
+
+  assert.equal((await f.api('/cards', { session: f.admin, body: { count: 1, days: 0, max_devices: 1 } })).status, 403);
+  for (const body of [{ sold: true }, { enabled: false }, { agent_id: agent.user.id }, { note: 'forbidden' }]) {
+    assert.equal((await f.api(`/cards/${active.id}`, { method: 'PATCH', session: f.admin, body })).status, 403);
+  }
+  assert.equal((await f.api(`/cards/${active.id}`, { method: 'DELETE', session: f.admin })).status, 403);
+  assert.deepEqual((await f.api('/summary', { session: f.admin })).data, overview);
+  assert.equal((await f.api('/cards', { session: a.session })).data.total, 3);
 });
 
 test('generation, pagination, filters, expiry and CSV export operate on persisted cards', async (t) => {

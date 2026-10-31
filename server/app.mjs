@@ -130,10 +130,20 @@ export function createApp(store, options = {}) {
     return agentId;
   }
   async function cardScope(account, params, filters = true) {
-    requireRole(account, 'merchant', 'agent');
+    requireRole(account, 'admin', 'merchant', 'agent');
     const values = [];
     const bind = (value) => `$${values.push(value)}`;
-    const clauses = [`c.merchant_id = ${bind(account.merchant_id)}`, 'c.deleted_at IS NULL'];
+    const clauses = ['c.deleted_at IS NULL'];
+    const merchantId = params.get('merchant');
+    if (account.role === 'admin') {
+      if (merchantId) {
+        if (!await db.one("SELECT id FROM accounts WHERE id = $1 AND role = 'merchant'", merchantId)) fail(400, '请选择有效的商户');
+        clauses.push(`c.merchant_id = ${bind(merchantId)}`);
+      }
+    } else {
+      if (merchantId) fail(403, '只有管理员可以按商户查询');
+      clauses.push(`c.merchant_id = ${bind(account.merchant_id)}`);
+    }
     if (account.role === 'agent') clauses.push(`c.agent_id = ANY(${bind(await descendants(account.id))}::text[])`);
     if (filters) {
       const q = params.get('q') || '';
@@ -150,7 +160,11 @@ export function createApp(store, options = {}) {
       else if (sale) fail(400, '销售状态不正确');
       const agentId = params.get('agent');
       if (agentId) {
-        if (agentId === 'unassigned') clauses.push(account.role === 'merchant' ? 'c.agent_id IS NULL' : `c.agent_id = ${bind(account.id)}`);
+        if (agentId === 'unassigned') clauses.push(account.role === 'agent' ? `c.agent_id = ${bind(account.id)}` : 'c.agent_id IS NULL');
+        else if (account.role === 'admin') {
+          if (!await db.one("SELECT id FROM accounts WHERE id = $1 AND role = 'agent'", agentId)) fail(400, '请选择有效的代理');
+          clauses.push(`c.agent_id = ${bind(agentId)}`);
+        }
         else clauses.push(`c.agent_id = ${bind(await checkAgent(account, agentId, false))}`);
       }
     }
@@ -158,8 +172,10 @@ export function createApp(store, options = {}) {
   }
   async function listCards(scope, limit, offset = 0) {
     return (await db.all(`SELECT c.*, a.display_name AS agent_name,
+      m.display_name AS merchant_name, m.username AS merchant_username,
+      m.enabled AS merchant_enabled, m.approval_status AS merchant_approval_status,
       (SELECT COUNT(*) FROM devices d WHERE d.card_id = c.id) AS used_devices
-      FROM cards c LEFT JOIN accounts a ON a.id = c.agent_id
+      FROM cards c JOIN accounts m ON m.id = c.merchant_id LEFT JOIN accounts a ON a.id = c.agent_id
       WHERE ${scope.sql} ORDER BY c.created_at DESC, c.id DESC
       LIMIT $${scope.values.length + 1} OFFSET $${scope.values.length + 2}`, ...scope.values, limit, offset))
       .map((card) => ({ ...card, enabled: Boolean(card.enabled),
@@ -369,6 +385,9 @@ export function createApp(store, options = {}) {
         const approval = url.searchParams.get('approval') || '';
         if (approval && !['pending', 'approved', 'rejected'].includes(approval)) fail(400, '审批状态不正确');
         if (approval) clauses.push(`a.approval_status = $${values.push(approval)}`);
+        const role = url.searchParams.get('role') || '';
+        if (role && !['merchant', 'agent'].includes(role)) fail(400, '账号类型不正确');
+        if (role) clauses.push(`a.role = $${values.push(role)}`);
         const clause = clauses.join(' AND ');
         const total = (await db.one(`SELECT COUNT(*) AS n FROM accounts a WHERE ${clause}`, ...values)).n;
         const rows = await db.all(`SELECT a.*, p.display_name AS parent_name,
@@ -427,10 +446,11 @@ export function createApp(store, options = {}) {
       if (path === '/api/merchant/summary' && req.method === 'GET') {
         const scope = await cardScope(account, url.searchParams, false);
         const result = (await db.one(`SELECT COUNT(*) AS total,
-          COUNT(*) FILTER (WHERE c.enabled AND (c.expires_at IS NULL OR c.expires_at > $${scope.values.length + 1}) AND c.sold_at IS NULL) AS available,
+          COUNT(*) FILTER (WHERE c.enabled AND m.enabled AND m.approval_status = 'approved'
+            AND (c.expires_at IS NULL OR c.expires_at > $${scope.values.length + 1}) AND c.sold_at IS NULL) AS available,
           COUNT(*) FILTER (WHERE c.sold_at IS NOT NULL) AS sold,
           COUNT(*) FILTER (WHERE EXISTS(SELECT 1 FROM devices d WHERE d.card_id = c.id)) AS activated
-          FROM cards c WHERE ${scope.sql}`, ...scope.values, Date.now()));
+          FROM cards c JOIN accounts m ON m.id = c.merchant_id WHERE ${scope.sql}`, ...scope.values, Date.now()));
         send(200, result); return;
       }
       if ((path === '/api/merchant/cards' || path === '/api/merchant/cards/export') && req.method === 'GET') {
@@ -443,6 +463,10 @@ export function createApp(store, options = {}) {
           const lines = [['卡密', '产品', '有效期', '状态', '代理', '销售状态', '已用设备', '设备上限', '备注'],
             ...rows.map((row) => [row.code, row.product, row.expires_at === null ? '永久' : new Date(row.expires_at).toISOString(),
               status[row.status], row.agent_name, row.sold_at === null ? '未售出' : '已售出', row.used_devices, row.max_devices, row.note])];
+          if (account.role === 'admin') {
+            lines[0].splice(4, 0, '所属商户', '商户账号');
+            rows.forEach((row, index) => lines[index + 1].splice(4, 0, row.merchant_name, row.merchant_username));
+          }
           res.writeHead(200, { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="cards.csv"' });
           res.end('\uFEFF' + lines.map((line) => line.map(csvCell).join(',')).join('\r\n')); return;
         }
@@ -474,6 +498,7 @@ export function createApp(store, options = {}) {
       }
       const cardMatch = path.match(/^\/api\/merchant\/cards\/([a-f0-9-]+)$/);
       if (cardMatch && (req.method === 'PATCH' || req.method === 'DELETE')) {
+        requireRole(account, 'merchant', 'agent');
         await authorizedWrite(account, req, async () => {
           const scope = await cardScope(account, url.searchParams, false);
           const card = await db.one(`SELECT c.* FROM cards c WHERE ${scope.sql} AND c.id = $${scope.values.length + 1}`, ...scope.values, cardMatch[1]);
