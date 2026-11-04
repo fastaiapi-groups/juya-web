@@ -1,0 +1,8 @@
+# Merge this matcher and handle into the existing fastaiapi.cloud / www site,
+# before its fallback handle. Keep the existing console and API handlers.
+@public_help path /help /help/* /downloads /downloads/*
+handle @public_help {
+    reverse_proxy 192.200.102.214:6660 {
+        import common_proxy_headers
+    }
+}

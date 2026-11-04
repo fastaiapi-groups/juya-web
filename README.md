@@ -159,6 +159,8 @@ QQ 群卡片使用 `{"label":"QQ 群","platform":"qq-group","value":"48878665"}`
 
 官网域名为 **https://home.fastaiapi.cloud**，页面 canonical 与分享链接均使用该域名。容器提供 HTTP 服务，宿主机绑定 **6660** 端口。将域名 DNS 指向部署服务器，由现有 Nginx / Caddy 管理 HTTPS 证书并转发到官网。
 
+公开教程和配套下载统一使用主域名：**https://fastaiapi.cloud/help/**、**https://fastaiapi.cloud/help/codex/** 和 **https://fastaiapi.cloud/downloads/ChatGPT.dmg**。教程页面的 canonical 使用主域名，官网首页仍使用 home。生产 VPS2 将 `/help`、`/help/*`、`/downloads`、`/downloads/*` 代理到同一官网服务 6660；主域名的控制台及 `/fastaiui`、`/fastaiapi` 路由继续使用既有服务。配置片段见 [docker/Caddyfile.help.example](docker/Caddyfile.help.example)，合入现有主域名站点的兜底 handle 之前，再校验并重载 Caddy。
+
 如果 Caddy 直接运行在与官网容器相同的宿主机，将 [docker/Caddyfile.example](docker/Caddyfile.example) 的以下配置合入服务器上现有的 Caddyfile，然后校验并重载 Caddy：
 
 ```caddyfile
