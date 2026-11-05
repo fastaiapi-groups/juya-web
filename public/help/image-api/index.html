@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101827">
-  <meta name="description" content="GPT Image 2.6 Flare 与 Sunburst 图片 API：FastAiApi 与 New API 两站通用参数，支持图片编辑、GIF 动图、SVG 矢量图与文件 URL。">
+  <meta name="description" content="GPT Image 2.6 Flare 与 Sunburst 图片 API：FastAiApi 与 TuMei API 两站通用参数，支持图片编辑、GIF 动图、SVG 矢量图与文件 URL。">
   <title>GPT Image 2.6 · 图片 API · FastAiApi</title>
   <link rel="canonical" href="https://fastaiapi.cloud/help/image-api/">
   <link rel="icon" href="/help/assets/logo.svg" type="image/svg+xml">
@@ -21,25 +21,25 @@
 <aside class="guide-nav"><a href="/help/" class="back">← 全部教程</a><p class="nav-label">图片 API</p><a href="/help/image-api/" aria-current="page">◈　GPT Image 2.6</a><a href="/help/api/">⌘　FastAiApi 使用教程</a><a href="/help/codex/">▧　Codex 从零上手</a><a href="/help/magic-video/">▶　魔法视频与插件</a><div class="side-note"><strong>两站通用参数</strong><p>选择站点并使用该站创建的 API Key。切换站点时，请求体保持一致。</p></div></aside>
 <main id="main" class="article-main">
 <div class="breadcrumb"><a href="/help/">帮助文档</a><span>/</span>GPT Image 2.6</div>
-<div class="article-heading"><span class="eyebrow">GPT IMAGE 2.6 / API</span><h1>图片、GIF 与 SVG</h1><p>Flare 与 Sunburst，支持文字生图、图片编辑、GIF 动图与 SVG 矢量图。</p><div class="meta"><span>2026 年 11 月 6 日更新</span><span>FastAiApi / New API 两站适用</span></div></div>
+<div class="article-heading"><span class="eyebrow">GPT IMAGE 2.6 / API</span><h1>图片、GIF 与 SVG</h1><p>Flare 与 Sunburst，支持文字生图、图片编辑、GIF 动图与 SVG 矢量图。</p><div class="meta"><span>2026 年 11 月 6 日更新</span><span>FastAiApi / TuMei API 两站适用</span></div></div>
 <details class="mobile-toc"><summary>本页目录</summary><nav aria-label="手机目录"><a href="#sites">1. 站点与鉴权</a><a href="#models">2. 模型说明与价格</a><a href="#parameters">3. 通用参数</a><a href="#generate">4. 文字生图</a><a href="#gif-svg">5. GIF 与 SVG</a><a href="#edit">6. 图片编辑</a><a href="#results">7. URL 与返回结果</a></nav></details>
 <article class="prose">
 <h2 id="sites">1. 站点与鉴权</h2>
 <p><a href="https://fastaiapi.cloud">fastaiapi.cloud</a> 与 <a href="https://tumeiapi.com">tumeiapi.com</a> 均支持本文两个模型。两站使用相同的 Images 接口路径、参数和请求体；只需更换 Base URL 与对应站点的 API Key。</p>
-<div class="table-scroll"><table><thead><tr><th>站点</th><th>Base URL</th><th>可用分组</th></tr></thead><tbody><tr><td>FastAiApi</td><td><code>https://fastaiapi.cloud</code></td><td>gpt-pro、gpt-Image-超分</td></tr><tr><td>New API</td><td><code>https://tumeiapi.com</code></td><td>default、企业VIP、Image2.6两分</td></tr></tbody></table></div>
+<div class="table-scroll"><table><thead><tr><th>站点</th><th>Base URL</th><th>可用分组</th></tr></thead><tbody><tr><td>FastAiApi</td><td><code>https://fastaiapi.cloud</code></td><td>gpt-pro、gpt-Image-超分</td></tr><tr><td>TuMei API</td><td><code>https://tumeiapi.com</code></td><td>default、企业VIP、Image2.6两分</td></tr></tbody></table></div>
 <p>鉴权请求头为 <code>Authorization: Bearer YOUR_API_KEY</code>。请在所选站点创建 Key 并选择对应分组；两个站点的 Key 分别管理。</p>
 <pre><code># 选择一个站点，末尾不加 /v1
 export BASE_URL='https://fastaiapi.cloud'
-# 使用 New API 时改为：https://tumeiapi.com
+# 使用 TuMei API 时改为：https://tumeiapi.com
 export API_KEY='YOUR_API_KEY'</code></pre>
-<div class="site-links"><a class="button" href="https://fastaiapi.cloud">FastAiApi 控制台 ↗</a><a class="button" href="https://tumeiapi.com">New API 控制台 ↗</a></div>
+<div class="site-links"><a class="button" href="https://fastaiapi.cloud">FastAiApi 控制台 ↗</a><a class="button" href="https://tumeiapi.com">TuMei API 控制台 ↗</a></div>
 
 <h2 id="models">2. 模型说明与价格</h2>
 <div class="model-intro"><h3>GPT Image 2.6 Flare</h3><p><code>gpt-image-2.6-flare</code>：面向快速创作与反复迭代，适合批量素材、电商配图和海报草稿。支持文字生图、参考图编辑、<strong>GIF 动图</strong>与<strong>SVG 矢量图</strong>，结果以文件 URL 返回。</p></div>
 <div class="model-intro"><h3>GPT Image 2.6 Sunburst</h3><p><code>gpt-image-2.6-sunburst</code>：面向精细画面与设计创作，适合产品视觉、海报设计和精细修图。支持文字生图、参考图编辑、<strong>GIF 动图</strong>与<strong>SVG 矢量图</strong>，结果以文件 URL 返回。</p></div>
 <p>以下为两个模型的人民币单张价格，使用相同分组时价格一致。</p>
-<div class="table-scroll"><table><thead><tr><th>站点</th><th>分组</th><th>Flare / 张</th><th>Sunburst / 张</th></tr></thead><tbody><tr><td>FastAiApi</td><td>gpt-pro</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>FastAiApi</td><td>gpt-Image-超分</td><td>¥0.04</td><td>¥0.04</td></tr><tr><td>New API</td><td>default</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>New API</td><td>Image2.6两分</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>New API</td><td>企业VIP</td><td colspan="2">企业专享价格，请联系商务</td></tr></tbody></table></div>
-<p>New API 的 <strong>Image2.6两分</strong> 分组同时提供 <code>gpt-image-2</code>、<code>gpt-image-2.5</code>、<code>gpt-image-2.5-flare</code>、<code>gpt-image-2.5-sunburst</code>，统一 ¥0.02/张。本文的 GIF / SVG 参数适用于两个 2.6 模型。</p>
+<div class="table-scroll"><table><thead><tr><th>站点</th><th>分组</th><th>Flare / 张</th><th>Sunburst / 张</th></tr></thead><tbody><tr><td>FastAiApi</td><td>gpt-pro</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>FastAiApi</td><td>gpt-Image-超分</td><td>¥0.04</td><td>¥0.04</td></tr><tr><td>TuMei API</td><td>default</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>TuMei API</td><td>Image2.6两分</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>TuMei API</td><td>企业VIP</td><td colspan="2">企业专享价格，请联系商务</td></tr></tbody></table></div>
+<p>TuMei API 的 <strong>Image2.6两分</strong> 分组同时提供 <code>gpt-image-2</code>、<code>gpt-image-2.5</code>、<code>gpt-image-2.5-flare</code>、<code>gpt-image-2.5-sunburst</code>，统一 ¥0.02/张。本文的 GIF / SVG 参数适用于两个 2.6 模型。</p>
 <p>多图请求按张计费，具体扣费以本站使用记录为准。生成耗时受画面复杂度、格式与当前负载影响。</p>
 
 <h2 id="parameters">3. 通用参数</h2>
@@ -141,7 +141,7 @@ export API_KEY='YOUR_API_KEY'</code></pre>
 </main>
 <aside class="desktop-toc"><p class="nav-label">本页目录</p><nav aria-label="本页目录"><a class="toc-h2" href="#sites">1. 站点与鉴权</a><a class="toc-h2" href="#models">2. 模型说明与价格</a><a class="toc-h2" href="#parameters">3. 通用参数</a><a class="toc-h2" href="#generate">4. 文字生图</a><a class="toc-h2" href="#gif-svg">5. GIF 与 SVG</a><a class="toc-h2" href="#edit">6. 图片编辑</a><a class="toc-h2" href="#results">7. URL 与返回结果</a></nav><a class="back-top" href="#main">↑ 回到顶部</a></aside>
 </div>
-<footer><span>FastAiApi · 图片 API</span><a href="/help/">帮助首页</a><a href="https://fastaiapi.cloud">FastAiApi ↗</a><a href="https://tumeiapi.com">New API ↗</a><span>更新于 2026-11-06</span></footer>
+<footer><span>FastAiApi · 图片 API</span><a href="/help/">帮助首页</a><a href="https://fastaiapi.cloud">FastAiApi ↗</a><a href="https://tumeiapi.com">TuMei API ↗</a><span>更新于 2026-11-06</span></footer>
 <dialog id="image-viewer" aria-label="图片大图"><button class="close-viewer" aria-label="关闭大图">×</button><img alt=""><p></p><a target="_blank" rel="noopener">打开原图 ↗</a></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="/help/help.js" defer></script>
