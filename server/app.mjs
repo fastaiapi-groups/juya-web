@@ -260,13 +260,14 @@ export function createApp(store, options = {}) {
             const reason = await validCard(card);
             if (reason) return { code: 1, message: reason };
             const now = Date.now();
-            const other = (await db.one(`SELECT c.id FROM devices d JOIN cards c ON c.id = d.card_id
-              JOIN accounts m ON m.id = c.merchant_id WHERE d.device_id = $1 AND c.id != $2
-              AND c.enabled = TRUE AND c.deleted_at IS NULL AND m.enabled = TRUE
-              AND (c.expires_at IS NULL OR c.expires_at > $3) LIMIT 1`, deviceId, card.id, now));
-            if (other) return { code: 1, message: '本机已绑定其他有效卡密' };
             const binding = (await db.one(`SELECT 1 FROM devices WHERE card_id = $1 AND device_id = $2`, card.id, deviceId));
             if (!binding) {
+              // Current bindings only: expired, disabled, deleted and unbound cards do not occupy a slot.
+              const active = (await db.one(`SELECT COUNT(*) AS n FROM devices d JOIN cards c ON c.id = d.card_id
+                WHERE d.device_id = $1 AND c.merchant_id = $2 AND c.product = $3
+                AND c.enabled = TRUE AND c.deleted_at IS NULL
+                AND (c.expires_at IS NULL OR c.expires_at > $4)`, deviceId, card.merchant_id, card.product, now)).n;
+              if (active >= 2) return { code: 1, message: '同一产品在本机最多可绑定2张有效卡密' };
               const used = (await db.one(`SELECT COUNT(*) AS n FROM devices WHERE card_id = $1`, card.id)).n;
               if (used >= card.max_devices) return { code: 1, message: '该卡密已达到使用设备数上限' };
               await db.exec(`INSERT INTO devices (card_id, device_id, created_at, last_seen) VALUES ($1, $2, $3, $4)`, card.id, deviceId, now, now);

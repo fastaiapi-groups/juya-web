@@ -289,18 +289,42 @@ test('public check is anonymous and side-effect free; activation and verify matc
   assert.equal((await f.request('/api/activate', { body: { code: card.code } })).data.message, '缺少设备标识');
 });
 
-test('simultaneous activation cannot exceed device limits; a device cannot bind another live card', async (t) => {
+test('per-card capacity stays enforced while one device can bind two current cards per product', async (t) => {
   const f = await fixture(t);
   const merchant = await f.account(f.admin, 'shop_a');
   const [card] = await f.generate(merchant.session);
   const results = await Promise.all(Array.from({ length: 8 }, (_, n) => f.request('/api/activate', { body: { code: card.code, deviceId: `device-${n}` } })));
   assert.equal(results.filter((row) => row.data.code === 0).length, 1);
   assert.equal((await f.store.db.one(`SELECT COUNT(*) AS n FROM devices WHERE card_id = $1`, card.id)).n, 1);
-  const [other] = (await f.generate(merchant.session, { product: 'other-card' })).filter((row) => row.product === 'other-card');
+  const [second, third] = (await f.generate(merchant.session, { count: 2 })).filter((row) => row.id !== card.id);
   const winner = results.findIndex((row) => row.data.code === 0);
-  assert.equal((await f.request('/api/activate', { body: { code: other.code, deviceId: `device-${winner}` } })).data.code, 1);
+  const deviceId = `device-${winner}`;
+  const activated = await f.request('/api/activate', { body: { code: second.code, deviceId } });
+  assert.equal(activated.data.code, 0);
+  assert.equal((await f.request('/api/activate', { body: { code: second.code, deviceId } })).data.data.token, activated.data.data.token);
+  assert.equal((await f.request('/api/activate', { body: { code: third.code, deviceId } })).data.message, '同一产品在本机最多可绑定2张有效卡密');
+  const [other] = (await f.generate(merchant.session, { product: 'other-card' })).filter((row) => row.product === 'other-card');
+  assert.equal((await f.request('/api/activate', { body: { code: other.code, deviceId } })).data.code, 0);
   await f.api(`/cards/${card.id}`, { session: merchant.session, method: 'PATCH', body: { enabled: false } });
-  assert.equal((await f.request('/api/activate', { body: { code: other.code, deviceId: `device-${winner}` } })).data.code, 0);
+  assert.equal((await f.request('/api/activate', { body: { code: third.code, deviceId } })).data.code, 0);
+});
+
+test('expired, disabled, deleted and unbound cards free a current product slot; merchant scopes stay separate', async (t) => {
+  const f = await fixture(t);
+  const merchant = await f.account(f.admin, 'slot_shop');
+  for (const state of ['expired', 'disabled', 'deleted', 'unbound']) {
+    const product = `product-${state}`, deviceId = `device-${state}`;
+    const cards = (await f.generate(merchant.session, { product, count: 3 })).filter(card => card.product === product);
+    for (const card of cards.slice(0, 2)) assert.equal((await f.request('/api/activate', { body: { code: card.code, deviceId } })).data.code, 0);
+    assert.equal((await f.request('/api/activate', { body: { code: cards[2].code, deviceId } })).data.code, 1);
+    if (state === 'expired') await f.store.db.exec('UPDATE cards SET expires_at = $1 WHERE id = $2', Date.now() - 1, cards[0].id);
+    else if (state === 'unbound') await f.store.db.exec('DELETE FROM devices WHERE card_id = $1 AND device_id = $2', cards[0].id, deviceId);
+    else await f.api(`/cards/${cards[0].id}`, { session: merchant.session, method: state === 'deleted' ? 'DELETE' : 'PATCH', ...(state === 'disabled' ? { body: { enabled: false } } : {}) });
+    assert.equal((await f.request('/api/activate', { body: { code: cards[2].code, deviceId } })).data.code, 0, state);
+  }
+  const other = await f.account(f.admin, 'independent_shop');
+  const [card] = await f.generate(other.session, { product: 'product-unbound' });
+  assert.equal((await f.request('/api/activate', { body: { code: card.code, deviceId: 'device-unbound' } })).data.code, 0);
 });
 
 test('disable, expire, delete and merchant suspension revoke all public checks and license verification', async (t) => {
@@ -395,12 +419,14 @@ test('independent app instances enforce device identity and card capacity in Pos
   const first = await fixture(t, schema);
   const second = await fixture(t, schema);
   const merchant = await first.account(first.admin, 'shared_shop');
-  const cards = await first.generate(merchant.session, { count: 2 });
+  const cards = await first.generate(merchant.session, { count: 3 });
   const simultaneous = await Promise.all([
     first.request('/api/activate', { body: { code: cards[0].code, deviceId: 'same-device-across-instances' } }),
     second.request('/api/activate', { body: { code: cards[1].code, deviceId: 'same-device-across-instances' } }),
+    first.request('/api/activate', { body: { code: cards[2].code, deviceId: 'same-device-across-instances' } }),
   ]);
-  assert.equal(simultaneous.filter((result) => result.data.code === 0).length, 1);
+  assert.equal(simultaneous.filter((result) => result.data.code === 0).length, 2);
+  assert.equal((await first.store.db.one('SELECT COUNT(*) AS n FROM devices WHERE device_id = $1', 'same-device-across-instances')).n, 2);
   const unused = cards[simultaneous.findIndex((result) => result.data.code !== 0)];
   const capacity = await Promise.all(Array.from({ length: 12 }, (_, index) => (index % 2 ? first : second).request('/api/activate', {
     body: { code: unused.code, deviceId: `separate-device-${index}` },

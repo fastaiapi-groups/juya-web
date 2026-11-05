@@ -23,7 +23,7 @@
     "expires_in": 0,
     "user": { "username": "card-example", "email": "" }
   }
-}</pre><ul><li>以 <code>code === 0</code> 判断业务成功。失败返回 <code>{ "code": 1, "message": "失败原因" }</code>。</li><li>同一设备重复激活同一卡密不会增加设备数；同一设备不能同时绑定另一张有效卡密。</li><li>三个 Token 字段均为同一份 License Token；没有单独的刷新接口，也没有在此创建账号会话。</li><li><code>expires_in</code> 单位为秒，永久卡为 0。限时卡从生成时开始计时，激活不延长有效期。</li></ul></section>
+}</pre><ul><li>以 <code>code === 0</code> 判断业务成功。失败返回 <code>{ "code": 1, "message": "失败原因" }</code>。</li><li>同一设备重复激活同一卡密不会增加设备数。同一商户的同一产品，每台设备最多绑定2张当前有效卡；过期、停用、删除或解绑后不占次数。每张卡的设备数量上限独立生效，超限返回“同一产品在本机最多可绑定2张有效卡密”。</li><li>三个 Token 字段均为同一份 License Token；没有单独的刷新接口，也没有在此创建账号会话。</li><li><code>expires_in</code> 单位为秒，永久卡为 0。限时卡从生成时开始计时，激活不延长有效期。</li></ul></section>
 <section class="panel"><h2>3. 校验已激活的授权凭证</h2><pre>POST /api/verify
 { "license": "YOUR_LICENSE_TOKEN" }</pre><p><code>license</code> 必须是激活响应中的 <code>data.access_token</code> 或 <code>data.token</code>，不能直接传卡密字符串。License Token 不是标准 JWT；客户端以服务器返回结果为准。</p><pre>{
   "ok": true,
