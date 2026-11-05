@@ -69,3 +69,54 @@ test('revocation is checked again after a previously successful upload',async t=
  assert.equal((await upload(app.url)).status,401);
  assert.equal(calls.filter(c=>c.url.includes('/api/get-upload-url')).length,1);
 });
+
+// Exercise the complete one-key installer transaction with the documented
+// management API shapes, including retries and concurrent-pricing conflicts.
+import {installMagicVideo} from '../plugins/new-api/installer-core.mjs';
+import {readFileSync} from 'node:fs';
+const catalog=JSON.parse(readFileSync(new URL('../plugins/zzdh/video_plugin_fastai_magic/catalog.json',import.meta.url),'utf8'));
+function panelAPI({currency='CNY',exchange=1,conflict=false,validKey=true,role=100}={}) {
+ const writes=[],channels=[],metadata=[],pricing=new Map();
+ const api=async(path,request={})=>{
+  const {method='GET',body}=request;
+  if(path==='/api/user/self')return {data:{id:1,role}};
+  if(path==='/api/status')return {data:{quota_display_type:currency,usd_exchange_rate:exchange}};
+  if(path==='/api/plugin/task'&&method==='GET')return {data:[]};
+  if(path==='/api/channel/fetch_models')return {data:validKey?catalog.models.map(m=>m.model_name):[]};
+  if(path.startsWith('/api/option/model_pricing?'))return {data:{entries:[...pricing].map(([model_name,configured])=>({model_name,configured,version:'v1'})),empty_version:'empty'}};
+  if(path.startsWith('/api/channel/search?'))return {data:{items:channels}};
+  if(path.startsWith('/api/models/search?'))return {data:{items:metadata}};
+  if(method!=='GET')writes.push({path,method,body});
+  if(path==='/api/plugin/task')return {success:true};
+  if(path==='/api/channel/'&&method==='POST'){channels.push({...body.channel,id:1});return {success:true};}
+  if(path==='/api/channel/'&&method==='PUT'){Object.assign(channels[0],body);return {success:true};}
+  if(path==='/api/option/model_pricing'&&method==='PATCH'){
+   if(conflict)throw new Error('model pricing changed; reload before saving');
+   for(const c of body.changes)pricing.set(c.model_name,c.pricing);return {success:true};
+  }
+  if(path==='/api/models/'){metadata.push(body);return {success:true};}
+  if(path==='/api/channel/1/status'){channels[0].status=body.status;return {success:true};}
+  if(path==='/api/channel/1')return {data:channels[0]};
+  throw new Error('Unexpected API call: '+path);
+ };
+ return {api,writes,channels,metadata,pricing};
+}
+const install=panel=>installMagicVideo({api:panel.api,catalog,source:'validated plugin fixture',apiKey:'sk-customerfixture123456789'});
+test('one key installs all models, metadata, per-unit pricing and an enabled channel without duplicate retries',async()=>{
+ const panel=panelAPI();const result=await install(panel);assert.equal(result.models,11);assert.equal(panel.channels[0].status,1);
+ assert.equal(panel.metadata.length,11);assert(panel.metadata.every(m=>m.icon&&m.tags.includes('计费')));
+ const c1=panel.pricing.get('sd-2-c1');assert(c1['billing_setting.billing_expr'].includes('* 1.2'));
+ const custom='tier("custom", u("requests") * 2)';c1['billing_setting.plugin_billing_expr']['magic-video']=custom;
+ await install(panel);assert.equal(panel.channels.length,1);assert.equal(panel.pricing.get('sd-2-c1')['billing_setting.plugin_billing_expr']['magic-video'],custom);
+});
+for(const currency of ['CNY','USD'])test('installer respects '+currency+' panel exchange without multiplying channel costs',async()=>{
+ const panel=panelAPI({currency,exchange:7.3});await install(panel);
+ const expression=panel.pricing.get('sd-2-c1')['billing_setting.billing_expr'];
+ const price=Number(/\* ([\d.]+)/.exec(expression)[1]);assert(Math.abs(price*7.3-1.2)<1e-10);
+});
+test('a pricing conflict keeps a new channel disabled',async()=>{
+ const panel=panelAPI({conflict:true});await assert.rejects(install(panel),/pricing changed/);assert.equal(panel.channels[0].status,2);
+});
+test('invalid platform keys or non-admin sessions cause no writes',async()=>{
+ for(const options of [{validKey:false},{role:10}]){const panel=panelAPI(options);await assert.rejects(install(panel));assert.equal(panel.writes.length,0);}
+});

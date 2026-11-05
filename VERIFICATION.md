@@ -107,3 +107,12 @@
 - 渠道查询缓存至少 20 秒，同任务并发合并；创建请求不缓存、不自动重试。缓存接口独立校验服务端凭据，不接受客户 Key 或商户 Cookie。
 - 依据当前稳定 OWASP ASVS 5.0.0 的认证、访问控制、通信及数据保护适用原则；参考 [Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html) 与 [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)。本次不作完整 ASVS 认证声明。
 - 已执行 `npm ci`、`npm run check`、`npm test`（独立临时 PostgreSQL 18，原有 23 项加新 9 项，共 32 项通过）及 `bash -n restart.sh`；随后补充独立过期、撤销即时生效回归，验证见同日最终发布记录。
+
+## 2026-11-05 魔法视频文档与双客户端发布
+
+- 独立入口 `/help/magic-video/`，提供字字动画插件和 new-api 一键接入包，包含 11 款模型、渠道原始描述、模型图标、原始标签及按次/按秒标签。价格按用户指定的人民币 1:1 成本加 20%，不是美元换算；9 款按次、2 款按秒。
+- new-api 安装器只需输入本站业务 Key；管理员正常登录后使用面板原有刷新会话接口，临时访问凭据仅用于当前源管理 API，不存储、导出或发送到外站。兼容检查先于写入，新渠道全部配置成功后才启用，计价按目标面板汇率转换并保留已有自定义价格。
+- `python3 scripts/build-magic-video.py`：生成可复现 ZIP、下载校验清单及文档；公开文件与 ZIP 内容通过上游标识、凭据及路径检查，不包含客户配置文件或运行缓存。
+- `npm run check`、`npm test`（临时 PostgreSQL 18，39 项全部通过）、`bash -n restart.sh`、安装器 JavaScript 语法及 `git diff --check` 通过；字字动画客户端离线回归 8 项通过。
+- 隔离无头浏览器验证桌面和 390px 手机文档、无横向溢出、两个下载入口、复制按钮和完整一键安装交互。管理 API 使用本地模拟，不调用真实生成接口。
+- new-api 协议插件离线 83 项通过；生产宿主 lint 和 77 项协议 fixture 通过。先前一次生成请求因渠道额度为零未受理、无任务和扣费；临时验证令牌已停用。按用户要求不再进行成片测试，待用户自行验证。

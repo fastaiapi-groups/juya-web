@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827"><meta name="description" content="FastAiApi 魔法视频分组接入文档，包含 11 款视频模型、首尾帧与多模态参考、字字动画和 new-api 插件下载。"><title>魔法视频 · API 与插件下载 · FastAiApi</title><link rel="canonical" href="https://fastaiapi.cloud/help/magic-video/"><link rel="icon" href="/help/assets/logo.svg" type="image/svg+xml"><link rel="stylesheet" href="/help/help.css"><link rel="stylesheet" href="magic-video.css"></head><body><a class="skip" href="#main">跳转到正文</a><header class="topbar"><a class="brand" href="/help/"><img src="/help/assets/logo.svg" width="36" height="36" alt=""><span>FastAiApi<small>帮助文档</small></span></a><nav aria-label="网站导航"><a href="https://home.fastaiapi.cloud/">官网首页</a><a href="/help/">帮助文档</a><a class="console" href="https://tumeiapi.com">视频控制台 ↗</a></nav></header><div class="progress" aria-hidden="true"></div>
+<div class="doc-layout"><aside class="guide-nav"><a href="/help/" class="back">← 全部教程</a><p class="nav-label">视频 API</p><a href="/help/magic-video/" aria-current="page">▶　魔法视频与插件</a><a href="/help/api/">⌘　FastAiApi 使用教程</a><a href="/help/codex/">▧　Codex 从零上手</a><div class="side-note"><strong>先准备一枚本站 Key</strong><p>在 tumeiapi.com 创建令牌，分组选择“魔法视频分组”。不同站点的 Key 不能默认通用。</p></div><a class="support-link" href="https://t.me/fastaiapi">联系支持 ↗</a></aside>
+<main id="main" class="article-main"><div class="breadcrumb"><a href="/help/">帮助文档</a><span>/</span>魔法视频</div><div class="article-heading"><span class="eyebrow">MAGIC VIDEO / API & PLUGINS</span><h1>魔法视频</h1><p>接入视频 API，或下载插件后填写本站 API Key。</p><div class="meta"><span>2026 年 11 月 5 日更新</span><span>11 款模型 · 9 款按次 / 2 款按秒</span></div></div>
+<details class="mobile-toc"><summary>本页目录</summary><nav aria-label="手机目录">__TOC__</nav></details>
+<article class="prose">
+<div class="notice"><strong>本站入口：tumeiapi.com · 魔法视频分组</strong><p>准备有可用额度、具备对应模型权限的本站 API Key。字字动画用户直接看<a href="#plugins">插件下载</a>；开发者从请求字段开始。</p></div>
+<h2 id="quickstart">1. 地址与鉴权</h2>
+<table><tbody><tr><th>控制台 / 模型广场</th><td><a href="https://tumeiapi.com/pricing">tumeiapi.com/pricing ↗</a></td></tr><tr><th>Base URL</th><td><code>https://tumeiapi.com</code>（下方示例不重复添加 <code>/v1</code>）</td></tr><tr><th>分组</th><td><strong>魔法视频分组</strong></td></tr><tr><th>请求头</th><td><code>Authorization: Bearer YOUR_FASTAIAPI_KEY</code><br><code>Content-Type: application/json</code></td></tr></tbody></table>
+<pre><code class="language-bash">export FASTAIAPI_KEY='替换为你的本站 API Key'
+curl --fail-with-body 'https://tumeiapi.com/v1/models' \
+  -H "Authorization: Bearer $FASTAIAPI_KEY"</code></pre>
+<p>模型列表以当前令牌权限为准。API Key 只保存在自己的客户端或服务端，不放入公开页面、URL 参数或代码仓库。</p>
+<h2 id="models">2. 模型、规格与价格</h2>
+<p>下列价格单位为人民币。按次型号每条成功视频计费一次；按秒型号按输出秒数计费。价格、分组倍率及可用性以<a href="https://tumeiapi.com/pricing">本站模型广场</a>和最终账单为准。</p>
+<div class="model-list">__MODEL_ROWS__</div>
+<p><code>mx-h3</code> 仅支持竖屏 <code>9:16</code>。<code>sd-2-c1</code> 按当前模型说明限制为 4–10 秒，不能照抄其他型号的 15 秒示例。切换模型时务必同时检查时长和分辨率。</p>
+<h2 id="request-fields">3. 请求字段与参考素材</h2>
+<pre><code class="language-http">POST /v1/videos
+Content-Type: application/json
+Authorization: Bearer YOUR_FASTAIAPI_KEY</code></pre>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>model</code></td><td>string</td><td>完整模型 ID，必填，区分大小写。</td></tr><tr><td><code>input.prompt</code></td><td>string</td><td>非空提示词，必填；可用“图1”“视频1”“音频1”等指代素材。</td></tr><tr><td><code>input.media</code></td><td>array</td><td>可选参考素材列表，数量须满足所选模型限制。</td></tr><tr><td><code>input.media[].type</code></td><td>string</td><td><code>first_frame</code> 首帧、<code>last_frame</code> 尾帧、<code>reference_image</code> 参考图、<code>reference_voice</code> 参考音频、<code>reference_video</code> 参考视频。</td></tr><tr><td><code>input.media[].url</code></td><td>string</td><td>素材的公网 HTTP(S) 直链；API 请求不接受本地文件路径。</td></tr><tr><td><code>parameters.duration</code></td><td>integer</td><td>输出秒数，必填，范围见上表。</td></tr><tr><td><code>parameters.resolution</code></td><td>string</td><td>建议明确填写，必须为该模型支持的分辨率。</td></tr><tr><td><code>parameters.ratio</code></td><td>string</td><td>建议明确填写；多数型号支持多种比例，<code>mx-h3</code> 仅 <code>9:16</code>，<code>sd-2-c4</code> 为 <code>1:1</code> / <code>16:9</code> / <code>9:16</code>。</td></tr></tbody></table></div>
+<p>本接口只接受 JSON。也支持顶层 <code>prompt</code>、<code>duration</code> / <code>seconds</code>、<code>resolution</code>、<code>ratio</code> / <code>aspect_ratio</code>，以及 <code>images</code>、<code>audios</code>、<code>videos</code> 数组。相同计费参数在顶层和 <code>parameters</code> 中冲突时会被拒绝；不要放入 <code>metadata</code>。一次任务仅生成一条视频。</p>
+<h3 id="text-video">3.1 文生视频</h3>
+<pre><code class="language-bash">curl --fail-with-body 'https://tumeiapi.com/v1/videos' \
+  -H "Authorization: Bearer $FASTAIAPI_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "sd-2-c1",
+    "input": {"prompt": "清晨的湖面，一只白色纸船缓缓漂过，镜头平稳"},
+    "parameters": {"duration": 4, "resolution": "720p", "ratio": "16:9"}
+  }'</code></pre>
+<h3 id="reference-video">3.2 首尾帧与多模态参考</h3>
+<pre><code class="language-json">{
+  "model": "sd-2-c4",
+  "input": {
+    "prompt": "首帧中的人物向前走，最后到达尾帧的花园场景",
+    "media": [
+      {"type": "first_frame", "url": "https://your-cdn.example/first.png"},
+      {"type": "last_frame", "url": "https://your-cdn.example/last.png"}
+    ]
+  },
+  "parameters": {"duration": 4, "resolution": "720p", "ratio": "16:9"}
+}</code></pre>
+<p>参考生视频请将媒体类型改为 <code>reference_image</code>、<code>reference_voice</code> 或 <code>reference_video</code>；参考图不会自动改成首帧。图片建议至少 300×300；SD 2.0 参考视频场景需注意输入与输出时长合计限制，通常不超过 25 秒。不同系列的数量和时长能力不通用，以所选模型为准。</p>
+<h2 id="query-download">4. 查询任务与下载视频</h2>
+<p>创建成功后保存响应中的 <code>id</code>（兼容 <code>task_id</code>）。每次查询间隔至少 20 秒，排队时不要重复提交新任务。</p>
+<pre><code class="language-bash">TASK_ID='替换为任务 ID'
+curl --fail-with-body "https://tumeiapi.com/v1/videos/$TASK_ID" \
+  -H "Authorization: Bearer $FASTAIAPI_KEY"</code></pre>
+<table><thead><tr><th>状态</th><th>处理</th></tr></thead><tbody><tr><td><code>queued</code></td><td>排队中，继续查询。</td></tr><tr><td><code>in_progress</code></td><td>生成中，继续查询。</td></tr><tr><td><code>completed</code></td><td>可以下载成片。</td></tr><tr><td><code>failed</code></td><td>读取错误信息，保留任务 ID 后停止轮询。</td></tr></tbody></table>
+<pre><code class="language-json">{
+  "id": "task_example",
+  "object": "video",
+  "model": "sd-2-c1",
+  "status": "completed",
+  "seconds": "4",
+  "video_url": "/v1/videos/task_example/content",
+  "url": "/v1/videos/task_example/content"
+}</code></pre>
+<p>本站返回自己的内容接口路径。完整下载 URL 为 <code>https://tumeiapi.com/v1/videos/{id}/content</code>，仍需携带有权访问任务的本站 Key，不能当作免鉴权公开直链。</p>
+<pre><code class="language-bash">DOWNLOAD_URL="https://tumeiapi.com/v1/videos/$TASK_ID/content"
+printf '视频下载 URL：%s\n' "$DOWNLOAD_URL"
+curl --fail --location --proto '=https' --proto-redir '=https' \
+  "$DOWNLOAD_URL" -H "Authorization: Bearer $FASTAIAPI_KEY" \
+  --output output.mp4</code></pre>
+<p>不要添加 <code>--location-trusted</code>。结果有有效期，尤其 <code>w3-p-c1</code> 的模型说明为 3–5 小时，请完成后尽快下载。</p>
+<h2 id="plugins">5. 下载插件</h2>
+<div class="plugin-downloads"><section class="plugin-box"><span class="eyebrow">字字动画</span><h3>字字动画视频插件</h3><p>内置本站地址、模型规格与素材上传。填入本站 Key，即可选择模型、时长和参考素材生成视频。</p><a class="button" href="downloads/fastai-magic-video-zzdh-1.0.0.zip" download>下载字字动画插件 ZIP ↓</a><small>版本 1.0.0 · SHA-256</small><code class="checksum">__ZZDH_SHA__</code></section>
+<section class="plugin-box"><span class="eyebrow">new-api</span><h3>new-api 一键接入包</h3><p>包含协议插件与一键安装器，自动创建渠道、模型、图标、标签与计费配置。业务设置只需填写本站 Key。</p><a class="button" href="downloads/fastai-magic-video-newapi-1.0.0.zip" download>下载 new-api 接入包 ZIP ↓</a><small>版本 1.0.0 · SHA-256</small><code class="checksum">__NEWAPI_SHA__</code></section></div>
+<h3 id="zzdh-install">5.1 字字动画：安装后只填写 Key</h3>
+<ol><li>解压 ZIP，将整个 <code>video_plugin_fastai_magic</code> 文件夹放入 <code>_internal/plugins/video_plugins/</code>。</li><li>重启字字动画，在视频插件列表选择“FastAiApi 魔法视频”。</li><li>填写 tumeiapi.com 的“魔法视频分组”Key，点击“测试连接”。接口地址已固定，无需填写。</li><li>选择模型与生成方式。插件自动限制模型的分辨率和时长，本地素材自动上传，单个文件不超过 10MB；较大素材可使用公网 URL。</li></ol>
+<p>插件会保存任务 ID，超时或断网后重新运行会继续查询原任务；不会自动重复创建付费请求。若创建响应不确定，请先核对控制台任务记录。视频成功后会自动下载，并在日志打印完整的本站下载 URL。</p>
+<h3 id="newapi-install">5.2 new-api：一键完成渠道和定价</h3>
+<ol><li>解压接入包，在浏览器打开包内 <code>installer.html</code>，把“安装魔法视频”按钮拖到书签栏。</li><li>打开你自己的 new-api 后台，正常登录超级管理员；通过面板原有的安全验证。</li><li>点击安装书签，输入本站“魔法视频分组”Key，点击“安装并启用”。无需手工填写 Base URL、模型列表、分辨率或价格。</li><li>安装完成后，可使用你自己面板的 Key，调用自己面板的 <code>/v1/videos</code>。</li></ol>
+<p>安装器适用于提供 <strong>Task Plugin API v1</strong> 和模型计费配置接口的 new-api。旧版本会先提示不兼容；不会把普通渠道当成已安装的视频插件。安装会保留已有自定义定价，新增价格按本地面板配置的计价单位换算；本地已有分组倍率继续生效。</p>
+<p>已有安装器书签可直接运行。也可以把下面的入口拖到书签栏，再在自己的后台使用：</p><p><a class="button install-bookmark" href="__INSTALL_BOOKMARK__" draggable="true">安装魔法视频 → 拖到书签栏</a></p>
+<p>安装器只向当前面板调用管理 API，不导出管理员会话。配置未完成时，新建渠道保持停用，可修复问题后重新运行。源码 <code>plugin.js</code>、模型清单和安装脚本均包含在 ZIP 内，便于审阅。</p>
+<h2 id="demo">6. 完整 cURL 示例</h2>
+<p>依赖 Bash、curl、jq。下载 <a href="downloads/demo.sh" download>demo.sh</a>，在独立目录执行 <code>FASTAIAPI_KEY='你的本站Key' bash demo.sh</code>。它只创建一次任务，随后查询并打印完整下载 URL、保存视频。创建超时先查控制台，避免重复付费。</p>
+<details><summary>展开完整脚本</summary><pre><code class="language-bash">__DEMO__</code></pre></details>
+<h2 id="errors">7. 常见问题</h2>
+<ul><li><strong>401 / 403：</strong>核对 Key 是否来自 tumeiapi.com、账户额度、令牌期限及模型 / 分组权限。本站 Key 与其他站点不通用。</li><li><strong>400：</strong>检查模型支持的时长、分辨率、参考素材数量及画幅比例，修改后再提交。</li><li><strong>排队很久：</strong>保存任务 ID，继续查询。进度和平均耗时不保证下一条任务的完成时间。</li><li><strong>创建超时：</strong>先看控制台任务记录，不自动重发。已经拿到 ID 时应继续原任务。</li><li><strong>视频无法下载：</strong>带上本站 Key，使用完整的本站内容 URL；尽快保存，避免链接过期。</li><li><strong>new-api 安装中断：</strong>保留安装器错误信息，检查版本和管理员权限，修复后再运行；不要手工开启尚未完成定价的渠道。</li></ul>
+</article></main><aside class="desktop-toc"><p class="nav-label">本页目录</p><nav aria-label="正文目录">__TOC__</nav><a class="back-top" href="#main">↑ 回到顶部</a></aside></div>
+<footer><span>FastAiApi · 魔法视频</span><a href="/help/">帮助首页</a><a href="https://tumeiapi.com/pricing">模型广场 ↗</a><span>更新于 2026-11-05</span></footer><dialog id="image-viewer" aria-label="图片大图"><button class="close-viewer" aria-label="关闭大图">×</button><img alt=""><p></p><a target="_blank" rel="noopener">打开原图 ↗</a></dialog><div id="toast" role="status" aria-live="polite"></div><script src="/help/help.js" defer></script></body></html>

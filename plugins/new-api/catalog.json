@@ -1,0 +1,299 @@
+{
+  "version": "1.0.0",
+  "date": "2026-11-05",
+  "api_base_url": "https://tumeiapi.com",
+  "group": "魔法视频分组",
+  "currency": "CNY",
+  "models": [
+    {
+      "model_name": "mx-h3",
+      "description": "9图  / 3音频 / 原生真人 / 768P分辨率  / 4-15s / 只能竖屏",
+      "tags": "视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "768p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 15
+      },
+      "supported_ratios": [
+        "9:16"
+      ],
+      "max_reference_images": 9,
+      "max_reference_videos": 0,
+      "max_reference_audios": 3,
+      "billing_unit": "request",
+      "model_price": 1.44,
+      "billing_expr": "tier(\"768p\", u(\"resolution\") == \"768p\" ? u(\"requests\") * 1.44 : u(\"requests\") * 1.44)"
+    },
+    {
+      "model_name": "sd-2.5-d2",
+      "description": "30图10音10视频 / 480p / 5-30秒 / 原生真人不卡脸",
+      "tags": "视频模型,按秒计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "480p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 30
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 30,
+      "max_reference_videos": 10,
+      "max_reference_audios": 10,
+      "billing_unit": "second",
+      "model_price": 0.348,
+      "billing_expr": "tier(\"480p\", u(\"resolution\") == \"480p\" ? u(\"seconds\") * 0.348 : u(\"seconds\") * 0.348)"
+    },
+    {
+      "model_name": "sd-2.5-d3",
+      "description": "30图10音10视频 / 720p / 5-30秒 / 原生真人不卡脸",
+      "tags": "视频模型,按秒计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 30
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 30,
+      "max_reference_videos": 10,
+      "max_reference_audios": 10,
+      "billing_unit": "second",
+      "model_price": 0.468,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"seconds\") * 0.468 : u(\"seconds\") * 0.468)"
+    },
+    {
+      "model_name": "sd-2-c4",
+      "description": "9 图 / 3 视频 / 3 音频 / 原生真人人脸 / 4-15s / 比例支持\"1:1\", \"16:9\", \"9:16\" / 720p",
+      "tags": "长期稳定,视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 15
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16"
+      ],
+      "max_reference_images": 9,
+      "max_reference_videos": 3,
+      "max_reference_audios": 3,
+      "billing_unit": "request",
+      "model_price": 2.16,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"requests\") * 2.16 : u(\"requests\") * 2.16)"
+    },
+    {
+      "model_name": "sd-2-c5",
+      "description": "9 图 / 3 视频 / 3 音频 / 原生人脸 / 4-15s / 全比例 / 720p",
+      "tags": "视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 15
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 9,
+      "max_reference_videos": 3,
+      "max_reference_audios": 3,
+      "billing_unit": "request",
+      "model_price": 3.0,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"requests\") * 3 : u(\"requests\") * 3)"
+    },
+    {
+      "model_name": "sd-2-c7",
+      "description": "9 图 / 3 视频 / 3 音频 / 原生真人人脸 / 4-15s / 全比例 / 720p",
+      "tags": "长期稳定,视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 15
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 9,
+      "max_reference_videos": 3,
+      "max_reference_audios": 3,
+      "billing_unit": "request",
+      "model_price": 3.36,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"requests\") * 3.36 : u(\"requests\") * 3.36)"
+    },
+    {
+      "model_name": "sd-2-c1",
+      "description": "9 图 / 720p / 4-10 秒 / 卡人脸 可自定处理人脸提供成功率 / 失败多重试",
+      "tags": "fast,视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 10
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 9,
+      "max_reference_videos": 0,
+      "max_reference_audios": 0,
+      "billing_unit": "request",
+      "model_price": 1.2,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"requests\") * 1.2 : u(\"requests\") * 1.2)"
+    },
+    {
+      "model_name": "sd-2-c8",
+      "description": "9 图 / 3 视频 / 3 音频 / 原生人脸 / 4-15s / 全比例 / 720p",
+      "tags": "满血,视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 15
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 9,
+      "max_reference_videos": 3,
+      "max_reference_audios": 3,
+      "billing_unit": "request",
+      "model_price": 4.56,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"requests\") * 4.56 : u(\"requests\") * 4.56)"
+    },
+    {
+      "model_name": "sd-2.5-c2",
+      "description": "30图10音10视频 / 720p / 5-30秒 / 原生真人不卡脸",
+      "tags": "视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 30
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 30,
+      "max_reference_videos": 10,
+      "max_reference_audios": 10,
+      "billing_unit": "request",
+      "model_price": 7.44,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"requests\") * 7.44 : u(\"requests\") * 7.44)"
+    },
+    {
+      "model_name": "sd-2.5-c3",
+      "description": "30图10视频10音频，720p，4-30s，全比例，原生真人不卡人脸",
+      "tags": "视频模型,按次计费",
+      "icon": "Jimeng.Avatar.type={'platform'}",
+      "supported_resolutions": [
+        "720p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 30
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 30,
+      "max_reference_videos": 10,
+      "max_reference_audios": 10,
+      "billing_unit": "request",
+      "model_price": 9.24,
+      "billing_expr": "tier(\"720p\", u(\"resolution\") == \"720p\" ? u(\"requests\") * 9.24 : u(\"requests\") * 9.24)"
+    },
+    {
+      "model_name": "w3-p-c1",
+      "description": "10图 / 5视频 / 5音频 / 720p/1080p / 5-30s / 速度快 每日限量 / 资源地址有效3-5小时，尽快下载",
+      "tags": "视频模型,按次计费",
+      "icon": "Alibaba.Color",
+      "supported_resolutions": [
+        "720p",
+        "1080p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 30
+      },
+      "supported_ratios": [
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "21:9"
+      ],
+      "max_reference_images": 10,
+      "max_reference_videos": 5,
+      "max_reference_audios": 5,
+      "billing_unit": "request",
+      "model_price": 5.04,
+      "billing_expr": "u(\"resolution\") == \"720p\" ? tier(\"720p\", u(\"requests\") * 5.04) : tier(\"1080p\", u(\"requests\") * 5.04)"
+    }
+  ]
+}
