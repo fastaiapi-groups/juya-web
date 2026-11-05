@@ -98,3 +98,12 @@
 - 浏览器实测手机正文 15px，下载版本、大小、安装说明与联系说明 14px。人工核对桌面下载区、英文产品卡片、390px 中文下载区和 320px 英文首屏。
 - Docker 本地重建、Compose 配置和 Git diff 检查通过。截图：`docs/readability-desktop.png`、`docs/readability-mobile.png`。
 - 服务器已部署 `5833d98` 并重建容器：healthy、`0.0.0.0:6660`、Nginx 配置检查通过。公网样式文件与本地 SHA-256 一致，浏览器确认下载说明和联系说明为 14px；三个安装包 HEAD 200、文件大小正确且仍以附件下载。
+
+
+## 2026-11-05 魔法视频服务端配套
+
+- 素材上传逐次调用本站严格令牌认证和令牌权限查询，不缓存成功认证；拒绝失效、过期、受限模型及无魔法视频模型的 Key。Cookie 不参与该接口认证；不接收 URL 中的凭据，不改动商户登录、会话或数据库结构。
+- 只向固定 HTTPS 平台发送客户 Key，只向固定渠道域名发送服务端渠道 Key；签名上传只接受固定 HTTPS 存储域名，禁止重定向传递凭据。限制大小、文件头、数量、并发与速率；日志仅记录状态及不可用作凭据的摘要。
+- 渠道查询缓存至少 20 秒，同任务并发合并；创建请求不缓存、不自动重试。缓存接口独立校验服务端凭据，不接受客户 Key 或商户 Cookie。
+- 依据当前稳定 OWASP ASVS 5.0.0 的认证、访问控制、通信及数据保护适用原则；参考 [Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html) 与 [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)。本次不作完整 ASVS 认证声明。
+- 已执行 `npm ci`、`npm run check`、`npm test`（独立临时 PostgreSQL 18，原有 23 项加新 9 项，共 32 项通过）及 `bash -n restart.sh`；随后补充独立过期、撤销即时生效回归，验证见同日最终发布记录。

@@ -47,6 +47,7 @@ services:
       MERCHANT_SECURE_COOKIES: ${MERCHANT_SECURE_COOKIES:-true}
       MERCHANT_PUBLIC_ORIGIN: ${MERCHANT_PUBLIC_ORIGIN:-}
       MERCHANT_TRUST_PROXY: "true"
+      MAGIC_VIDEO_VENDOR_KEY: ${MAGIC_VIDEO_VENDOR_KEY:-}
     networks:
       - default
       - merchant-db
