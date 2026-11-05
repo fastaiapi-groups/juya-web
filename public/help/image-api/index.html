@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="GPT Image 2.6 Flare 与 Sunburst 图片 API：FastAiApi 与 New API 两站通用参数，支持图片编辑、GIF 动图、SVG 矢量图与文件 URL。">
+  <title>GPT Image 2.6 · 图片 API · FastAiApi</title>
+  <link rel="canonical" href="https://fastaiapi.cloud/help/image-api/">
+  <link rel="icon" href="/help/assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/help/help.css">
+  <style>
+    .table-scroll{max-width:100%;overflow-x:auto}.table-scroll table{min-width:550px}.prose td code{overflow-wrap:anywhere}.prose pre{max-width:100%;overflow-x:auto}.model-intro{padding:20px 24px;border:1px solid var(--line);border-radius:12px;background:#fff;margin:20px 0}.model-intro h3{margin-top:0}.site-links{display:flex;gap:12px;flex-wrap:wrap}.site-links .button{font-size:12px}.prose code{overflow-wrap:anywhere}
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">跳转到正文</a>
+<header class="topbar"><a class="brand" href="/help/"><img src="/help/assets/logo.svg" width="36" height="36" alt=""><span>FastAiApi<small>帮助文档</small></span></a><nav aria-label="网站导航"><a href="https://home.fastaiapi.cloud/">官网首页</a><a href="/help/">帮助文档</a><a class="console" href="https://fastaiapi.cloud">进入控制台 ↗</a></nav></header>
+<div class="progress" aria-hidden="true"></div>
+<div class="doc-layout">
+<aside class="guide-nav"><a href="/help/" class="back">← 全部教程</a><p class="nav-label">图片 API</p><a href="/help/image-api/" aria-current="page">◈　GPT Image 2.6</a><a href="/help/api/">⌘　FastAiApi 使用教程</a><a href="/help/codex/">▧　Codex 从零上手</a><a href="/help/magic-video/">▶　魔法视频与插件</a><div class="side-note"><strong>两站通用参数</strong><p>选择站点并使用该站创建的 API Key。切换站点时，请求体保持一致。</p></div></aside>
+<main id="main" class="article-main">
+<div class="breadcrumb"><a href="/help/">帮助文档</a><span>/</span>GPT Image 2.6</div>
+<div class="article-heading"><span class="eyebrow">GPT IMAGE 2.6 / API</span><h1>图片、GIF 与 SVG</h1><p>Flare 与 Sunburst，支持文字生图、图片编辑、GIF 动图与 SVG 矢量图。</p><div class="meta"><span>2026 年 11 月 6 日更新</span><span>FastAiApi / New API 两站适用</span></div></div>
+<details class="mobile-toc"><summary>本页目录</summary><nav aria-label="手机目录"><a href="#sites">1. 站点与鉴权</a><a href="#models">2. 模型说明与价格</a><a href="#parameters">3. 通用参数</a><a href="#generate">4. 文字生图</a><a href="#gif-svg">5. GIF 与 SVG</a><a href="#edit">6. 图片编辑</a><a href="#results">7. URL 与返回结果</a></nav></details>
+<article class="prose">
+<h2 id="sites">1. 站点与鉴权</h2>
+<p><a href="https://fastaiapi.cloud">fastaiapi.cloud</a> 与 <a href="https://newapi.fastaiapi.cloud">newapi.fastaiapi.cloud</a> 均支持本文两个模型。两站使用相同的 Images 接口路径、参数和请求体；只需更换 Base URL 与对应站点的 API Key。</p>
+<div class="table-scroll"><table><thead><tr><th>站点</th><th>Base URL</th><th>可用分组</th></tr></thead><tbody><tr><td>FastAiApi</td><td><code>https://fastaiapi.cloud</code></td><td>gpt-pro、gpt-Image-超分</td></tr><tr><td>New API</td><td><code>https://newapi.fastaiapi.cloud</code></td><td>default、企业VIP、Image2.6两分</td></tr></tbody></table></div>
+<p>鉴权请求头为 <code>Authorization: Bearer YOUR_API_KEY</code>。请在所选站点创建 Key 并选择对应分组；两个站点的 Key 分别管理。</p>
+<pre><code># 选择一个站点，末尾不加 /v1
+export BASE_URL='https://fastaiapi.cloud'
+# 使用 New API 时改为：https://newapi.fastaiapi.cloud
+export API_KEY='YOUR_API_KEY'</code></pre>
+<div class="site-links"><a class="button" href="https://fastaiapi.cloud">FastAiApi 控制台 ↗</a><a class="button" href="https://newapi.fastaiapi.cloud">New API 控制台 ↗</a></div>
+
+<h2 id="models">2. 模型说明与价格</h2>
+<div class="model-intro"><h3>GPT Image 2.6 Flare</h3><p><code>gpt-image-2.6-flare</code>：面向快速创作与反复迭代，适合批量素材、电商配图和海报草稿。支持文字生图、参考图编辑、<strong>GIF 动图</strong>与<strong>SVG 矢量图</strong>，结果以文件 URL 返回。</p></div>
+<div class="model-intro"><h3>GPT Image 2.6 Sunburst</h3><p><code>gpt-image-2.6-sunburst</code>：面向精细画面与设计创作，适合产品视觉、海报设计和精细修图。支持文字生图、参考图编辑、<strong>GIF 动图</strong>与<strong>SVG 矢量图</strong>，结果以文件 URL 返回。</p></div>
+<p>以下为两个模型的人民币单张价格，使用相同分组时价格一致。</p>
+<div class="table-scroll"><table><thead><tr><th>站点</th><th>分组</th><th>Flare / 张</th><th>Sunburst / 张</th></tr></thead><tbody><tr><td>FastAiApi</td><td>gpt-pro</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>FastAiApi</td><td>gpt-Image-超分</td><td>¥0.04</td><td>¥0.04</td></tr><tr><td>New API</td><td>default</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>New API</td><td>Image2.6两分</td><td>¥0.02</td><td>¥0.02</td></tr><tr><td>New API</td><td>企业VIP</td><td>¥0.008</td><td>¥0.008</td></tr></tbody></table></div>
+<p>New API 的 <strong>Image2.6两分</strong> 分组同时提供 <code>gpt-image-2</code>、<code>gpt-image-2.5</code>、<code>gpt-image-2.5-flare</code>、<code>gpt-image-2.5-sunburst</code>，统一 ¥0.02/张。本文的 GIF / SVG 参数适用于两个 2.6 模型。</p>
+<p>多图请求按张计费，具体扣费以本站使用记录为准。生成耗时受画面复杂度、格式与当前负载影响。</p>
+
+<h2 id="parameters">3. 通用参数</h2>
+<p>文字生图使用 <code>POST /v1/images/generations</code>，图片编辑使用 <code>POST /v1/images/edits</code>，JSON 请求头为 <code>Content-Type: application/json</code>。</p>
+<div class="table-scroll"><table><thead><tr><th>参数</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>model</code></td><td>必填：<code>gpt-image-2.6-flare</code> 或 <code>gpt-image-2.6-sunburst</code>。</td></tr>
+<tr><td><code>prompt</code></td><td>必填，描述画面或编辑要求。</td></tr>
+<tr><td><code>n</code></td><td>生成次数，1–4，默认 1。一次生成可能返回多份图片文件，见返回说明。</td></tr>
+<tr><td><code>output_format</code></td><td><code>png</code>、<code>jpeg</code>（<code>jpg</code>）、<code>webp</code>、<code>gif</code>、<code>svg</code>。GIF / SVG 使用限制见下节。</td></tr>
+<tr><td><code>response_format</code></td><td>建议 <code>url</code>。当前非流式接口返回 <code>data[].url</code>；传 <code>b64_json</code> 也以 URL 返回。</td></tr>
+<tr><td><code>aspect_ratio</code></td><td>宽高比，如 <code>1:1</code>、<code>16:9</code>、<code>9:16</code>。兼容 <code>aspectRatio</code>。</td></tr>
+<tr><td><code>image_size</code></td><td>分辨率提示：<code>1K</code>、<code>2K</code>、<code>4K</code>；兼容 <code>resolution</code>、<code>imageSize</code>，按此顺序取第一个有效字段。</td></tr>
+<tr><td><code>size</code></td><td>兼容像素尺寸（如 <code>1024x1024</code>）、比例或分辨率档位，也接受 <code>auto</code>、<code>default</code>。明确像素尺寸优先；这两个模型不保证严格输出对应像素数。</td></tr>
+<tr><td><code>quality</code></td><td><code>auto</code>、<code>low</code>、<code>medium</code>、<code>high</code>、<code>xhigh</code>、<code>max</code>、<code>standard</code>、<code>hd</code>。画质提示，不保证每档产生固定效果。</td></tr>
+<tr><td><code>background</code></td><td>兼容背景提示字段，不保证透明背景效果。</td></tr>
+<tr><td><code>stream</code></td><td>本文示例均为 <code>false</code>；GIF、SVG 必须为 <code>false</code> 或省略。</td></tr>
+<tr><td><code>frame_count</code></td><td>GIF 可选帧数提示；不补默认值，不保证精确遵循。</td></tr>
+<tr><td><code>frame_duration_ms</code></td><td>GIF 可选单帧时长提示，单位毫秒；不补默认值，不保证精确遵循。</td></tr>
+<tr><td><code>images</code></td><td>编辑时使用 <code>[{"image_url":"公开图片 URL 或 Data URL"}]</code>。此结构两站通用。</td></tr>
+</tbody></table></div>
+<p>尺寸字段是构图与分辨率提示，实际输出尺寸可能不同。GIF、SVG 保留原文件，不做本地像素缩放。</p>
+
+<h2 id="generate">4. 文字生图</h2>
+<p>先设置上文的 <code>BASE_URL</code> 与 <code>API_KEY</code>，以下请求在两站完全相同。切换另一个模型时只修改 <code>model</code>。</p>
+<pre><code>curl "$BASE_URL/v1/images/generations" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2.6-flare",
+    "prompt": "一只小猫坐在窗边，温暖的午后光线",
+    "n": 1,
+    "aspect_ratio": "1:1",
+    "image_size": "1K",
+    "output_format": "png",
+    "response_format": "url",
+    "stream": false
+  }'</code></pre>
+
+<h2 id="gif-svg">5. GIF 与 SVG</h2>
+<h3>GIF 动图</h3>
+<p>两个模型均支持请求 GIF 动图。可用于文字生成与参考图编辑，结果上传文件存储后返回可下载的 URL；不支持流式请求。</p>
+<pre><code>curl "$BASE_URL/v1/images/generations" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2.6-flare",
+    "prompt": "生成循环 GIF 动图：蓝色小球在白色背景上轻轻弹跳",
+    "output_format": "gif",
+    "frame_count": 20,
+    "frame_duration_ms": 100,
+    "response_format": "url",
+    "stream": false
+  }'</code></pre>
+<h3>SVG 矢量图</h3>
+<p>两个模型均支持请求 SVG 矢量图。SVG 仅支持无参考图的文字生成，不支持图片编辑、参考图输入或流式请求。</p>
+<pre><code>curl "$BASE_URL/v1/images/generations" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2.6-sunburst",
+    "prompt": "生成真正的 SVG 矢量文件：白色背景中央一个蓝色圆形图标，使用圆形路径，不要栅格图",
+    "output_format": "svg",
+    "response_format": "url",
+    "stream": false
+  }'</code></pre>
+<div class="notice"><strong>以实际文件格式为准。</strong><p>GIF、SVG 是生成格式请求，可能返回 PNG 等栅格结果。接口会保留实际字节、后缀与 MIME，不会把 PNG 改名为 GIF 或 SVG；需要指定格式的应用应检查下载文件。GIF 一次生成也可能同时包含动图和 PNG 预览，程序应遍历 <code>data[]</code>。</p></div>
+
+<h2 id="edit">6. 图片编辑</h2>
+<p>两站均使用 <code>images</code> 数组传入参考图。<code>image_url</code> 可填写可公开下载的 HTTP(S) URL，或 <code>data:image/png;base64,...</code>。服务会实际读取参考图并执行生成。</p>
+<pre><code>curl "$BASE_URL/v1/images/edits" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2.6-sunburst",
+    "prompt": "保留主体，把背景改为柔和的浅蓝色",
+    "images": [{"image_url": "https://example.com/reference.png"}],
+    "n": 1,
+    "output_format": "png",
+    "response_format": "url",
+    "stream": false
+  }'</code></pre>
+<p>也可以请求 <code>output_format: "gif"</code> 将参考画面制作成动图。单张参考图不超过 50 MiB，最多 16 张，累计不超过 100 MiB；图片地址须可被服务访问。</p>
+
+<h2 id="results">7. URL 与返回结果</h2>
+<pre><code>{
+  "created": 1793910000,
+  "data": [
+    {
+      "url": "https://YOUR_FILE_HOST/generated-image.gif",
+      "revised_prompt": "你的原始提示词"
+    }
+  ]
+}</code></pre>
+<p><code>data[].url</code> 是图片或动图的下载地址。GIF、SVG 与普通图片一样存储为文件，并通过 URL 访问；链接保留时间以站点存储策略为准，需要长期使用时请及时保存。</p>
+<p><code>n=1</code> 执行一次生成，可能保留多份返回文件；<code>n&gt;1</code> 执行多次生成，最终最多返回 <code>n</code> 份。GIF 帧数、画质与尺寸是生成提示，业务端应检查实际结果。</p>
+<p>遇到 <code>401</code> 时检查所选站点的 API Key；模型不可用时检查 Key 分组及模型名称；<code>429</code> 或临时服务繁忙时使用适当退避，避免对已成功返回的请求重复提交。</p>
+</article>
+<div class="next-guide"><span>继续阅读</span><a href="/help/api/">注册、创建 Key 与其他使用说明 →</a></div>
+</main>
+<aside class="desktop-toc"><p class="nav-label">本页目录</p><nav aria-label="本页目录"><a class="toc-h2" href="#sites">1. 站点与鉴权</a><a class="toc-h2" href="#models">2. 模型说明与价格</a><a class="toc-h2" href="#parameters">3. 通用参数</a><a class="toc-h2" href="#generate">4. 文字生图</a><a class="toc-h2" href="#gif-svg">5. GIF 与 SVG</a><a class="toc-h2" href="#edit">6. 图片编辑</a><a class="toc-h2" href="#results">7. URL 与返回结果</a></nav><a class="back-top" href="#main">↑ 回到顶部</a></aside>
+</div>
+<footer><span>FastAiApi · 图片 API</span><a href="/help/">帮助首页</a><a href="https://fastaiapi.cloud">FastAiApi ↗</a><a href="https://newapi.fastaiapi.cloud">New API ↗</a><span>更新于 2026-11-06</span></footer>
+<dialog id="image-viewer" aria-label="图片大图"><button class="close-viewer" aria-label="关闭大图">×</button><img alt=""><p></p><a target="_blank" rel="noopener">打开原图 ↗</a></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/help/help.js" defer></script>
+</body>
+</html>
