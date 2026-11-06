@@ -84,5 +84,61 @@ class ClientContract(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'时长超出'):client.generate({'prompt':'Sunset','output_dir':directory})
             post.assert_not_called()
 
+    def test_gpu_references_go_through_newapi_without_magic_upload(self):
+        with tempfile.TemporaryDirectory() as directory:
+            image=Path(directory)/'person.png';image.write_bytes(b'png-fixture')
+            settings=self.settings(model='minimax-h3-u24',duration=5,resolution='768p',generation_mode='参考生视频',resource_account_key='rgpu_'+'a'*64)
+            with patch.object(client,'get_params',return_value=settings), patch.object(client,'upload') as vendor_upload, patch.object(client.requests,'post',return_value=response({'id':'task_gpu'})) as post, patch.object(client.requests,'get',side_effect=[response({'status':'completed'}),response()]), contextlib.redirect_stdout(io.StringIO()) as output:
+                client.generate({'prompt':'Keep this person','output_dir':directory,'reference_images':[str(image)]})
+                payload=post.call_args.kwargs['json']
+                self.assertEqual(post.call_args.args[0],'https://tumeiapi.com/v1/videos')
+                self.assertEqual(payload['model'],'minimax-h3-u24')
+                self.assertEqual(payload['size'],'1376x768')
+                self.assertEqual(payload['seconds'],5)
+                self.assertEqual(payload['metadata']['channel'],'autodl')
+                self.assertTrue(payload['metadata']['reference_images'][0].startswith('data:image/png;base64,'))
+                self.assertEqual(payload['metadata']['resource_account_key'],'rgpu_'+'a'*64)
+                vendor_upload.assert_not_called()
+                self.assertNotIn(KEY,output.getvalue())
+
+    def test_hybrid_keeps_frame_roles_and_reference_video_separate(self):
+        model=client.MODELS['minimax-h3-x'];params=self.settings(model='minimax-h3-x',duration=5,generation_mode='首尾帧+参考素材')
+        context={'first_frame_path':'first.png','end_frame_path':'last.png','reference_images':['person.png'],'reference_videos':['motion.mp4'],'audio_path':'voice.wav'}
+        plan=client.media_plan(context,params,model)
+        body=client.gpu_payload(model,params,'scene',5,'480p','16:9',[{'type':r,'url':v} for r,v in plan])
+        self.assertEqual(body['input_reference'],'first.png')
+        self.assertEqual(body['metadata']['last_frame_url'],'last.png')
+        self.assertEqual(body['metadata']['reference_images'],['person.png'])
+        self.assertEqual(body['metadata']['reference_videos'],['motion.mp4'])
+        self.assertEqual(body['metadata']['reference_audios'],['voice.wav'])
+        self.assertEqual(body['metadata']['mode'],'ref2va')
+        context.pop('end_frame_path')
+        body=client.gpu_payload(model,params,'scene',5,'480p','16:9',[{'type':r,'url':v} for r,v in client.media_plan(context,params,model)])
+        self.assertNotIn('last_frame_url',body['metadata'])
+        self.assertEqual(body['metadata']['reference_images'],['person.png'])
+
+    def test_gpu_modes_reject_unsupported_references_before_submit(self):
+        model=client.MODELS['minimax-h3-u32'];params=self.settings(model='minimax-h3-u32',duration=5,generation_mode='参考生视频')
+        with self.assertRaisesRegex(RuntimeError,'数量超过'):
+            client.gpu_payload(model,params,'scene',5,'480p','16:9',[{'type':'reference_voice','url':'voice.wav'}])
+        avatar=client.MODELS['ltx-2.3-avatar']
+        with self.assertRaisesRegex(RuntimeError,'完整配音'):
+            client.gpu_payload(avatar,{**params,'generation_mode':'数字人'},'scene',5,'480p','9:16',[{'type':'first_frame','url':'portrait.png'}])
+
+    def test_wan_uses_reference_long_edge_and_native_fps(self):
+        model=client.MODELS['wan2.2'];params=self.settings(model='wan2.2',generation_mode='首帧')
+        body=client.gpu_payload(model,params,'scene',1,'480','跟随参考图',[{'type':'first_frame','url':'frame.png'}])
+        self.assertNotIn('size',body)
+        self.assertEqual(body['metadata']['resolution'],480)
+        self.assertEqual(body['metadata']['fps'],16)
+
+    def test_wan21_uses_common_panel_queue_with_native_dimensions(self):
+        model=client.MODELS['wan2.1']
+        body=client.gpu_payload(model,{'generation_mode':'文生视频'},'scene',1,'480p','16:9',[])
+        self.assertEqual(body['metadata']['channel'],'autodl')
+        self.assertEqual(body['metadata']['fps'],16)
+        self.assertEqual(body['size'],'848x480')
+        self.assertNotIn('input_reference',body)
+
 
 if __name__ == '__main__':unittest.main()

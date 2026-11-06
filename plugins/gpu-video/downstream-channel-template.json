@@ -1,0 +1,13 @@
+{
+  "mode": "single",
+  "channel": {
+    "type": 60,
+    "name": "FastAiApi GPU Video",
+    "key": "YOUR_TUMEIAPI_KEY",
+    "base_url": "https://tumeiapi.com",
+    "models": "minimax-h3,minimax-h3-u17,minimax-h3-u24,minimax-h3-u32,wan2.2,wan2.1,ltx-2.3,ltx-2.3-grid,ltx-2.3-avatar,minimax-h3-x,ltx-2.3-x",
+    "group": "default",
+    "setting": "{\"task_extend_plugin_keys\":[\"comfyui-video\"]}",
+    "model_mapping": "{}"
+  }
+}

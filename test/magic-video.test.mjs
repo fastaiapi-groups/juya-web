@@ -74,7 +74,7 @@ test('revocation is checked again after a previously successful upload',async t=
 // management API shapes, including retries and concurrent-pricing conflicts.
 import {installMagicVideo} from '../plugins/new-api/installer-core.mjs';
 import {readFileSync} from 'node:fs';
-const catalog=JSON.parse(readFileSync(new URL('../plugins/zzdh/video_plugin_fastai_magic/catalog.json',import.meta.url),'utf8'));
+const catalog=JSON.parse(readFileSync(new URL('../plugins/new-api/catalog.json',import.meta.url),'utf8'));
 function panelAPI({currency='CNY',exchange=1,conflict=false,validKey=true,role=100}={}) {
  const writes=[],channels=[],metadata=[],pricing=new Map();
  const api=async(path,request={})=>{

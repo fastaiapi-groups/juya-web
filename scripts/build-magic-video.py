@@ -38,16 +38,21 @@ new_readme='''FastAiApi 魔法视频 new-api 接入包 1.0.0
 安装器不保存或导出管理员凭据，不自动提交生成测试。
 文档：https://fastaiapi.cloud/help/magic-video/
 '''
-zz_readme='''FastAiApi 魔法视频 字字动画插件 1.0.0
+zz_readme='''FastAiApi 视频 字字动画统一插件 1.1.0
 
 将 video_plugin_fastai_magic 文件夹放入字字动画的 _internal/plugins/video_plugins/，重启客户端。
-选择“FastAiApi 魔法视频”，填写 tumeiapi.com 的“魔法视频分组”Key。本站地址、11 款模型规格已内置。
-支持文生视频、首尾帧、多模态参考与本地素材上传（单文件最多 10MB）。不同模型支持的素材和规格不同。
-只创建一次任务，超时或断网后保留 .task.json，重新运行会继续查询。创建结果不确定时先检查控制台任务，勿直接重试；核对后再处理对应 .task.json。
-成功后自动保存 mp4，并打印完整的本站下载 URL。下载仍需本站 Key，不是免鉴权直链。
-这是字字动画客户端插件，不是额外的服务端 Python 程序。
+选择“FastAiApi 视频”，填写 tumeiapi.com 的 API Key。原魔法视频与 GPU 视频合并在一个插件内；模型列表按 Key 权限加载。
+模型、时长、FPS、分辨率、首尾帧、参考图/音频等按模型切换；不同渠道能力不能混用。
+GPU 模型通过 NewAPI → Go Wrapper → 显卡；本地素材编码后由 Go 转发，图片在提交显卡前转为实际 JPEG。
+原魔法视频仍使用原接口和素材上传流程。单个本地文件最多 10MB，总量过大请使用公网 URL。
+可选填写 rgpu_… 用户资源池 Key 使用自己的显卡；无需向插件提供云账号 Token 或 Wrapper 管理密钥。
+只创建一次任务，超时或断网后保留 .task.json，重新运行会继续查询。创建结果不确定时先检查控制台，勿直接重试。
+成功后自动保存 mp4，并打印完整的本站下载 URL。下载需本站 Key，不是免鉴权直链。
+这是现有字字动画 SDK 的客户端插件，不需要部署 Python 服务。
 文档：https://fastaiapi.cloud/help/magic-video/
+GPU 参数：https://fastaiapi.cloud/help/magic-video/gpu-video-api.md
 '''
+
 
 def archive(path,files):
  with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
@@ -59,15 +64,19 @@ client_root=ROOT/'plugins/zzdh/video_plugin_fastai_magic'
 files={}
 for name in ['main.py','info.json','catalog.json','ui/index.html','ui/app.js','ui/assets/jimeng.svg','ui/assets/alibaba.svg','ui/assets/lobe-icons-LICENSE.txt']:files['video_plugin_fastai_magic/'+name]=(client_root/name).read_bytes()
 files['video_plugin_fastai_magic/安装说明.txt']=zz_readme
-zz=DOWNLOADS/'fastai-magic-video-zzdh-1.0.0.zip';archive(zz,files)
+zz=DOWNLOADS/'fastai-video-zzdh-1.1.0.zip';archive(zz,files)
 new=DOWNLOADS/'fastai-magic-video-newapi-1.0.0.zip';archive(new,{'fastai-magic-video-newapi/plugin.js':SOURCE,'fastai-magic-video-newapi/catalog.json':json.dumps(CAT,ensure_ascii=False,indent=2),'fastai-magic-video-newapi/install.js':ui,'fastai-magic-video-newapi/installer.html':installer,'fastai-magic-video-newapi/安装说明.txt':new_readme})
+gpu_root=ROOT/'plugins/gpu-video'
+gpu=DOWNLOADS/'fastai-gpu-video-newapi-1.9.6.zip'
+archive(gpu,{'fastai-gpu-video-newapi/'+p.name:p.read_bytes() for p in gpu_root.iterdir() if p.is_file()})
+(OUT/'gpu-video-api.md').write_bytes((gpu_root/'gpu-video-api.md').read_bytes())
 (DOWNLOADS/'demo.sh').write_bytes((ROOT/'plugins/magic-video/demo.sh').read_bytes())
 (DOWNLOADS/'plugin.js').write_text(SOURCE)
 (DOWNLOADS/'install.js').write_text(ui)
 (DOWNLOADS/'catalog.json').write_text(json.dumps(CAT,ensure_ascii=False,indent=2)+'\n')
 (OUT/'installer.html').write_text(installer)
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-(DOWNLOADS/'SHA256SUMS.txt').write_text(''.join(sha(p)+'  '+p.name+'\n' for p in [zz,new,DOWNLOADS/'demo.sh',DOWNLOADS/'plugin.js',DOWNLOADS/'install.js']))
+(DOWNLOADS/'SHA256SUMS.txt').write_text(''.join(sha(p)+'  '+p.name+'\n' for p in [zz,new,gpu,DOWNLOADS/'demo.sh',DOWNLOADS/'plugin.js',DOWNLOADS/'install.js']))
 rows=[]
 for m in CAT['models']:
  esc=lambda x:html.escape(str(x),quote=True)
@@ -77,7 +86,7 @@ for m in CAT['models']:
  caps=f"{m['supported_duration']['min']}–{m['supported_duration']['max']} 秒 · {' / '.join(m['supported_resolutions'])} · 参考上限 {m['max_reference_images']} 图 / {m['max_reference_videos']} 视频 / {m['max_reference_audios']} 音频"
  rows.append(f'<section class="model-spec"><div class="model-top"><div class="model-id"><img src="assets/{icon}.svg" alt="" width="38" height="38"><strong>{esc(m["model_name"])}</strong></div><span class="model-price">¥{m["model_price"]:g}<small>/{unit}</small></span></div><p>{esc(m["description"])}</p><p class="spec-line">{esc(caps)}</p><div class="model-tags">{tags}</div></section>')
 toc=''.join(f'<a class="toc-h2" href="#{key}">{name}</a>' for key,name in [('quickstart','1. 地址与鉴权'),('models','2. 模型、规格与价格'),('request-fields','3. 请求与参考素材'),('query-download','4. 查询与下载'),('plugins','5. 下载插件'),('demo','6. 完整示例'),('errors','7. 常见问题')])
-page=(ROOT/'plugins/magic-video/page.html').read_text().replace('__TOC__',toc).replace('__MODEL_ROWS__','\n'.join(rows)).replace('__INSTALL_BOOKMARK__',html.escape(bookmark,quote=True)).replace('__ZZDH_SHA__',sha(zz)).replace('__NEWAPI_SHA__',sha(new)).replace('__DEMO__',html.escape((ROOT/'plugins/magic-video/demo.sh').read_text()))
+page=(ROOT/'plugins/magic-video/page.html').read_text().replace('__TOC__',toc).replace('__MODEL_ROWS__','\n'.join(rows)).replace('__INSTALL_BOOKMARK__',html.escape(bookmark,quote=True)).replace('__ZZDH_SHA__',sha(zz)).replace('__NEWAPI_SHA__',sha(new)).replace('__GPU_SHA__',sha(gpu)).replace('__DEMO__',html.escape((ROOT/'plugins/magic-video/demo.sh').read_text()))
 assert '__' not in page
 (OUT/'index.html').write_text(page)
-print(json.dumps({'models':len(CAT['models']),'bookmarklet_bytes':len(bookmark),'downloads':{p.name:{'bytes':p.stat().st_size,'sha256':sha(p)} for p in [zz,new]}},ensure_ascii=False,indent=2))
+print(json.dumps({'models':len(CAT['models']),'bookmarklet_bytes':len(bookmark),'downloads':{p.name:{'bytes':p.stat().st_size,'sha256':sha(p)} for p in [zz,new,gpu]}},ensure_ascii=False,indent=2))

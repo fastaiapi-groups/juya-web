@@ -1,1 +1,4 @@
-{"name":"FastAiApi 魔法视频","description":"连接 tumeiapi.com 魔法视频分组，填写本站 API Key 即可生成视频，支持本地素材上传"}
+{
+  "name": "FastAiApi 视频",
+  "description": "魔法视频与显卡视频统一插件；填写本站 API Key，按模型选择参数与参考素材"
+}

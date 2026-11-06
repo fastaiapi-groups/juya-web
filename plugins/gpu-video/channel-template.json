@@ -1,0 +1,13 @@
+{
+  "mode": "single",
+  "channel": {
+    "type": 61,
+    "name": "ComfyUI Video",
+    "key": "YOUR_WRAPPER_KEY",
+    "base_url": "https://comfy.fastaiapi.cloud",
+    "models": "minimax-h3,minimax-h3-u17,minimax-h3-u24,minimax-h3-u32,wan2.2,wan2.1,ltx-2.3,ltx-2.3-grid,ltx-2.3-avatar,minimax-h3-x,ltx-2.3-x",
+    "group": "default",
+    "setting": "{\"task_plugin_key\": \"comfyui-video\"}",
+    "model_mapping": "{}"
+  }
+}

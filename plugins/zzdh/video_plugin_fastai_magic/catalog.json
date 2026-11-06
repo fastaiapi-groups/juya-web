@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
-  "date": "2026-11-05",
+  "version": "1.1.0",
+  "date": "2026-11-06",
   "api_base_url": "https://tumeiapi.com",
-  "group": "魔法视频分组",
+  "group": "按模型权限选择分组",
   "currency": "CNY",
   "models": [
     {
@@ -294,6 +294,1870 @@
       "billing_unit": "request",
       "model_price": 5.04,
       "billing_expr": "u(\"resolution\") == \"720p\" ? tier(\"720p\", u(\"requests\") * 5.04) : tier(\"1080p\", u(\"requests\") * 5.04)"
+    },
+    {
+      "model_name": "minimax-h3",
+      "description": "MiniMax H3 · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "480p",
+        "768p",
+        "1080p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "generation_modes": [
+        "文生视频",
+        "首帧",
+        "首尾帧",
+        "参考生视频",
+        "加速文生"
+      ],
+      "gpu_modes": {
+        "文生视频": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "首帧": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "首尾帧": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "参考生视频": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 9,
+          "reference_videos_max": 0,
+          "reference_audios_max": 3,
+          "negative_prompt": false,
+          "reference_images_min": 0
+        },
+        "加速文生": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        }
+      },
+      "fps": {
+        "min": 24,
+        "max": 24,
+        "step": 1,
+        "default": 24
+      },
+      "max_reference_images": 9,
+      "max_reference_videos": 0,
+      "max_reference_audios": 3,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "minimax-h3-u24",
+      "description": "MiniMax H3 U24 · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "480p",
+        "768p",
+        "1080p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "generation_modes": [
+        "文生视频",
+        "参考生视频"
+      ],
+      "gpu_modes": {
+        "文生视频": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "参考生视频": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 9,
+          "reference_videos_max": 0,
+          "reference_audios_max": 3,
+          "negative_prompt": false
+        }
+      },
+      "fps": {
+        "min": 24,
+        "max": 24,
+        "step": 1,
+        "default": 24
+      },
+      "max_reference_images": 9,
+      "max_reference_videos": 0,
+      "max_reference_audios": 3,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "minimax-h3-u32",
+      "description": "MiniMax H3 U32 · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "480p",
+        "768p",
+        "1080p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "generation_modes": [
+        "文生视频",
+        "参考生视频"
+      ],
+      "gpu_modes": {
+        "文生视频": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "参考生视频": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 9,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        }
+      },
+      "fps": {
+        "min": 24,
+        "max": 24,
+        "step": 1,
+        "default": 24
+      },
+      "max_reference_images": 9,
+      "max_reference_videos": 0,
+      "max_reference_audios": 0,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "minimax-h3-u17",
+      "description": "MiniMax H3 U17（常规缩放导出） · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "480p",
+        "768p",
+        "1080p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "generation_modes": [
+        "文生视频"
+      ],
+      "gpu_modes": {
+        "文生视频": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        }
+      },
+      "fps": {
+        "min": 24,
+        "max": 24,
+        "step": 1,
+        "default": 24
+      },
+      "max_reference_images": 2,
+      "max_reference_videos": 0,
+      "max_reference_audios": 0,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "wan2.2",
+      "description": "Wan 2.2 · SmoothMixV2 · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "480",
+        "768",
+        "1024",
+        "1280",
+        "1536"
+      ],
+      "supported_duration": {
+        "min": 1,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "跟随参考图"
+      ],
+      "generation_modes": [
+        "首帧"
+      ],
+      "gpu_modes": {
+        "首帧": {
+          "duration": {
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 16,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [],
+          "ratios": [],
+          "dimension_mode": "reference",
+          "controls": {
+            "fps": {
+              "min": 16,
+              "max": 16,
+              "step": 1,
+              "default": 16
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            },
+            "resolution": {
+              "min": 256,
+              "max": 1536,
+              "step": 16,
+              "default": 1024,
+              "choices": [
+                480,
+                768,
+                1024,
+                1280,
+                1536
+              ]
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "fps": 16,
+            "seed": 20261008,
+            "negative_prompt": "blurry, low quality, watermark, distorted faces, flickering",
+            "resolution": 1024
+          },
+          "audio": false,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": true
+        }
+      },
+      "fps": {
+        "min": 16,
+        "max": 16,
+        "step": 1,
+        "default": 16
+      },
+      "max_reference_images": 2,
+      "max_reference_videos": 0,
+      "max_reference_audios": 0,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "ltx-2.3",
+      "description": "LTX 2.3 · 高动态图生视频 · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "480p",
+        "768p",
+        "1080p"
+      ],
+      "supported_duration": {
+        "min": 1,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "generation_modes": [
+        "首帧"
+      ],
+      "gpu_modes": {
+        "首帧": {
+          "duration": {
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 8,
+              "max": 60,
+              "step": 1,
+              "default": 30
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 640,
+            "height": 384,
+            "fps": 30,
+            "seed": 20261008,
+            "negative_prompt": "blurry, low quality, watermark, distorted faces, flickering"
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": true
+        }
+      },
+      "fps": {
+        "min": 8,
+        "max": 60,
+        "step": 1,
+        "default": 30
+      },
+      "max_reference_images": 2,
+      "max_reference_videos": 0,
+      "max_reference_audios": 0,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "ltx-2.3-grid",
+      "description": "LTX 2.3 · 四宫格 · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "512p",
+        "768p",
+        "1024p"
+      ],
+      "supported_duration": {
+        "min": 4,
+        "max": 15,
+        "step": 1,
+        "default": 4
+      },
+      "supported_ratios": [
+        "1:1"
+      ],
+      "generation_modes": [
+        "四宫格"
+      ],
+      "gpu_modes": {
+        "四宫格": {
+          "duration": {
+            "min": 4,
+            "max": 15,
+            "step": 1,
+            "default": 4
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 4,
+            "width": 512,
+            "height": 512,
+            "fps": 24,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        }
+      },
+      "fps": {
+        "min": 24,
+        "max": 24,
+        "step": 1,
+        "default": 24
+      },
+      "max_reference_images": 2,
+      "max_reference_videos": 0,
+      "max_reference_audios": 0,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "ltx-2.3-avatar",
+      "description": "LTX 2.3 · 电商数字人 · 显卡视频；参数按当前模型能力校验",
+      "tags": "视频模型,显卡视频",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "576p"
+      ],
+      "supported_duration": {
+        "min": 5,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "9:16"
+      ],
+      "generation_modes": [
+        "数字人"
+      ],
+      "gpu_modes": {
+        "数字人": {
+          "duration": {
+            "min": 5,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 30,
+              "max": 30,
+              "step": 1,
+              "default": 30
+            },
+            "seed": {
+              "min": -1,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 576,
+            "height": 1024,
+            "fps": 30,
+            "seed": 20261008
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false,
+          "audio_required": true
+        }
+      },
+      "fps": {
+        "min": 30,
+        "max": 30,
+        "step": 1,
+        "default": 30
+      },
+      "max_reference_images": 2,
+      "max_reference_videos": 0,
+      "max_reference_audios": 1,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "minimax-h3-x",
+      "description": "MiniMax H3 · 仙宫云显卡；使用独立公开模型名",
+      "tags": "视频模型,仙宫云",
+      "protocol": "openai_video",
+      "channel": "xiangongyun",
+      "supported_resolutions": [
+        "480p",
+        "768p",
+        "1080p"
+      ],
+      "supported_duration": {
+        "min": 2,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "generation_modes": [
+        "文生视频",
+        "首帧",
+        "首尾帧",
+        "参考生视频",
+        "首尾帧+参考素材"
+      ],
+      "gpu_modes": {
+        "文生视频": {
+          "duration": {
+            "min": 2,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": 0,
+              "max": 9007199254740991,
+              "step": 1,
+              "default": 20261008
+            },
+            "steps": {
+              "min": 1,
+              "max": 50,
+              "step": 1,
+              "default": 20
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008,
+            "steps": 20
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "首帧": {
+          "duration": {
+            "min": 2,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": 0,
+              "max": 9007199254740991,
+              "step": 1,
+              "default": 20261008
+            },
+            "steps": {
+              "min": 1,
+              "max": 50,
+              "step": 1,
+              "default": 20
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008,
+            "steps": 20
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "首尾帧": {
+          "duration": {
+            "min": 2,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": 0,
+              "max": 9007199254740991,
+              "step": 1,
+              "default": 20261008
+            },
+            "steps": {
+              "min": 1,
+              "max": 50,
+              "step": 1,
+              "default": 20
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008,
+            "steps": 20
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": false
+        },
+        "参考生视频": {
+          "duration": {
+            "min": 2,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": 0,
+              "max": 9007199254740991,
+              "step": 1,
+              "default": 20261008
+            },
+            "steps": {
+              "min": 1,
+              "max": 50,
+              "step": 1,
+              "default": 20
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008,
+            "steps": 20
+          },
+          "audio": true,
+          "reference_images_max": 9,
+          "reference_videos_max": 3,
+          "reference_audios_max": 3,
+          "negative_prompt": false
+        },
+        "首尾帧+参考素材": {
+          "duration": {
+            "min": 2,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 24,
+              "max": 24,
+              "step": 1,
+              "default": 24
+            },
+            "seed": {
+              "min": 0,
+              "max": 9007199254740991,
+              "step": 1,
+              "default": 20261008
+            },
+            "steps": {
+              "min": 1,
+              "max": 50,
+              "step": 1,
+              "default": 20
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 480,
+            "height": 864,
+            "fps": 24,
+            "seed": 20261008,
+            "steps": 20
+          },
+          "audio": true,
+          "reference_images_max": 9,
+          "reference_videos_max": 3,
+          "reference_audios_max": 3,
+          "negative_prompt": false
+        }
+      },
+      "fps": {
+        "min": 24,
+        "max": 24,
+        "step": 1,
+        "default": 24
+      },
+      "max_reference_images": 11,
+      "max_reference_videos": 3,
+      "max_reference_audios": 3,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "ltx-2.3-x",
+      "description": "LTX 2.3 · 22B · 仙宫云显卡；使用独立公开模型名",
+      "tags": "视频模型,仙宫云",
+      "protocol": "openai_video",
+      "channel": "xiangongyun",
+      "supported_resolutions": [
+        "448p",
+        "704p",
+        "1088p"
+      ],
+      "supported_duration": {
+        "min": 1,
+        "max": 15,
+        "step": 1,
+        "default": 5
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "generation_modes": [
+        "首尾帧"
+      ],
+      "gpu_modes": {
+        "首尾帧": {
+          "duration": {
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 32,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 25,
+              "max": 25,
+              "default": 25,
+              "step": 1
+            },
+            "seed": {
+              "min": 0,
+              "max": 9007199254740991,
+              "step": 1,
+              "default": 20261008
+            },
+            "cfg": {
+              "min": 0,
+              "max": 20,
+              "step": 0.1,
+              "default": 4
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 768,
+            "height": 448,
+            "fps": 25,
+            "seed": 20261008,
+            "cfg": 4,
+            "negative_prompt": "blurry, low quality, watermark, distorted faces, flickering"
+          },
+          "audio": true,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": true
+        }
+      },
+      "fps": {
+        "min": 25,
+        "max": 25,
+        "default": 25,
+        "step": 1
+      },
+      "max_reference_images": 2,
+      "max_reference_videos": 0,
+      "max_reference_audios": 0,
+      "billing_unit": "second",
+      "model_price": null
+    },
+    {
+      "model_name": "wan2.1",
+      "description": "Wan 2.1 文生视频，原生工作流，与面板共用队列；无音轨",
+      "tags": "GPU视频,AutoDL",
+      "protocol": "openai_video",
+      "channel": "autodl",
+      "supported_resolutions": [
+        "480p",
+        "768p",
+        "1088p"
+      ],
+      "supported_duration": {
+        "min": 1,
+        "max": 15
+      },
+      "supported_ratios": [
+        "16:9",
+        "9:16",
+        "1:1",
+        "4:3",
+        "3:4"
+      ],
+      "max_reference_images": 0,
+      "max_reference_audios": 0,
+      "max_reference_videos": 0,
+      "model_price": null,
+      "billing_unit": "request",
+      "fps": {
+        "min": 8,
+        "max": 60,
+        "step": 1,
+        "default": 16
+      },
+      "generation_modes": [
+        "文生视频"
+      ],
+      "gpu_modes": {
+        "文生视频": {
+          "duration": {
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "default": 5
+          },
+          "dimensions": {
+            "multiple": 16,
+            "min": 256,
+            "max": 1920,
+            "max_pixels": 2088960
+          },
+          "resolutions": [
+            {
+              "id": "480",
+              "label": "480P",
+              "short_edge": 480
+            },
+            {
+              "id": "768",
+              "label": "768P",
+              "short_edge": 768
+            },
+            {
+              "id": "1088",
+              "label": "1088P",
+              "short_edge": 1088
+            }
+          ],
+          "ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "dimension_mode": "custom",
+          "controls": {
+            "fps": {
+              "min": 8,
+              "max": 60,
+              "step": 1,
+              "default": 16
+            },
+            "seed": {
+              "min": 0,
+              "max": 4294967295,
+              "step": 1,
+              "default": 20261008
+            },
+            "steps": {
+              "min": 1,
+              "max": 50,
+              "step": 1,
+              "default": 20
+            },
+            "cfg": {
+              "min": 0,
+              "max": 20,
+              "step": 0.1,
+              "default": 6
+            }
+          },
+          "defaults": {
+            "duration": 5,
+            "width": 832,
+            "height": 480,
+            "fps": 16,
+            "seed": 20261008,
+            "steps": 20,
+            "cfg": 6,
+            "negative_prompt": "blurry, low quality, watermark, distorted faces, flickering"
+          },
+          "audio": false,
+          "reference_images_max": 0,
+          "reference_videos_max": 0,
+          "reference_audios_max": 0,
+          "negative_prompt": true
+        }
+      }
     }
   ]
 }
