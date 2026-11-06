@@ -1,0 +1,361 @@
+[
+  {
+    "id": "text-video",
+    "title": "文生视频",
+    "format": "standard",
+    "note": "仅传文字与生成参数。sd-2-c1 支持4–10秒，本例用5秒。",
+    "body": {
+      "model": "sd-2-c1",
+      "input": {
+        "prompt": "清晨的湖面，一只白色纸船缓缓漂过，镜头平稳。"
+      },
+      "parameters": {
+        "duration": 5,
+        "resolution": "720p",
+        "ratio": "16:9"
+      }
+    }
+  },
+  {
+    "id": "first-frame",
+    "title": "首帧图生视频",
+    "format": "standard",
+    "note": "",
+    "body": {
+      "model": "sd-2-c1",
+      "input": {
+        "prompt": "图片中的人物自然向前行走，镜头平稳跟拍。",
+        "media": [
+          {
+            "type": "first_frame",
+            "url": "https://cdn.example.com/first.jpg"
+          }
+        ]
+      },
+      "parameters": {
+        "duration": 5,
+        "resolution": "720p",
+        "ratio": "16:9"
+      }
+    }
+  },
+  {
+    "id": "first-last-frame",
+    "title": "首尾帧生视频",
+    "format": "standard",
+    "note": "",
+    "body": {
+      "model": "sd-2-c4",
+      "input": {
+        "prompt": "人物从首帧的小路走入花园，最终到达尾帧的位置。",
+        "media": [
+          {
+            "type": "first_frame",
+            "url": "https://cdn.example.com/first.jpg"
+          },
+          {
+            "type": "last_frame",
+            "url": "https://cdn.example.com/last.jpg"
+          }
+        ]
+      },
+      "parameters": {
+        "duration": 5,
+        "resolution": "720p",
+        "ratio": "16:9"
+      }
+    }
+  },
+  {
+    "id": "reference-images",
+    "title": "人物、场景和风格参考",
+    "format": "standard",
+    "note": "reference_image 提供人物、场景、道具或风格参考，不等于首帧约束。",
+    "body": {
+      "model": "sd-2-c4",
+      "input": {
+        "prompt": "图1的人物站在图2的庭院中，保持人物外观和场景布局。",
+        "media": [
+          {
+            "type": "reference_image",
+            "url": "https://cdn.example.com/person.jpg"
+          },
+          {
+            "type": "reference_image",
+            "url": "https://cdn.example.com/courtyard.jpg"
+          }
+        ]
+      },
+      "parameters": {
+        "duration": 5,
+        "resolution": "720p",
+        "ratio": "16:9"
+      }
+    }
+  },
+  {
+    "id": "reference-audio",
+    "title": "参考图片与声音",
+    "format": "standard",
+    "note": "此示例选择支持参考音频的sd-2-c4；sd-2-c1不接受参考音频。",
+    "body": {
+      "model": "sd-2-c4",
+      "input": {
+        "prompt": "人物@图1使用音频1的声音，在庭院中轻声介绍春天。",
+        "media": [
+          {
+            "type": "reference_image",
+            "url": "https://cdn.example.com/person.jpg"
+          },
+          {
+            "type": "reference_voice",
+            "url": "https://cdn.example.com/voice.mp3"
+          }
+        ]
+      },
+      "parameters": {
+        "duration": 5,
+        "resolution": "720p",
+        "ratio": "9:16"
+      }
+    }
+  },
+  {
+    "id": "reference-motion",
+    "title": "参考图片、声音与动作视频",
+    "format": "standard",
+    "note": "输入视频与输出时长合计限制按模型说明执行；本例只提供一份短动作参考。",
+    "body": {
+      "model": "sd-2-c4",
+      "input": {
+        "prompt": "人物@图1使用音频1的声音，参考视频1的动作和镜头节奏完成介绍。",
+        "media": [
+          {
+            "type": "reference_image",
+            "url": "https://cdn.example.com/person.jpg"
+          },
+          {
+            "type": "reference_voice",
+            "url": "https://cdn.example.com/voice.mp3"
+          },
+          {
+            "type": "reference_video",
+            "url": "https://cdn.example.com/motion.mp4"
+          }
+        ]
+      },
+      "parameters": {
+        "duration": 5,
+        "resolution": "720p",
+        "ratio": "16:9"
+      }
+    }
+  },
+  {
+    "id": "vertical-h3",
+    "title": "竖屏音画视频",
+    "format": "standard",
+    "note": "mx-h3只支持9:16和768p。",
+    "body": {
+      "model": "mx-h3",
+      "input": {
+        "prompt": "图1中的人物在雨后街道上介绍沿途景色，声音参考音频1。",
+        "media": [
+          {
+            "type": "reference_image",
+            "url": "https://cdn.example.com/person.jpg"
+          },
+          {
+            "type": "reference_voice",
+            "url": "https://cdn.example.com/voice.mp3"
+          }
+        ]
+      },
+      "parameters": {
+        "duration": 5,
+        "resolution": "768p",
+        "ratio": "9:16"
+      }
+    }
+  },
+  {
+    "id": "compat-text",
+    "title": "文本生成与分辨率",
+    "format": "compatible",
+    "note": "minimax-h3-u24可替换为minimax-h3-u32或minimax-h3-u17；逐项按模型表选择支持的素材。",
+    "body": {
+      "model": "minimax-h3-u24",
+      "prompt": "红色小球在木桌上缓缓滚动，镜头固定。",
+      "seconds": 5,
+      "size": "864x480"
+    }
+  },
+  {
+    "id": "compat-first-last",
+    "title": "H3首尾帧",
+    "format": "compatible",
+    "note": "",
+    "body": {
+      "model": "minimax-h3",
+      "prompt": "人物从首帧位置向前走，结束画面与尾帧一致。",
+      "seconds": 5,
+      "size": "864x480",
+      "input_reference": "https://cdn.example.com/first.jpg",
+      "metadata": {
+        "last_frame_url": "https://cdn.example.com/last.jpg"
+      }
+    }
+  },
+  {
+    "id": "compat-reference",
+    "title": "H3人物图与参考声音",
+    "format": "compatible",
+    "note": "U32可以参考图片，但不能传reference_audios；U17只接受文本。",
+    "body": {
+      "model": "minimax-h3-u24",
+      "prompt": "保持图1的人物形象，参考音频1的声音进行讲述。",
+      "seconds": 5,
+      "size": "864x480",
+      "metadata": {
+        "reference_images": [
+          "https://cdn.example.com/person.jpg"
+        ],
+        "reference_audios": [
+          "https://cdn.example.com/voice.mp3"
+        ]
+      }
+    }
+  },
+  {
+    "id": "compat-fast",
+    "title": "H3加速文生",
+    "format": "compatible",
+    "note": "加速方式只用于文生，不与首帧或参考素材组合。",
+    "body": {
+      "model": "minimax-h3",
+      "prompt": "日落时分，一只纸船缓缓漂过湖面。",
+      "seconds": 5,
+      "size": "864x480",
+      "metadata": {
+        "variant": "fast"
+      }
+    }
+  },
+  {
+    "id": "compat-hybrid",
+    "title": "H3 X首尾帧与参考素材组合",
+    "format": "compatible",
+    "note": "首尾帧约束和人物/动作参考分别提供，不能把同一参考角色图默认为尾帧。",
+    "body": {
+      "model": "minimax-h3-x",
+      "prompt": "保持图1的人物外观，参考视频1的步态，从首帧走到尾帧。",
+      "seconds": 5,
+      "size": "864x480",
+      "input_reference": "https://cdn.example.com/first.jpg",
+      "metadata": {
+        "mode": "ref2va",
+        "last_frame_url": "https://cdn.example.com/last.jpg",
+        "reference_images": [
+          "https://cdn.example.com/person.jpg"
+        ],
+        "reference_videos": [
+          "https://cdn.example.com/motion.mp4"
+        ]
+      }
+    }
+  },
+  {
+    "id": "compat-wan-first",
+    "title": "Wan首帧与长边档位",
+    "format": "compatible",
+    "note": "此型号按参考图比例输出。480表示长边档位，不是固定480×288；不需要同时传size。",
+    "body": {
+      "model": "wan2.2",
+      "prompt": "画面中的小船缓缓前行，保持画面稳定。",
+      "seconds": 5,
+      "input_reference": "https://cdn.example.com/first.jpg",
+      "metadata": {
+        "resolution": 480
+      }
+    }
+  },
+  {
+    "id": "compat-wan-text",
+    "title": "Wan文本生成",
+    "format": "compatible",
+    "note": "不支持图片、音频或视频参考；成片没有音轨。",
+    "body": {
+      "model": "wan2.1",
+      "prompt": "一只纸船漂过平静的湖面。",
+      "seconds": 5,
+      "size": "832x480",
+      "metadata": {
+        "fps": 16
+      }
+    }
+  },
+  {
+    "id": "compat-ltx-first",
+    "title": "LTX首帧音画",
+    "format": "compatible",
+    "note": "",
+    "body": {
+      "model": "ltx-2.3",
+      "prompt": "人物沿林间小路缓步前行，镜头跟拍。",
+      "seconds": 5,
+      "size": "768x448",
+      "input_reference": "https://cdn.example.com/first.jpg",
+      "metadata": {
+        "fps": 30
+      }
+    }
+  },
+  {
+    "id": "compat-grid",
+    "title": "LTX四宫格",
+    "format": "compatible",
+    "note": "上传一张2×2四宫格图片，画面依次为左上、右上、左下、右下；不是四张独立参考图。",
+    "body": {
+      "model": "ltx-2.3-grid",
+      "prompt": "按四幅画面的顺序，表现人物进入庭院、停下、转身、离开的过程。",
+      "seconds": 4,
+      "size": "512x512",
+      "input_reference": "https://cdn.example.com/grid-2x2.jpg"
+    }
+  },
+  {
+    "id": "compat-avatar",
+    "title": "LTX数字人配音",
+    "format": "compatible",
+    "note": "提供一张人物图和一段覆盖生成时长的完整配音；不是仅提供一小段音色样本。",
+    "body": {
+      "model": "ltx-2.3-avatar",
+      "prompt": "人物正对镜头自然讲述，面部表情柔和。",
+      "seconds": 5,
+      "size": "576x1024",
+      "input_reference": "https://cdn.example.com/presenter.jpg",
+      "metadata": {
+        "reference_audios": [
+          "https://cdn.example.com/speech.mp3"
+        ]
+      }
+    }
+  },
+  {
+    "id": "compat-ltx-last",
+    "title": "LTX X首尾帧",
+    "format": "compatible",
+    "note": "宽高按64对齐，此型号使用25fps；不要套用其他LTX变种的默认值。",
+    "body": {
+      "model": "ltx-2.3-x",
+      "prompt": "从清晨的花园平稳移动到尾帧中的凉亭。",
+      "seconds": 5,
+      "size": "768x448",
+      "input_reference": "https://cdn.example.com/first.jpg",
+      "metadata": {
+        "last_frame_url": "https://cdn.example.com/last.jpg",
+        "fps": 25
+      }
+    }
+  }
+]

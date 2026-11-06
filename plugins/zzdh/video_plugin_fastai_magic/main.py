@@ -31,7 +31,7 @@ DEFAULTS = {"api_key": "", "model": "sd-2-c1", "duration": 4, "ratio": "16:9", "
 
 
 def get_info():
-    return {"name": "FastAiApi 视频", "description": "魔法与显卡视频，按模型选择参数和参考素材", "version": "1.1.0", "author": "FastAiApi"}
+    return {"name": "FastAiApi 视频", "description": "魔法与显卡视频，按模型选择参数和参考素材", "version": "1.1.1", "author": "FastAiApi"}
 
 
 def get_params():
@@ -60,7 +60,7 @@ def list_models(key=""):
                 continue
             item = dict(saved)
             for field in ("description", "tags"):
-                item[field] = current[name].get(field) or saved.get(field, "")
+                item[field] = saved.get(field, "")
             match = re.search(r'u\("(requests|seconds)"\)\s*\*\s*(\d+(?:\.\d+)?)', current[name].get("billing_expr", ""))
             if match:
                 item["model_price"] = float(match.group(2))
@@ -214,7 +214,7 @@ def gpu_payload(model, params, prompt, duration, resolution, ratio, media):
             raise RuntimeError("参考素材数量超过当前模型模式限制")
     if rule.get("audio_required") and len(roles["reference_voice"]) != 1:
         raise RuntimeError("数字人需要一段覆盖生成时长的完整配音")
-    metadata = {"channel": model["channel"]}
+    metadata = {}
     payload = {"model": model["model_name"], "prompt": prompt, "seconds": int(duration), "metadata": metadata}
     if rule["dimension_mode"] == "reference":
         metadata["resolution"] = int(resolution.rstrip("p"))

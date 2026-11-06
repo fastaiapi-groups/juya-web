@@ -1,14 +1,13 @@
-// QuantumNous/new-api task plugin API v1. The upstream is comfyui-api-wrapper.
 export const meta = {
   apiVersion: 1,
   key: "comfyui-video",
   name: "视频生成服务",
-  version: "1.9.6",
+  version: "1.9.7",
   author: { name: "FastAI" },
   description: { en: "Video generation and reference-based creation", zh: "视频生成与参考素材创作" },
-  baseUrl: "https://comfy.fastaiapi.cloud",
-  upstreams: ["vendor", "new_api"],
-  allowedHosts: ["comfy.fastaiapi.cloud:443"],
+  baseUrl: "https://tumeiapi.com",
+  upstreams: ["new_api"],
+  allowedHosts: ["tumeiapi.com:443"],
   models: ["minimax-h3", "minimax-h3-u17", "minimax-h3-u24", "minimax-h3-u32", "wan2.2", "ltx-2.3", "ltx-2.3-grid", "ltx-2.3-avatar", "wan2.1", "minimax-h3-x", "ltx-2.3-x"],
   fetchMode: "per_task",
   protocols: ["openai_video"],
@@ -34,12 +33,12 @@ function resourceAccountKey(req) {
   return key;
 }
 
-function xiangongAlias(model) {
+function extendedAlias(model) {
   const id = String(model || "").toLowerCase();
   return id === "minimax-h3-x" ? "minimax-h3" : id === "ltx-2.3-x" ? "ltx-2.3" : undefined;
 }
 
-function xiangongRequest(req, model) {
+function extendedRequest(req, model) {
   const metadata = req.metadata === undefined ? {} : req.metadata;
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) throw new Error("metadata must be an object");
   const body = Object.assign({}, req);
@@ -56,32 +55,27 @@ function xiangongRequest(req, model) {
   }
   if (body.seconds !== undefined && body.duration !== undefined && body.seconds !== body.duration) throw new Error("seconds conflicts with duration");
   body.seconds = body.seconds === undefined ? (body.duration === undefined ? 5 : body.duration) : body.seconds;
-  const id = xiangongAlias(model) || String(model || "").toLowerCase();
-  if (!["minimax-h3", "ltx-2.3"].includes(id)) throw new Error("Unsupported Xiangongyun model");
-  if (body.seconds < (id === "minimax-h3" ? 2 : 1) || body.seconds > 15) throw new Error("Unsupported Xiangongyun video duration");
+  const id = extendedAlias(model) || String(model || "").toLowerCase();
+  if (!["minimax-h3", "ltx-2.3"].includes(id)) throw new Error("Unsupported selected video model");
+  if (body.seconds < (id === "minimax-h3" ? 2 : 1) || body.seconds > 15) throw new Error("Unsupported selected video video duration");
   if (body.size === undefined) body.size = String(body.width === undefined ? (id === "minimax-h3" ? 864 : 768) : body.width) + "x" + String(body.height === undefined ? (id === "minimax-h3" ? 480 : 448) : body.height);
   const dimensions = /^(\d{3,4})x(\d{3,4})$/.exec(body.size);
   if (!dimensions) throw new Error("size must be WIDTHxHEIGHT");
   const width = Number(dimensions[1]), height = Number(dimensions[2]), multiple = id === "minimax-h3" ? 32 : 64;
-  if (width < 256 || height < 256 || width > 1920 || height > 1920 || width * height > 1920 * 1088 || width % multiple || height % multiple) throw new Error("Unsupported Xiangongyun video dimensions");
+  if (width < 256 || height < 256 || width > 1920 || height > 1920 || width * height > 1920 * 1088 || width % multiple || height % multiple) throw new Error("Unsupported selected video video dimensions");
   if (body.width !== undefined && body.width !== width || body.height !== undefined && body.height !== height) throw new Error("size conflicts with dimensions");
   if (body.n !== undefined && body.n !== 1) throw new Error("Only n=1 is supported");
   body.model = id;
-  if (body.channel !== undefined && body.channel !== "xiangongyun") throw new Error("Xiangongyun models require the xiangongyun channel");
-  body.channel = "xiangongyun";
   body["async"] = true;
   if (typeof body.prompt !== "string" || !body.prompt.trim() || body.prompt.length > 20000) throw new Error("prompt must contain 1–20000 characters");
   resourceAccountKey(body);
   const allowed = ["model", "channel", "prompt", "seconds", "duration", "size", "input_reference", "first_frame_url", "image_url", "last_frame_url", "reference_images", "reference_videos", "reference_audios", "mode", "variant", "width", "height", "fps", "seed", "steps", "cfg", "negative_prompt", "n", "async", "response_format", "resource_account_key"];
-  for (const field of Object.keys(body)) if (!allowed.includes(field)) throw new Error("Unsupported Xiangongyun parameter: " + field);
-  // Keep OpenAI video fields intact. Wrapper owns workflow and GPU selection.
+  for (const field of Object.keys(body)) if (!allowed.includes(field)) throw new Error("Unsupported selected video parameter: " + field);
   return body;
 }
 
-function isXiangong(req, model) {
-  // Resource keys identify an isolated pool, not its cloud provider. AutoDL
-  // user pools use the same key format as Xiangongyun pools.
-  return !!xiangongAlias(model || req.model) || req.channel === "xiangongyun" || req.metadata && req.metadata.channel === "xiangongyun";
+function isExtended(req, model) {
+  return !!extendedAlias(model || req.model);
 }
 function effectiveRequest(req) {
   const metadata = req.metadata === undefined ? {} : req.metadata;
@@ -106,12 +100,8 @@ function values(req, model) {
   }
   return body;
 }
-
-
-// Legacy semantic fields and aliases work on both wrapper registry versions.
-// Public model names remain owned by the NewAPI host response.
 function upstreamValues(req, model, hasFile) {
-  if (isXiangong(req, model)) return xiangongRequest(req, model);
+  if (isExtended(req, model)) return extendedRequest(req, model);
   const body = values(effectiveRequest(req), model);
   const modelId = String(model || '').toLowerCase();
   if (["minimax-h3", "minimax-h3-u24", "minimax-h3-u32"].includes(modelId) && body.resolution !== undefined) {
@@ -120,8 +110,6 @@ function upstreamValues(req, model, hasFile) {
       const dimensions = {"480p":[864,480],"768p":[1376,768],"1080p":[1920,1088]}[tier];
       body.width = dimensions[0]; body.height = dimensions[1];
     }
-    // Resolution is a public price/size selector; graph adapters receive the
-    // actual dimensions, not an unsupported string-valued GPU control.
     delete body.resolution;
   } else if (typeof body.resolution === "string" && Number.isFinite(Number(body.resolution)) && body.resolution.trim()) {
     body.resolution = Number(body.resolution);
@@ -148,8 +136,6 @@ function upstreamValues(req, model, hasFile) {
     body.model = referenceMode ? "minimax-h3-reference" : imageMode ? "minimax-h3-i2v" : body.variant === "fast" ? "minimax-h3-t2v-fast" : "minimax-h3-t2v";
   } else if (h3) body.model = modelId;
   else body.model = model;
-  // Keep primary Wan/LTX IDs so updated wrappers select their configured GPU
-  // channel. Saved-workflow aliases would fall back to the legacy backend.
   if (body.seconds !== undefined) {
     const seconds = Number(body.seconds);
     if (body.duration !== undefined && Number(body.duration) !== seconds) throw new Error("seconds conflicts with duration");
@@ -164,12 +150,12 @@ function upstreamValues(req, model, hasFile) {
     if (!match) throw new Error("size must be WIDTHxHEIGHT");
     const width = Number(match[1]), height = Number(match[2]);
     if (width < 256 || height < 256 || width > 1920 || height > 1920) throw new Error("size dimensions must be 256–1920");
-    if (model === "wan2.2" && body.channel === "autodl") {
+    if (model === "wan2.2" && body.channel === "managed") {
       const resolution = Math.ceil(Math.max(width, height) / 16) * 16;
       if (body.width !== undefined || body.height !== undefined || (body.resolution !== undefined && Number(body.resolution) !== resolution)) throw new Error("size conflicts with resolution");
       body.resolution = resolution;
     } else {
-      const multiple = model === "wan2.1" || model === "wan2.2" ? 16 : model === "ltx-2.3" && body.channel !== "autodl" ? 64 : 32;
+      const multiple = model === "wan2.1" || model === "wan2.2" ? 16 : model === "ltx-2.3" && body.channel !== "managed" ? 64 : 32;
       for (const pair of [["width", width], ["height", height]]) {
         const aligned = Math.ceil(pair[1] / multiple) * multiple;
         if (body[pair[0]] !== undefined && Number(body[pair[0]]) !== aligned) throw new Error("size conflicts with " + pair[0]);
@@ -183,13 +169,13 @@ function upstreamValues(req, model, hasFile) {
 }
 
 export function buildSubmitRequest(ctx) {
+  if (!ctx.upstream || ctx.upstream.kind !== "new_api") throw new Error("Select the NewAPI connection profile");
   h3BillingResolution(ctx);
   const req = ctx.requestBody || {};
+  if (req.channel !== undefined || (req.metadata || {}).channel !== undefined) throw new Error("Select a public model; routing options are not accepted");
   if (!String(req.prompt || "").trim()) throw new Error("prompt is required");
   let body = upstreamValues(req, ctx.upstreamModel, (ctx.files || []).length > 0);
   if (ctx.upstream && ctx.upstream.kind === "new_api") {
-    // A downstream gateway addresses the upstream's public model, not the
-    // Wrapper's private workflow aliases. Validation above still applies.
     body = Object.assign(effectiveRequest(req), {model: ctx.upstreamModel});
     body["async"] = true;
   }
@@ -234,8 +220,6 @@ export function parseTaskResult(ctx, body) {
   if (body.progress > 0 && body.progress <= 100) result.progress = body.progress + "%";
   return result;
 }
-
-// H3 price tiers share the published MiniMax resolution names.
 function h3BillingResolution(ctx) {
   const req = effectiveRequest(ctx.requestBody || {});
   const model = String(ctx.model || req.model || ctx.upstreamModel || "").toLowerCase();
@@ -256,9 +240,9 @@ function h3BillingResolution(ctx) {
 
 export function extractUsage(ctx) {
   const req = effectiveRequest(ctx.requestBody || {});
-  if (isXiangong(req, ctx.model || ctx.upstreamModel)) {
-    const body = xiangongRequest(req, ctx.upstreamModel || ctx.model);
-    if (xiangongAlias(ctx.model) || xiangongAlias(ctx.upstreamModel)) return { seconds: body.seconds };
+  if (isExtended(req, ctx.model || ctx.upstreamModel)) {
+    const body = extendedRequest(req, ctx.upstreamModel || ctx.model);
+    if (extendedAlias(ctx.model) || extendedAlias(ctx.upstreamModel)) return { seconds: body.seconds };
     const shortEdge = Math.min(body.width || 864, body.height || 480);
     const size = body.size && /^(\d+)x(\d+)$/.exec(body.size);
     const edge = size ? Math.min(Number(size[1]), Number(size[2])) : shortEdge;
@@ -282,12 +266,8 @@ export function listArtifacts(task) {
 
 export function buildContentRequest(ctx) {
   if (ctx.artifactKey !== "video") throw new Error("artifact_not_found");
-  // Artifact downloads enforce SSRF protection independently of task submission.
-  // This deployment uses an internal address for dispatch and its fixed public
-  // TLS address for artifacts, whose host enforces public-address SSRF checks.
-  // Do not derive a credential destination from caller-supplied metadata.
   const configuredBase = String(ctx.baseUrl).replace(/\/+$/, "");
-  const baseUrl = configuredBase === "http://fastai-comfy-gateway:8000" ? "https://comfy.fastaiapi.cloud" : configuredBase;
+  const baseUrl = configuredBase;
   return { url: baseUrl + "/v1/videos/" + encodeURIComponent(ctx.upstreamTaskId) + "/content",
            method: ctx.clientRequest.method, headers: { Authorization: "Bearer " + ctx.apiKey } };
 }
@@ -320,8 +300,8 @@ export const protocols = {
           if (!req.metadata || typeof req.metadata !== "object" || Array.isArray(req.metadata)) throw new Error("metadata must be an object");
         }
       }
-      if (isXiangong(req, ctx.model)) {
-        req = xiangongRequest(req, ctx.model);
+      if (isExtended(req, ctx.model)) {
+        req = extendedRequest(req, ctx.model);
         return { kind: "submit", model: ctx.model,
                  action: req.reference_images || req.reference_videos || req.reference_audios ? "reference_to_video" : hasFile || req.input_reference || req.first_frame_url ? "image_to_video" : "text_to_video",
                  requestBody: req };
@@ -336,14 +316,18 @@ export const protocols = {
     },
     render: function (ctx, task) {
       const statuses = { NOT_START: "queued", SUBMITTED: "queued", QUEUED: "queued", IN_PROGRESS: "in_progress", SUCCESS: "completed", FAILURE: "failed" };
-      const result = Object.assign({}, task.data || {}, { id: task.task_id, object: "video", status: statuses[task.status] || "queued" });
+      const saved = task.data || {};
+      const result = { id: task.task_id, object: "video", status: statuses[task.status] || "queued" };
+      for (const field of ["model", "mode", "created_at", "completed_at", "progress", "seconds", "size", "stage", "timings"]) {
+        if (saved[field] !== undefined) result[field] = saved[field];
+      }
       if (ctx.model) result.model = ctx.model;
       if (task.status === "SUCCESS") {
         const content = "/v1/videos/" + encodeURIComponent(task.task_id) + "/content";
         result.url = result.video_url = result.content_url = content;
-        result.data = (Array.isArray(result.data) ? result.data : [{mime_type:"video/mp4"}]).map(item => item.b64_json ? item : Object.assign({},item,{url:content}));
+        result.data = (Array.isArray(saved.data) ? saved.data : [{mime_type:"video/mp4"}]).map(item => item.b64_json ? {b64_json:item.b64_json,mime_type:item.mime_type||"video/mp4"} : {filename:item.filename||"video.mp4",mime_type:item.mime_type||"video/mp4",url:content});
       }
-      result.seconds = Number(result.seconds || (result.parameters || {}).duration || result.requested_seconds) || undefined;
+      result.seconds = Number(result.seconds || (saved.parameters || {}).duration || saved.requested_seconds) || undefined;
       if (task.finish_time && task.submit_time) result.generation_seconds = Math.max(0, task.finish_time - task.submit_time);
       if (task.status === "FAILURE") result.error = { code: "video_generation_failed", message: task.fail_reason || "Video generation failed" };
       return result;

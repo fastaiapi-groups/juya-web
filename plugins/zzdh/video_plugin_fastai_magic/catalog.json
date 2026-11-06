@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "date": "2026-11-06",
   "api_base_url": "https://tumeiapi.com",
   "group": "按模型权限选择分组",
@@ -297,10 +297,9 @@
     },
     {
       "model_name": "minimax-h3",
-      "description": "MiniMax H3 · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "MiniMax H3：文生、首帧、首尾帧及多参考素材，支持音画生成。",
+      "tags": "视频模型,首尾帧",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "480p",
         "768p",
@@ -668,10 +667,9 @@
     },
     {
       "model_name": "minimax-h3-u24",
-      "description": "MiniMax H3 U24 · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "MiniMax H3 U24：支持文本、人物/场景参考图和音频参考，24fps。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "480p",
         "768p",
@@ -840,10 +838,9 @@
     },
     {
       "model_name": "minimax-h3-u32",
-      "description": "MiniMax H3 U32 · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "MiniMax H3 U32：支持文本及人物/场景参考图，24fps；不接受参考音频。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "480p",
         "768p",
@@ -1012,10 +1009,9 @@
     },
     {
       "model_name": "minimax-h3-u17",
-      "description": "MiniMax H3 U17（常规缩放导出） · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "MiniMax H3 U17：纯文本生成，24fps，不接受参考素材。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "480p",
         "768p",
@@ -1118,10 +1114,9 @@
     },
     {
       "model_name": "wan2.2",
-      "description": "Wan 2.2 · SmoothMixV2 · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "Wan 2.2：首帧图生视频，按参考图比例确定画幅，16fps，无音轨。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "480",
         "768",
@@ -1213,10 +1208,9 @@
     },
     {
       "model_name": "ltx-2.3",
-      "description": "LTX 2.3 · 高动态图生视频 · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "LTX 2.3：首帧图生视频，默认30fps，支持音画生成。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "480p",
         "768p",
@@ -1320,10 +1314,9 @@
     },
     {
       "model_name": "ltx-2.3-grid",
-      "description": "LTX 2.3 · 四宫格 · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "LTX 2.3 四宫格：一张2×2图片，依次使用左上、右上、左下、右下，24fps。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "512p",
         "768p",
@@ -1422,10 +1415,9 @@
     },
     {
       "model_name": "ltx-2.3-avatar",
-      "description": "LTX 2.3 · 电商数字人 · 显卡视频；参数按当前模型能力校验",
-      "tags": "视频模型,显卡视频",
+      "description": "LTX 2.3 数字人：一张人物图与一段完整配音，30fps。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "576p"
       ],
@@ -1523,10 +1515,9 @@
     },
     {
       "model_name": "minimax-h3-x",
-      "description": "MiniMax H3 · 仙宫云显卡；使用独立公开模型名",
-      "tags": "视频模型,仙宫云",
+      "description": "MiniMax H3 X：首尾帧、多参考图、音频、视频和Hybrid组合。",
+      "tags": "视频模型,首尾帧",
       "protocol": "openai_video",
-      "channel": "xiangongyun",
       "supported_resolutions": [
         "480p",
         "768p",
@@ -1928,10 +1919,9 @@
     },
     {
       "model_name": "ltx-2.3-x",
-      "description": "LTX 2.3 · 22B · 仙宫云显卡；使用独立公开模型名",
-      "tags": "视频模型,仙宫云",
+      "description": "LTX 2.3 X：首尾帧约束，固定25fps，宽高按64对齐。",
+      "tags": "视频模型,首尾帧",
       "protocol": "openai_video",
-      "channel": "xiangongyun",
       "supported_resolutions": [
         "448p",
         "704p",
@@ -2042,10 +2032,9 @@
     },
     {
       "model_name": "wan2.1",
-      "description": "Wan 2.1 文生视频，原生工作流，与面板共用队列；无音轨",
-      "tags": "GPU视频,AutoDL",
+      "description": "Wan 2.1：文本生成视频，默认16fps，无音轨。",
+      "tags": "视频模型",
       "protocol": "openai_video",
-      "channel": "autodl",
       "supported_resolutions": [
         "480p",
         "768p",

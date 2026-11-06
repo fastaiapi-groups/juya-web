@@ -38,14 +38,14 @@ new_readme='''FastAiApi 魔法视频 new-api 接入包 1.0.0
 安装器不保存或导出管理员凭据，不自动提交生成测试。
 文档：https://fastaiapi.cloud/help/magic-video/
 '''
-zz_readme='''FastAiApi 视频 字字动画统一插件 1.1.0
+zz_readme='''FastAiApi 视频 字字动画统一插件 1.1.1
 
 将 video_plugin_fastai_magic 文件夹放入字字动画的 _internal/plugins/video_plugins/，重启客户端。
 选择“FastAiApi 视频”，填写 tumeiapi.com 的 API Key。原魔法视频与 GPU 视频合并在一个插件内；模型列表按 Key 权限加载。
-模型、时长、FPS、分辨率、首尾帧、参考图/音频等按模型切换；不同渠道能力不能混用。
-GPU 模型通过 NewAPI → Go Wrapper → 显卡；本地素材编码后由 Go 转发，图片在提交显卡前转为实际 JPEG。
+模型、时长、FPS、分辨率、首尾帧、参考图/音频等按模型切换；不同型号能力不能混用。
+模型自动接入，本地素材自动处理；图片提交前转换为JPEG。
 原魔法视频仍使用原接口和素材上传流程。单个本地文件最多 10MB，总量过大请使用公网 URL。
-可选填写 rgpu_… 用户资源池 Key 使用自己的显卡；无需向插件提供云账号 Token 或 Wrapper 管理密钥。
+可选填写 rgpu_… 用户资源池 Key 使用自己的显卡；无需向插件提供其他服务的管理密钥。
 只创建一次任务，超时或断网后保留 .task.json，重新运行会继续查询。创建结果不确定时先检查控制台，勿直接重试。
 成功后自动保存 mp4，并打印完整的本站下载 URL。下载需本站 Key，不是免鉴权直链。
 这是现有字字动画 SDK 的客户端插件，不需要部署 Python 服务。
@@ -64,11 +64,11 @@ client_root=ROOT/'plugins/zzdh/video_plugin_fastai_magic'
 files={}
 for name in ['main.py','info.json','catalog.json','ui/index.html','ui/app.js','ui/assets/jimeng.svg','ui/assets/alibaba.svg','ui/assets/lobe-icons-LICENSE.txt']:files['video_plugin_fastai_magic/'+name]=(client_root/name).read_bytes()
 files['video_plugin_fastai_magic/安装说明.txt']=zz_readme
-zz=DOWNLOADS/'fastai-video-zzdh-1.1.0.zip';archive(zz,files)
+zz=DOWNLOADS/'fastai-video-zzdh-1.1.1.zip';archive(zz,files)
 new=DOWNLOADS/'fastai-magic-video-newapi-1.0.0.zip';archive(new,{'fastai-magic-video-newapi/plugin.js':SOURCE,'fastai-magic-video-newapi/catalog.json':json.dumps(CAT,ensure_ascii=False,indent=2),'fastai-magic-video-newapi/install.js':ui,'fastai-magic-video-newapi/installer.html':installer,'fastai-magic-video-newapi/安装说明.txt':new_readme})
 gpu_root=ROOT/'plugins/gpu-video'
-gpu=DOWNLOADS/'fastai-gpu-video-newapi-1.9.6.zip'
-archive(gpu,{'fastai-gpu-video-newapi/'+p.name:p.read_bytes() for p in gpu_root.iterdir() if p.is_file()})
+gpu=DOWNLOADS/'fastai-gpu-video-newapi-1.9.7.zip'
+archive(gpu,{'fastai-gpu-video-newapi/'+name:(gpu_root/name).read_bytes() for name in ['README.md','comfyui-video.js','plugin-upload.json','downstream-channel-template.json','gpu-video-api.md','acceptance-20261106.md']})
 (OUT/'gpu-video-api.md').write_bytes((gpu_root/'gpu-video-api.md').read_bytes())
 (OUT/'acceptance-20261106.md').write_bytes((gpu_root/'acceptance-20261106.md').read_bytes())
 (DOWNLOADS/'demo.sh').write_bytes((ROOT/'plugins/magic-video/demo.sh').read_bytes())
@@ -86,8 +86,28 @@ for m in CAT['models']:
  tags=''.join('<span class="model-tag">'+esc(t)+'</span>' for t in m['tags'].split(',') if t)
  caps=f"{m['supported_duration']['min']}–{m['supported_duration']['max']} 秒 · {' / '.join(m['supported_resolutions'])} · 参考上限 {m['max_reference_images']} 图 / {m['max_reference_videos']} 视频 / {m['max_reference_audios']} 音频"
  rows.append(f'<section class="model-spec"><div class="model-top"><div class="model-id"><img src="assets/{icon}.svg" alt="" width="38" height="38"><strong>{esc(m["model_name"])}</strong></div><span class="model-price">¥{m["model_price"]:g}<small>/{unit}</small></span></div><p>{esc(m["description"])}</p><p class="spec-line">{esc(caps)}</p><div class="model-tags">{tags}</div></section>')
-toc=''.join(f'<a class="toc-h2" href="#{key}">{name}</a>' for key,name in [('quickstart','1. 地址与鉴权'),('models','2. 模型、规格与价格'),('request-fields','3. 请求与参考素材'),('query-download','4. 查询与下载'),('plugins','5. 下载插件'),('demo','6. 完整示例'),('errors','7. 常见问题')])
-page=(ROOT/'plugins/magic-video/page.html').read_text().replace('__TOC__',toc).replace('__MODEL_ROWS__','\n'.join(rows)).replace('__INSTALL_BOOKMARK__',html.escape(bookmark,quote=True)).replace('__ZZDH_SHA__',sha(zz)).replace('__NEWAPI_SHA__',sha(new)).replace('__GPU_SHA__',sha(gpu)).replace('__DEMO__',html.escape((ROOT/'plugins/magic-video/demo.sh').read_text()))
+PUBLIC_CAT=json.loads((client_root/'catalog.json').read_text())
+examples=json.loads((ROOT/'plugins/magic-video/examples.json').read_text())
+example_for={'minimax-h3':'compat-first-last','minimax-h3-u24':'compat-text','minimax-h3-u32':'compat-text','minimax-h3-u17':'compat-text','wan2.2':'compat-wan-first','wan2.1':'compat-wan-text','ltx-2.3':'compat-ltx-first','ltx-2.3-grid':'compat-grid','ltx-2.3-avatar':'compat-avatar','minimax-h3-x':'compat-hybrid','ltx-2.3-x':'compat-ltx-last','mx-h3':'vertical-h3'}
+overview=[]
+for m in PUBLIC_CAT['models']:
+ name=m['model_name'];compat=m.get('protocol')=='openai_video'
+ if compat:
+  modes=' / '.join(m['generation_modes']);fps=m['fps'];caps=modes+'；'+str(fps['default'])+'fps'+('（可调）' if fps['min']!=fps['max'] else '')
+ else:
+  caps='文生 / 首尾帧 / 参考；≤'+str(m['max_reference_images'])+'图'
+  if m['max_reference_audios']:caps+=' + '+str(m['max_reference_audios'])+'音频'
+  if m['max_reference_videos']:caps+=' + '+str(m['max_reference_videos'])+'视频'
+ duration=m['supported_duration'];res=' / '.join(m['supported_resolutions']);ratio=' / '.join(m['supported_ratios'])
+ overview.append('<tr data-public-model="'+html.escape(name)+'"><td><code>'+html.escape(name)+'</code></td><td>'+html.escape(caps)+'</td><td>'+str(duration['min'])+'–'+str(duration['max'])+'秒</td><td>'+html.escape(res)+'<small>'+html.escape(ratio)+'</small></td><td><a href="#'+example_for.get(name,'text-video')+'">'+('兼容请求' if compat else '标准请求')+' ↗</a></td></tr>')
+example_rows=[]
+for e in examples:
+ detail='<h3 id="'+e['id']+'">'+html.escape(e['title'])+'</h3>'
+ if e['note']:detail+='<p>'+html.escape(e['note'])+'</p>'
+ detail+='<pre><code class="language-json">'+html.escape(json.dumps(e['body'],ensure_ascii=False,indent=2))+'</code></pre>'
+ example_rows.append(detail)
+toc=''.join(f'<a class="toc-h2" href="#{key}">{name}</a>' for key,name in [('quickstart','1. 地址与鉴权'),('models','2. 支持模型清单'),('request-fields','3. 字段与素材类型'),('examples','4. 调用示例'),('query-download','5. 查询与下载'),('plugins','6. 插件下载'),('demo','7. 完整运行脚本'),('errors','8. 常见问题')])
+page=(ROOT/'plugins/magic-video/page.html').read_text().replace('__TOC__',toc).replace('__MODEL_TABLE__','\n'.join(overview)).replace('__MODEL_ROWS__','\n'.join(rows)).replace('__EXAMPLE_ROWS__','\n'.join(example_rows)).replace('__INSTALL_BOOKMARK__',html.escape(bookmark,quote=True)).replace('__ZZDH_SHA__',sha(zz)).replace('__NEWAPI_SHA__',sha(new)).replace('__GPU_SHA__',sha(gpu)).replace('__DEMO__',html.escape((ROOT/'plugins/magic-video/demo.sh').read_text()))
 assert '__' not in page
 (OUT/'index.html').write_text(page)
-print(json.dumps({'models':len(CAT['models']),'bookmarklet_bytes':len(bookmark),'downloads':{p.name:{'bytes':p.stat().st_size,'sha256':sha(p)} for p in [zz,new,gpu]}},ensure_ascii=False,indent=2))
+print(json.dumps({'models':len(PUBLIC_CAT['models']),'bookmarklet_bytes':len(bookmark),'downloads':{p.name:{'bytes':p.stat().st_size,'sha256':sha(p)} for p in [zz,new,gpu]}},ensure_ascii=False,indent=2))

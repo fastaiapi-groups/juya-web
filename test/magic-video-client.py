@@ -95,7 +95,7 @@ class ClientContract(unittest.TestCase):
                 self.assertEqual(payload['model'],'minimax-h3-u24')
                 self.assertEqual(payload['size'],'1376x768')
                 self.assertEqual(payload['seconds'],5)
-                self.assertEqual(payload['metadata']['channel'],'autodl')
+                self.assertNotIn('channel',payload['metadata'])
                 self.assertTrue(payload['metadata']['reference_images'][0].startswith('data:image/png;base64,'))
                 self.assertEqual(payload['metadata']['resource_account_key'],'rgpu_'+'a'*64)
                 vendor_upload.assert_not_called()
@@ -135,7 +135,7 @@ class ClientContract(unittest.TestCase):
     def test_wan21_uses_common_panel_queue_with_native_dimensions(self):
         model=client.MODELS['wan2.1']
         body=client.gpu_payload(model,{'generation_mode':'文生视频'},'scene',1,'480p','16:9',[])
-        self.assertEqual(body['metadata']['channel'],'autodl')
+        self.assertNotIn('channel',body['metadata'])
         self.assertEqual(body['metadata']['fps'],16)
         self.assertEqual(body['size'],'848x480')
         self.assertNotIn('input_reference',body)
