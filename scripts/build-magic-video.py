@@ -70,6 +70,7 @@ gpu_root=ROOT/'plugins/gpu-video'
 gpu=DOWNLOADS/'fastai-gpu-video-newapi-1.9.6.zip'
 archive(gpu,{'fastai-gpu-video-newapi/'+p.name:p.read_bytes() for p in gpu_root.iterdir() if p.is_file()})
 (OUT/'gpu-video-api.md').write_bytes((gpu_root/'gpu-video-api.md').read_bytes())
+(OUT/'acceptance-20261106.md').write_bytes((gpu_root/'acceptance-20261106.md').read_bytes())
 (DOWNLOADS/'demo.sh').write_bytes((ROOT/'plugins/magic-video/demo.sh').read_bytes())
 (DOWNLOADS/'plugin.js').write_text(SOURCE)
 (DOWNLOADS/'install.js').write_text(ui)
