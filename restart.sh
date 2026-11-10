@@ -4,18 +4,15 @@ umask 077
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 no_pull=false
-case "${1:-}" in
-  '') ;;
-  --no-pull) no_pull=true ;;
-  -h|--help)
-    echo '用法：./restart.sh [--no-pull]'
-    echo '默认：快进拉取当前分支 → 检查配置 → 构建 → 备份 PostgreSQL → 启动并验证。'
-    echo '--no-pull：用于已快进到指定版本的发布或本机调试。'
-    echo '支持 ENV_FILE、COMPOSE_FILE、COMPOSE_PROJECT_NAME、DOCKER_BIN、DOCKER_COMPOSE_BIN。'
-    exit 0 ;;
-  *) echo "未知参数：$1" >&2; exit 2 ;;
-esac
-if (( $# > 1 )); then echo '一次只接受一个参数。' >&2; exit 2; fi
+website_only=false
+for arg in "$@"; do
+  case "$arg" in
+    --no-pull) no_pull=true ;;
+    --website-static) website_only=true ;;
+    -h|--help) echo '用法：./restart.sh [--no-pull] [--website-static]'; exit 0 ;;
+    *) echo "未知参数：$arg" >&2; exit 2 ;;
+  esac
+done
 command -v python3 >/dev/null || { echo '需要 Python 3 初始化私有配置。' >&2; exit 1; }
 mkdir .restart.lock 2>/dev/null || { echo '另一个更新正在执行；确认没有更新进程后才能移除 .restart.lock。' >&2; exit 1; }
 trap 'rmdir .restart.lock 2>/dev/null || true' EXIT
@@ -37,6 +34,7 @@ if ! "$no_pull"; then
     echo '更新脚本已变化，重新加载新入口…'
     rmdir .restart.lock
     trap - EXIT
+    if "$website_only"; then exec bash ./restart.sh --no-pull --website-static; fi
     exec bash ./restart.sh --no-pull
   fi
 fi
@@ -68,6 +66,15 @@ else
 fi
 # A standalone Compose binary needs the same permission prefix as Docker.
 if [[ "${docker_cmd[0]}" == sudo && "${compose[0]}" != sudo ]]; then compose=(sudo -n "${compose[@]}"); fi
+
+if "$website_only"; then
+  if [[ "${docker_cmd[0]}" == sudo ]]; then
+    sudo -n env DOCKER_BIN="${docker_cmd[2]}" bash scripts/publish-website.sh
+  else
+    DOCKER_BIN="${docker_cmd[0]}" bash scripts/publish-website.sh
+  fi
+  exit 0
+fi
 
 env_file=${ENV_FILE:-.env}
 project=$(python3 scripts/configure-env.py --env-file "$env_file" --example .env.example --project-name)

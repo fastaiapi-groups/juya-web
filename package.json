@@ -8,7 +8,9 @@
   "scripts": {
     "start": "node server/index.mjs",
     "test": "node test/run.mjs",
-    "check": "node --check server/app.mjs && node --check server/store.mjs && node --check server/index.mjs && node --check server/set-admin.mjs && node --check public/merchant/merchant.js && node --check public/merchant/register.js"
+    "check": "node --check server/app.mjs && node --check server/store.mjs && node --check server/index.mjs && node --check server/set-admin.mjs && node --check public/merchant/merchant.js && node --check public/merchant/register.js",
+    "build:pages": "npm --prefix frontend run build",
+    "test:pages": "cd frontend && vitest run --config vitest.updates.config.ts && vitest run --config vitest.recharge.config.ts"
   },
   "dependencies": {
     "pg": "8.23.1"

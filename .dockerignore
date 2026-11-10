@@ -14,3 +14,7 @@ test-results
 backups
 .restart.lock
 **/__pycache__
+
+.local
+frontend/node_modules
+frontend/dist

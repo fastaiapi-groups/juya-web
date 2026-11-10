@@ -15,3 +15,6 @@ test-results/
 backups/
 .restart.lock/
 __pycache__/
+
+.local/
+frontend/dist/

@@ -6,6 +6,9 @@ services:
     depends_on:
       merchant:
         condition: service_healthy
+    networks:
+      - default
+      - design-pages
     ports:
       - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6660}:80"
     volumes:
@@ -84,3 +87,7 @@ volumes:
 networks:
   merchant-db:
     internal: true
+
+  design-pages:
+    external: true
+    name: design_default

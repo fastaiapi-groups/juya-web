@@ -1,6 +1,14 @@
+FROM node:24-alpine AS frontend
+WORKDIR /app
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
 FROM nginx:1.28-alpine
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY public/ /usr/share/nginx/html/
+COPY --from=frontend /app/dist/ /usr/share/nginx/html/fastaiui/
 COPY config/site.json /etc/fastai/site.json
 RUN mkdir -p /srv/downloads \
     && find /usr/share/nginx/html -type d -exec chmod 755 {} + \
