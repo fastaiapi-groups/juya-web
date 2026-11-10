@@ -33,6 +33,14 @@ mv "$backup/new-html/fastaiui/index.html" "$backup/new-ui-index.html"
 "$docker" cp "$backup/new-index.html" "$target:/usr/share/nginx/html/index.html.next"
 "$docker" cp "$backup/new-ui-index.html" "$target:/usr/share/nginx/html/fastaiui/index.html.next"
 "$docker" exec "$target" sh -c 'find /usr/share/nginx/html -type d -exec chmod 755 {} +; find /usr/share/nginx/html -type f -exec chmod 644 {} +; mv /usr/share/nginx/html/index.html.next /usr/share/nginx/html/index.html; mv /usr/share/nginx/html/fastaiui/index.html.next /usr/share/nginx/html/fastaiui/index.html; nginx -s reload'
-"$docker" exec "$target" wget -q -O /dev/null http://127.0.0.1/fastaiui/downloads/manju
-"$docker" exec "$target" wget -q -O /dev/null http://127.0.0.1/api/merchant/healthz
+# reload returns before new workers start accepting; allow that bounded handoff.
+healthy=false
+for attempt in {1..30}; do
+  if "$docker" exec "$target" wget -q -O /dev/null http://127.0.0.1/fastaiui/downloads/manju &&
+     "$docker" exec "$target" wget -q -O /dev/null http://127.0.0.1/api/merchant/healthz; then
+    healthy=true; break
+  fi
+  sleep 0.2
+done
+"$healthy" || { echo 'Website post-reload health check failed; rollback files retained.' >&2; exit 1; }
 printf 'Published website %s; rollback files: %s\n' "$version" "$backup"
