@@ -3,4 +3,4 @@
 
 .portal-section{padding:48px 0 70px;border-bottom:1px solid var(--line)}.portal-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.portal-links a{padding:22px;border:1px solid var(--line);border-radius:10px;background:#121b20}.portal-links a:hover{border-color:#bde8cb66}.portal-links b{display:block;font-size:15px;font-weight:500}.portal-links span{display:block;margin-top:9px;font-size:12px;color:var(--muted);line-height:1.8}.product-card.manju{background:linear-gradient(145deg,#19251f,#121b20)}@media(max-width:1000px){.portal-links{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:760px){.portal-links{grid-template-columns:1fr}.portal-section{padding:32px 0 48px}header{height:auto;min-height:80px;flex-wrap:wrap;gap:14px;padding-top:18px;padding-bottom:18px}header nav{gap:12px;flex-wrap:wrap}footer>div{flex-wrap:wrap}}
 
-.download-clients{min-width:0}.download-clients>.manju-download-entry{border-color:#bde8cb55;background:#bde8cb0c;margin-bottom:24px}.download-client-label{font-size:12px;color:var(--muted);margin-bottom:12px}
+.manju-download-section .manju-download-entry{border-color:#bde8cb55;background:#bde8cb0c}
