@@ -21,6 +21,9 @@ trap '"$docker" rm "$temp" >/dev/null 2>&1 || true' EXIT
 if ! "$docker" inspect "$target" --format '{{json .NetworkSettings.Networks}}' | grep -q '"design_default"'; then
   "$docker" network connect design_default "$target"
 fi
+if ! "$docker" inspect "$target" --format '{{json .NetworkSettings.Networks}}' | grep -q '"sub2api-deploy_sub2api-network"'; then
+  "$docker" network connect sub2api-deploy_sub2api-network "$target"
+fi
 "$docker" cp "$backup/new-nginx.conf" "$target:/etc/nginx/conf.d/default.conf"
 if ! "$docker" exec "$target" nginx -t; then
   "$docker" cp "$backup/previous-nginx.conf" "$target:/etc/nginx/conf.d/default.conf"

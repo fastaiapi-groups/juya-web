@@ -5,7 +5,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "test:recharge": "vitest run --config vitest.recharge.config.ts"
+    "test:recharge": "vitest run --config vitest.recharge.config.ts",
+    "test:updates": "vitest run --config vitest.updates.config.ts"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^5.2.3",

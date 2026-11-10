@@ -9,6 +9,7 @@ services:
     networks:
       - default
       - design-pages
+      - account-pages
     ports:
       - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6660}:80"
     volumes:
@@ -91,3 +92,7 @@ networks:
   design-pages:
     external: true
     name: design_default
+
+  account-pages:
+    external: true
+    name: sub2api-deploy_sub2api-network

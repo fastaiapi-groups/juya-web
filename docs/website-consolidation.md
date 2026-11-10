@@ -20,3 +20,5 @@
 只对已公布别名的精确同源 Origin 做后端规范化；外部 Origin 原样交给后端拒绝，不关闭 CSRF。HTTP 国内入口登录时仅在该精确 Origin 上移除商户 Cookie 的 Secure 标志，HTTPS 保持 Secure；会话仍 HttpOnly、SameSite=Strict。三个域名会话各自隔离，不能承诺自动跨域登录。
 
 回退文件保存在服务器 `.local/website-publish/<UTC>-<commit>/`；恢复 previous-nginx.conf 并 nginx -t / reload，恢复 previous-html 中对应 HTML；旧哈希不清理。Caddy 同目录 before-website 备份可原样恢复并 validate/reload，Worker 可回退上一版本。老项目仍完整运行。
+
+官网登录入口 `/fastaiui/login?redirect=...` 用于充值、发布管理。原 `/login` 控制台路径保持。认证代理只放行公开设置、原登录和2FA三个接口，继续使用原账号和权限；不新建账号、重置密码或复制数据库。开启验证码时停止本页密码提交，引导到原主站验证，禁止跳过。会话沿用现有前端 bearer token 方案；三个域名之间不自动共享浏览器令牌。

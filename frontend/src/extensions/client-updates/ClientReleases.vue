@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const loginDestination='/fastaiui/login?redirect='+encodeURIComponent(window.location.pathname+window.location.search)
 import {ref,onMounted,computed} from 'vue'
 import {apiClient} from '../../api/client'
 import ManjuDownloads from './ManjuDownloads.vue'
@@ -58,7 +59,7 @@ async function copy(hash:string){try{await navigator.clipboard.writeText(hash);n
     <div v-if="['ready','published'].includes(selected.status)" class="withdraw"><label>撤回原因<input v-model="reason" maxlength="500" placeholder="填写原因，撤回后停止新的分发"/></label><button :disabled="busy||reason.trim().length<2" @click="withdraw">撤回此版本</button></div>
    </div></section></div></section>
   </template>
-  <section v-else-if="admin&&!loading" class="panel empty"><h2>需要管理员权限</h2><p>请先使用本站管理员账号登录后打开版本管理。</p><a class="primary" href="/login">前往登录</a></section>
+  <section v-else-if="admin&&!loading" class="panel empty"><h2>需要管理员权限</h2><p>请先使用本站管理员账号登录后打开版本管理。</p><a class="primary" :href="loginDestination">前往登录</a></section>
  </main><footer>FastAiApi · 自有站点分发 · 签名与 SHA-256 校验</footer>
 </div>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const loginDestination='/fastaiui/login?redirect='+encodeURIComponent(window.location.pathname+window.location.search)
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { apiClient, getAuthToken } from '../../api/client'
 import RechargeAdmin from './RechargeAdmin.vue'
@@ -84,7 +85,7 @@ async function manualRefresh() { error.value = ''; try { await refresh() } catch
   <div class="recharge">
     <header><div class="nav"><a class="brand" href="/fastaiui/recharge"><i>↗</i> 充值中心</a><nav aria-label="充值导航"><button :class="{ active: tab === 'products' }" @click="tab = 'products'">总览</button><button :class="{ active: tab === 'orders' }" @click="tab = 'orders'">充值记录</button><button :class="{ active: tab === 'logs' }" @click="tab = 'logs'">到账日志</button><button v-if="isAdmin" :class="{ active: tab === 'admin' }" @click="tab = 'admin'">充值管理 <small>管理员</small></button><a v-if="isAdmin" class="nav-link" href="/fastaiui/admin/recharge-stats">数据统计 <small>管理员</small></a></nav><a v-if="isAdmin" class="back" href="/fastaiui/admin/client-releases">客户端发布 ↗</a><a class="back" href="/fastaiui/">返回绘画 ↗</a></div></header>
     <main>
-      <section class="page-heading"><div><h1>自动充值</h1><p>选择套餐，按订单金额扫码支付，渠道确认后自动到账。</p></div><div class="identity" v-if="authenticated"><span>{{ email }}</span><span class="role">{{ isAdmin ? '管理员账号' : '仅显示我的数据' }}</span><button class="refresh" @click="manualRefresh">刷新 ↻</button></div><a v-else class="login" href="/login">登录后充值 →</a></section>
+      <section class="page-heading"><div><h1>自动充值</h1><p>选择套餐，按订单金额扫码支付，渠道确认后自动到账。</p></div><div class="identity" v-if="authenticated"><span>{{ email }}</span><span class="role">{{ isAdmin ? '管理员账号' : '仅显示我的数据' }}</span><button class="refresh" @click="manualRefresh">刷新 ↻</button></div><a v-else class="login" :href="loginDestination">登录后充值 →</a></section>
       <div v-if="error" class="alert error" role="alert">{{ error }}<button @click="error = ''">关闭</button></div><div v-if="notice" class="alert" role="status">{{ notice }}<button @click="notice = ''">关闭</button></div><div v-if="offlineChannels.length" class="channel-alert" role="status"><span class="channel-alert-icon">!</span><div><strong>{{ allChannelsOffline ? '支付通道暂时离线' : '部分支付通道暂时离线' }}</strong><small>{{ offlineChannels.join('、') }}当前不可用，请选择在线通道或稍后重试。</small></div><button @click="manualRefresh">重新检测</button></div>
       <section class="metrics"><div><span>当前可用余额</span><strong>${{ balance }}</strong></div><div><span>最近订单到账额度</span><strong>${{ Number(totalCredit.toFixed(8)) }}</strong></div><div><span>已到账订单</span><strong>{{ paidOrders.length }} <small>笔</small></strong></div><div><span>待支付订单</span><strong>{{ pendingCount }} <small>笔</small></strong></div></section>
       <template v-if="tab === 'products'">
