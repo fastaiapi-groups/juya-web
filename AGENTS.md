@@ -1,6 +1,6 @@
 # 项目约定
 
-- 官网域名为 `home.fastaiapi.cloud`，当前仓库为 `fastaiapi-groups/juya-web`。本地 `fastai-website` 对应生产 `/opt/fastaiapi-groups/juya-web`，生产分支为 `main`。
+- 官网默认入口为 `https://tumeiapi.com/hub/home/`，`home.fastaiapi.cloud` 保留兼容访问，当前仓库为 `fastaiapi-groups/juya-web`。本地 `fastai-website` 对应生产 `/opt/fastaiapi-groups/juya-web`，生产分支为 `main`。
 - 用户明确要求后续业务数据统一使用 PostgreSQL。商户、代理、卡密、设备绑定、会话和签名密钥均存 PostgreSQL；新功能沿用现有连接池和参数化 SQL，不添加 SQLite 或浏览器本地存储作为业务数据库。
 - 商户和代理保留分销层级，代理可发展下级。自助注册和上级创建的新代理均需平台管理员审批，分销权限按整条上级链和所属子树校验。
 - 多条相关写入通过 `server/store.mjs` 的事务执行，事务必须使用同一连接。保留商户权限隔离、设备激活锁和现有公开 API 的请求/响应格式。
