@@ -8,8 +8,9 @@
 - `.env`、数据库、备份、凭据和测试数据不提交 Git。管理员和数据库初始密码由启动脚本安全生成，启动时不得自动重置已有密码；用户明确要求改名或重置管理员时，使用一次性的 set-admin 操作并保留账号 ID 和业务数据。
 - 验证命令：`npm ci`、`npm run check`、`npm test`、`bash -n restart.sh`。集成测试使用临时 PostgreSQL 或显式 `TEST_DATABASE_URL`，不使用生产数据库测试。
 
-- 官网统一页面源码位于 `frontend/`，构建基路径 `/fastaiui/`。原下载、充值、管理路径不变；三入口为国内90端口、tumeiapi.com、fastaiapi.cloud。老 `sub2api-creator-engine` 的全部源码和原充值服务必须保留。
+- 官网统一页面源码位于 `frontend/`，构建资源基路径 `/hub/home/ui/`。原下载、充值、管理路径不变；三入口为国内90端口、tumeiapi.com、fastaiapi.cloud。老 `sub2api-creator-engine` 的全部源码和原充值服务必须保留。
 - 纯页面发布使用 `./restart.sh --no-pull --website-static`，只构建页面并原子写入现有 Nginx 后平滑 reload，不触发商户/账号/数据库或 NewAPI/Sub2API 重建。
-- 官网登录入口 `/fastaiui/login` 使用原 Sub2API 登录与两步验证，精确认证代理白名单不得扩大；启用验证码时引导到原主站验证，不跳过验证。不改变原控制台 `/login`。
+- 官网登录入口 `/hub/home/login` 使用原 Sub2API 登录与两步验证，精确认证代理白名单不得扩大；启用验证码时引导到原主站验证，不跳过验证。不改变原控制台 `/login`。
 - 官网定位为两款中转平台（FastAi API、TuMei API）、图灵在线设计、笑笑漫剧、Codex++ 的统一宣传与管理门户；首页五项产品均需保留明确入口。
 - 官网页面与文档的导航优先使用 `/hub/home/` 路径：downloads、help、merchant、recharge、admin、login；旧 `/fastaiui`、`/help` 等保持兼容。不要改写签名发布数据，安装包只转换呈现链接。首页漫剧模块保留直达正式APK的二维码。
+- 用户指定官网默认域名为 `https://tumeiapi.com`，回复用户的官网/文档/下载网址使用该域名；公开规范URL和二维码也以该域名为主。平台专属API示例与账号服务归属不混改，官网内部链接优先使用同线路相对Hub路径。
