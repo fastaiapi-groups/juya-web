@@ -54,7 +54,7 @@ it('renders signed notes as separate readable entries and keeps the last full in
  expect(current.notes).toBe('保留账号与工程。优化任务提醒。\r\n支持 0.2.19 及以后版本\n下载说明 https://example.com/v0.2.19')
  expect(wrapper.find('.md-release-heading').text()).toContain('v0.2.20')
  expect(wrapper.find('.md-card-version').text()).toBe('v0.2.19')
- expect(wrapper.find('.md-download-button').attributes('href')).toBe(installer.assets[0].url)
+ expect(wrapper.find('.md-download-button').attributes('href')).toBe('/hub/home/services/manju-updates/downloads/manju/0.2.19/abc/Manju.dmg')
  expect(wrapper.find('.md-card-bottom a').attributes('href')).toBe('http://8.137.194.180:90/hub/updates/downloads/manju/0.2.19/abc/Manju.dmg')
  expect(wrapper.find('form').exists()).toBe(false)
  expect(apiClient.get).toHaveBeenCalledTimes(1)

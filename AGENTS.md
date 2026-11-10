@@ -12,3 +12,4 @@
 - 纯页面发布使用 `./restart.sh --no-pull --website-static`，只构建页面并原子写入现有 Nginx 后平滑 reload，不触发商户/账号/数据库或 NewAPI/Sub2API 重建。
 - 官网登录入口 `/fastaiui/login` 使用原 Sub2API 登录与两步验证，精确认证代理白名单不得扩大；启用验证码时引导到原主站验证，不跳过验证。不改变原控制台 `/login`。
 - 官网定位为两款中转平台（FastAi API、TuMei API）、图灵在线设计、笑笑漫剧、Codex++ 的统一宣传与管理门户；首页五项产品均需保留明确入口。
+- 官网页面与文档的导航优先使用 `/hub/home/` 路径：downloads、help、merchant、recharge、admin、login；旧 `/fastaiui`、`/help` 等保持兼容。不要改写签名发布数据，安装包只转换呈现链接。首页漫剧模块保留直达正式APK的二维码。

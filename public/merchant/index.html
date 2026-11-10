@@ -6,15 +6,15 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#7155f5">
   <title>漫剧商户中心 · FastAiApi</title>
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/merchant/merchant.css">
-  <script src="/merchant/merchant.js" defer></script>
+  <link rel="icon" href="/hub/home/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/hub/home/merchant/merchant.css">
+  <script src="/hub/home/merchant/merchant.js" defer></script>
 </head>
 <body>
   <div id="startup" class="startup" role="status">正在连接商户中心…</div>
   <section id="login-view" class="login-layout" hidden>
     <div class="login-story">
-      <a class="brand inverse" href="/"><span class="brand-icon">F</span>FastAiApi</a>
+      <a class="brand inverse" href="/hub/home/"><span class="brand-icon">F</span>FastAiApi</a>
       <div><span class="eyebrow">MANJU MERCHANT CENTER</span><h1>让好故事，<br>走向更多人。</h1><p>你的漫剧卡密、代理和销售记录，<br>在这里有条不紊。</p><div class="story-tags"><span>独立商户空间</span><span>灵活分销管理</span><span>实时授权验证</span></div></div>
       <small>FASTAIAPI · 为每一份创作，连接更多可能</small>
     </div>
@@ -26,13 +26,13 @@
         <p id="login-error" class="error" role="alert"></p>
         <button class="button primary full" type="submit">登录 <span>→</span></button>
       </form>
-      <a class="register-link" href="/merchant/register.html">还没有账号？注册商户 / 代理 →</a><p class="login-hint">商户及各级代理注册后，由管理员审批。<br>忘记密码请联系上级或平台管理员。</p>
-      <div class="login-links"><a href="/">← 返回官网</a><a href="/merchant/api.html">公开验证 API ↗</a></div>
+      <a class="register-link" href="/hub/home/merchant/register.html">还没有账号？注册商户 / 代理 →</a><p class="login-hint">商户及各级代理注册后，由管理员审批。<br>忘记密码请联系上级或平台管理员。</p>
+      <div class="login-links"><a href="/hub/home/">← 返回官网</a><a href="/hub/home/merchant/api.html">公开验证 API ↗</a></div>
     </div></div>
   </section>
 
   <div id="dashboard" hidden>
-    <header class="topbar"><div class="topbar-inner"><a class="brand" href="/"><span class="brand-icon">F</span>FastAiApi <span class="brand-divider"></span><small>商户中心</small></a><div class="user-menu"><span id="role-badge" class="role-badge"></span><span id="current-user"></span><button id="logout" class="button small ghost">退出登录</button></div></div></header>
+    <header class="topbar"><div class="topbar-inner"><a class="brand" href="/hub/home/"><span class="brand-icon">F</span>FastAiApi <span class="brand-divider"></span><small>商户中心</small></a><div class="user-menu"><span id="role-badge" class="role-badge"></span><span id="current-user"></span><button id="logout" class="button small ghost">退出登录</button></div></div></header>
     <main class="container">
       <div class="page-heading"><div><span class="eyebrow purple">MERCHANT WORKSPACE</span><h1 id="workspace-title">卡密管理</h1><p id="workspace-description" class="muted">管理每一张卡密，连接每一位创作者。</p></div><div class="approval-actions"><button id="copy-invite" class="button" hidden>复制代理邀请链接 ↗</button><button id="copy-entry" class="button" hidden>复制专属登录入口 ↗</button></div></div>
       <div id="summary" class="stats" aria-label="卡密概览" hidden></div>
@@ -70,11 +70,11 @@
         <span class="eyebrow purple">PUBLIC VERIFICATION API</span><h2>让你的应用连接卡密服务</h2><p class="muted">以下接口无需后台登录或管理员 Token。卡密和授权凭证请通过 HTTPS 发送。</p>
         <div class="api-cards"><article><span class="endpoint-tag">POST</span><code>/api/cards/check</code><h3>检查卡密</h3><p>只传卡密即可查询状态，不激活、不绑定设备、不占用名额。</p><pre>{ "code": "YOUR_CARD_CODE" }</pre></article><article><span class="endpoint-tag">POST</span><code>/api/activate</code><h3>激活设备</h3><p>首次使用时绑定稳定设备标识，获取 License Token。</p><pre>{ "code": "YOUR_CARD_CODE",
   "deviceId": "installation-id" }</pre></article><article><span class="endpoint-tag">POST</span><code>/api/verify</code><h3>验证授权</h3><p>传入激活返回的授权凭证，检查卡密和设备绑定是否仍有效。</p><pre>{ "license": "YOUR_LICENSE_TOKEN" }</pre></article></div>
-        <a class="button primary" href="/merchant/api.html" target="_blank" rel="noopener">查看完整接口文档 ↗</a>
+        <a class="button primary" href="/hub/home/merchant/api.html" target="_blank" rel="noopener">查看完整接口文档 ↗</a>
       </section>
 
       <section id="settings-panel" class="panel settings-panel" hidden><h2>修改登录密码</h2><p class="muted">修改后所有登录会话失效，请使用新密码重新登录。</p><form id="password-form"><label>原密码<input name="current_password" type="password" required autocomplete="current-password" maxlength="128"></label><label>新密码<input name="password" type="password" required minlength="12" maxlength="128" autocomplete="new-password" placeholder="12–128 位"></label><label>确认新密码<input name="confirm_password" type="password" required minlength="12" maxlength="128" autocomplete="new-password"></label><button class="button primary" type="submit">更新密码</button></form></section>
-      <footer class="workspace-footer"><span>FastAiApi 漫剧商户中心</span><a href="/merchant/api.html">接口文档 ↗</a></footer>
+      <footer class="workspace-footer"><span>FastAiApi 漫剧商户中心</span><a href="/hub/home/merchant/api.html">接口文档 ↗</a></footer>
     </main>
   </div>
   <dialog id="modal"><form id="modal-form"><div class="modal-heading"><h2 id="modal-title"></h2><button class="icon-button" type="button" id="close-modal" aria-label="关闭弹窗">×</button></div><div id="modal-content"></div><p id="modal-error" class="error" role="alert"></p><div class="modal-footer"><button type="button" class="button" id="cancel-modal">取消</button><button class="button primary" id="confirm-modal" type="submit">确认</button></div></form></dialog>

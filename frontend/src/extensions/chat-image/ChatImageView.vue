@@ -60,7 +60,7 @@
             </div>
           </div>
           <div class="header-actions">
-            <a class="command-button" href="/fastaiui/recharge" style="text-decoration:none">余额充值</a>
+            <a class="command-button" href="/hub/home/recharge" style="text-decoration:none">余额充值</a>
             <button class="command-button gallery-button" @click="galleryOpen = true">
               <Icon name="grid" size="sm" />图库
             </button>

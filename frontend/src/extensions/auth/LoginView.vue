@@ -2,11 +2,11 @@
 import { ref, onMounted } from 'vue'
 const emit=defineEmits<{authenticated:[path:string]}>()
 const email=ref(''),password=ref(''),code=ref(''),temporary=ref(''),error=ref(''),busy=ref(false),ready=ref(false),captcha=ref(false)
-const candidate=new URLSearchParams(location.search).get('redirect')||'/fastaiui/recharge'
-const destination=/^\/fastaiui\/(?!\/)/.test(candidate)&&!/[\\\r\n]/.test(candidate)&&!candidate.startsWith('/fastaiui/login')?candidate:'/fastaiui/recharge'
+const candidate=(new URLSearchParams(location.search).get('redirect')||'/hub/home/recharge').replace(/^\/fastaiui(?=\/)/,'/hub/home')
+const destination=/^\/(?:fastaiui|hub\/home)\/(?!\/)/.test(candidate)&&!/[\\\r\n]/.test(candidate)&&!candidate.startsWith('/hub/home/login')?candidate:'/hub/home/recharge'
 const canonicalLogin='https://fastaiapi.cloud/login?redirect='+encodeURIComponent(destination)
 async function request(path:string,body?:unknown){
- const response=await fetch('/fastaiapi/website-auth/'+path,{method:body?'POST':'GET',credentials:'omit',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{})})
+ const response=await fetch('/hub/home/auth/'+path,{method:body?'POST':'GET',credentials:'omit',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{})})
  const data=await response.json()
  if(!response.ok||typeof data.code==='number'&&data.code!==0)throw Error(data.message||data.error||'登录失败，请稍后重试')
  return data.data??data
@@ -32,7 +32,7 @@ async function login(){
  <p v-if="error" role="alert">{{error}}</p>
  <template v-if="captcha"><p>当前账号服务需要安全验证，请在主站完成登录。</p><a :href="canonicalLogin">前往主站验证登录 →</a></template>
  <form v-else @submit.prevent="login"><template v-if="!temporary"><label>邮箱<input v-model="email" type="email" autocomplete="username" required maxlength="254"/></label><label>密码<input v-model="password" type="password" autocomplete="current-password" required maxlength="128"/></label></template><label v-else>两步验证码<input v-model="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button :disabled="busy||!ready">{{busy?'正在登录…':temporary?'验证并登录':'登录'}}</button></form>
- <a class="website-login-back" href="/fastaiui/downloads/manju">返回软件下载</a></section><footer>三个入口使用同一账号服务与权限；请在当前入口登录。</footer></main>
+ <a class="website-login-back" href="/hub/home/downloads/manju">返回软件下载</a></section><footer>三个入口使用同一账号服务与权限；请在当前入口登录。</footer></main>
 </template>
 <style scoped>
 .website-login{min-height:100vh;background:#f5f7f2;color:#29382b;padding:44px 24px;font-family:system-ui,sans-serif;box-sizing:border-box}.website-login-brand{font-size:22px;font-weight:700;text-decoration:none;color:#294b37}.website-login section{max-width:410px;margin:64px auto 30px;padding:36px;background:white;border:1px solid #e4eadd;border-radius:16px}.website-login small{color:#6b8268}.website-login h1{font-size:28px;margin:10px 0}.website-login p{font-size:14px;line-height:1.8;color:#697664}.website-login [role=alert]{color:#a83939}.website-login label{display:block;font-size:14px;margin-top:20px}.website-login input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #d5ddce;border-radius:7px;margin-top:8px;font:inherit}.website-login button{margin:24px 0 20px;width:100%;padding:13px;background:#294b37;color:white;border:0;border-radius:7px;font:inherit;cursor:pointer}.website-login button:disabled{opacity:.5;cursor:wait}.website-login-back,.website-login footer{font-size:13px;color:#697664}.website-login footer{text-align:center}.website-login a{color:#294b37}@media(max-width:480px){.website-login section{padding:24px;margin-top:40px}}

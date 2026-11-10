@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>卡密公开验证 API · FastAiApi</title><link rel="stylesheet" href="/merchant/merchant.css"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"></head>
-<body><main class="api-doc"><a class="brand" href="/merchant/"><span class="brand-icon">F</span>FastAiApi · 商户中心</a><span class="eyebrow purple">PUBLIC API REFERENCE</span><h1>卡密公开验证接口</h1><p>使用当前站点域名作为基础地址。以下三个接口无需商户登录、Cookie 或 Authorization 请求头，支持跨域 POST。请求须使用 <code>Content-Type: application/json</code>。</p><p>本项目生成的卡密在本项目验证。旧 xiaoxiao 后台的卡密及 License Token 不会自动导入，也不能直接在这里验证。</p>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>卡密公开验证 API · FastAiApi</title><link rel="stylesheet" href="/hub/home/merchant/merchant.css"><link rel="icon" href="/hub/home/assets/favicon.svg" type="image/svg+xml"></head>
+<body><main class="api-doc"><a class="brand" href="/hub/home/merchant/"><span class="brand-icon">F</span>FastAiApi · 商户中心</a><span class="eyebrow purple">PUBLIC API REFERENCE</span><h1>卡密公开验证接口</h1><p>使用当前站点域名作为基础地址。以下三个接口无需商户登录、Cookie 或 Authorization 请求头，支持跨域 POST。请求须使用 <code>Content-Type: application/json</code>。</p><p>本项目生成的卡密在本项目验证。旧 xiaoxiao 后台的卡密及 License Token 不会自动导入，也不能直接在这里验证。</p>
 <section class="panel"><h2>1. 检查卡密，不激活、不绑定设备</h2><pre>POST /api/cards/check
 { "code": "YOUR_CARD_CODE" }</pre><p>成功响应：</p><pre>{
   "ok": true,
@@ -44,4 +44,4 @@
   if (result.ok !== true) throw new Error(result.reason || '授权无效');
   return result;
 }</pre><p>正常业务失败使用 HTTP 200。非法 JSON / 参数返回 400，不支持的格式返回 415，过大请求返回 413，频率超限返回 429。每个来源 IP 的三个公开接口合计限额为每分钟 120 次；429 可读取 <code>Retry-After</code> 后重试。</p><p>网络或服务错误应与卡密无效分别处理。卡密和 Token 是凭证，请通过 HTTPS 传输并妥善保存，勿放入 URL、日志或公开页面。</p></section>
-<a class="button" href="/merchant/">← 返回商户中心</a></main></body></html>
+<a class="button" href="/hub/home/merchant/">← 返回商户中心</a></main></body></html>

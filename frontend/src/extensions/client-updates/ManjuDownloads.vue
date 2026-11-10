@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { installerHref } from '../../utils/hub-links'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import QRCode from 'qrcode'
 import type { ClientAsset, ClientRelease } from './types'
@@ -54,14 +55,14 @@ function alternateDownload(value: string): string {
   <div class="manju-downloads">
     <a class="md-skip-link" href="#downloads">跳到客户端下载</a>
     <header class="md-header">
-      <a class="md-brand" href="/fastaiui/downloads/manju" aria-label="FastAiApi 笑笑漫剧下载首页">
+      <a class="md-brand" href="/hub/home/downloads/manju" aria-label="FastAiApi 笑笑漫剧下载首页">
         <span class="md-brand-mark" aria-hidden="true">F<span></span></span>
         <span>FastAiApi <small>笑笑漫剧</small></span>
       </a>
       <nav aria-label="页面导航">
         <a href="#release-notes">更新记录</a>
-        <a href="/fastaiui/recharge">充值中心</a>
-        <a class="md-help-link" href="https://fastaiapi.cloud/help/codex/" target="_blank" rel="noopener noreferrer">帮助手册 <span aria-hidden="true">↗</span></a>
+        <a href="/hub/home/recharge">充值中心</a>
+        <a class="md-help-link" href="/hub/home/help/codex/" target="_blank" rel="noopener noreferrer">帮助手册 <span aria-hidden="true">↗</span></a>
       </nav>
     </header>
 
@@ -124,7 +125,7 @@ function alternateDownload(value: string): string {
             <h3>{{ asset.platform === 'macos' ? 'macOS' : 'Windows' }}</h3>
             <p class="md-card-subtitle">{{ architecture(asset) }}</p>
             <div class="md-file-meta"><span>{{ asset.platform === 'macos' ? 'DMG 安装包' : asset.name.toLowerCase().endsWith('.msi') ? 'MSI 安装包' : 'EXE 安装包' }}</span><span>{{ fileSize(asset.size_bytes) }}</span><span>官方稳定版</span></div>
-            <a class="md-button md-download-button" :href="asset.url" :aria-label="`下载 ${architecture(asset)} v${downloads!.version} 安装包`">下载 {{ asset.platform === 'macos' ? 'macOS' : 'Windows' }} 版 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 17v4h14v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a class="md-button md-download-button" :href="installerHref(asset.url)" :aria-label="`下载 ${architecture(asset)} v${downloads!.version} 安装包`">下载 {{ asset.platform === 'macos' ? 'macOS' : 'Windows' }} 版 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 17v4h14v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
             <div class="md-card-bottom"><span>官方发布 · SHA-256 校验</span><a v-if="alternateDownload(asset.url)" :href="alternateDownload(asset.url)">备用线路下载 <span aria-hidden="true">↗</span></a></div>
             <details class="md-file-check"><summary>查看文件校验信息 <span aria-hidden="true">＋</span></summary><div><code>{{ asset.sha256 }}</code><button type="button" :aria-label="`复制 ${architecture(asset)} SHA-256`" @click="$emit('copy', asset.sha256)">复制 SHA-256</button></div></details>
           </article>

@@ -52,7 +52,7 @@
   function date(value) {
     return value === null ? '永久有效' : new Date(value).toLocaleString('zh-CN', { hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
   }
-  function entry(merchantId) { return `${location.origin}/merchant/?shop=${encodeURIComponent(merchantId)}`; }
+  function entry(merchantId) { return `${location.origin}/hub/home/merchant/?shop=${encodeURIComponent(merchantId)}`; }
   function showLogin(message = '') {
     state.request++;
     state.user = null;
@@ -305,7 +305,7 @@
     if (type === 'cards') { state.pageSize = Number(event.target.value); state.page = 1; loadCards().catch(pageError); }
     if (type === 'accounts') { state.accountPageSize = Number(event.target.value); state.accountPage = 1; loadAccounts().catch(pageError); }
   });
-  $('#copy-invite').addEventListener('click', () => copy(`${location.origin}/merchant/register.html?parent=${encodeURIComponent(state.user.id)}`));
+  $('#copy-invite').addEventListener('click', () => copy(`${location.origin}/hub/home/merchant/register.html?parent=${encodeURIComponent(state.user.id)}`));
   $('#approval-filter').addEventListener('change', () => { state.accountPage = 1; loadAccounts().catch(pageError); });
   $('#password-form').addEventListener('submit', (event) => {
     event.preventDefault();

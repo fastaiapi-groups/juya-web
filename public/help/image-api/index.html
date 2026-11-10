@@ -6,21 +6,21 @@
   <meta name="theme-color" content="#101827">
   <meta name="description" content="GPT Image 2.6 Flare 与 Sunburst 图片 API：FastAiApi 与 TuMei API 两站通用参数，支持图片编辑、GIF 动图、SVG 矢量图与文件 URL。">
   <title>GPT Image 2.6 · 图片 API · FastAiApi</title>
-  <link rel="canonical" href="https://fastaiapi.cloud/help/image-api/">
-  <link rel="icon" href="/help/assets/logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/help/help.css">
+  <link rel="canonical" href="/hub/home/help/image-api/">
+  <link rel="icon" href="/hub/home/help/assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/hub/home/help/help.css">
   <style>
     .table-scroll{max-width:100%;overflow-x:auto}.table-scroll table{min-width:550px}.prose td code{overflow-wrap:anywhere}.prose pre{max-width:100%;overflow-x:auto}.model-intro{padding:20px 24px;border:1px solid var(--line);border-radius:12px;background:#fff;margin:20px 0}.model-intro h3{margin-top:0}.site-links{display:flex;gap:12px;flex-wrap:wrap}.site-links .button{font-size:12px}.prose code{overflow-wrap:anywhere}
   </style>
 </head>
 <body>
 <a class="skip" href="#main">跳转到正文</a>
-<header class="topbar"><a class="brand" href="/help/"><img src="/help/assets/logo.svg" width="36" height="36" alt=""><span>FastAiApi<small>帮助文档</small></span></a><nav aria-label="网站导航"><a href="https://home.fastaiapi.cloud/">官网首页</a><a href="/help/">帮助文档</a><a class="console" href="https://fastaiapi.cloud">进入控制台 ↗</a></nav></header>
+<header class="topbar"><a class="brand" href="/hub/home/help/"><img src="/hub/home/help/assets/logo.svg" width="36" height="36" alt=""><span>FastAiApi<small>帮助文档</small></span></a><nav aria-label="网站导航"><a href="https://home.fastaiapi.cloud/">官网首页</a><a href="/hub/home/help/">帮助文档</a><a class="console" href="https://fastaiapi.cloud">进入控制台 ↗</a></nav></header>
 <div class="progress" aria-hidden="true"></div>
 <div class="doc-layout">
-<aside class="guide-nav"><a href="/help/" class="back">← 全部教程</a><p class="nav-label">图片 API</p><a href="/help/image-api/" aria-current="page">◈　GPT Image 2.6</a><a href="/help/api/">⌘　FastAiApi 使用教程</a><a href="/help/codex/">▧　Codex 从零上手</a><a href="/help/magic-video/">▶　魔法视频与插件</a><div class="side-note"><strong>两站通用参数</strong><p>选择站点并使用该站创建的 API Key。切换站点时，请求体保持一致。</p></div></aside>
+<aside class="guide-nav"><a href="/hub/home/help/" class="back">← 全部教程</a><p class="nav-label">图片 API</p><a href="/hub/home/help/image-api/" aria-current="page">◈　GPT Image 2.6</a><a href="/hub/home/help/api/">⌘　FastAiApi 使用教程</a><a href="/hub/home/help/codex/">▧　Codex 从零上手</a><a href="/hub/home/help/magic-video/">▶　魔法视频与插件</a><div class="side-note"><strong>两站通用参数</strong><p>选择站点并使用该站创建的 API Key。切换站点时，请求体保持一致。</p></div></aside>
 <main id="main" class="article-main">
-<div class="breadcrumb"><a href="/help/">帮助文档</a><span>/</span>GPT Image 2.6</div>
+<div class="breadcrumb"><a href="/hub/home/help/">帮助文档</a><span>/</span>GPT Image 2.6</div>
 <div class="article-heading"><span class="eyebrow">GPT IMAGE 2.6 / API</span><h1>图片、GIF 与 SVG</h1><p>Flare 与 Sunburst，支持文字生图、图片编辑、GIF 动图与 SVG 矢量图。</p><div class="meta"><span>2026 年 11 月 6 日更新</span><span>FastAiApi / TuMei API 两站适用</span></div></div>
 <details class="mobile-toc"><summary>本页目录</summary><nav aria-label="手机目录"><a href="#sites">1. 站点与鉴权</a><a href="#models">2. 模型说明与价格</a><a href="#parameters">3. 通用参数</a><a href="#generate">4. 文字生图</a><a href="#gif-svg">5. GIF 与 SVG</a><a href="#edit">6. 图片编辑</a><a href="#results">7. URL 与返回结果</a></nav></details>
 <article class="prose">
@@ -137,13 +137,13 @@ export API_KEY='YOUR_API_KEY'</code></pre>
 <p><code>n=1</code> 执行一次生成，可能保留多份返回文件；<code>n&gt;1</code> 执行多次生成，最终最多返回 <code>n</code> 份。GIF 帧数、画质与尺寸是生成提示，业务端应检查实际结果。</p>
 <p>遇到 <code>401</code> 时检查所选站点的 API Key；模型不可用时检查 Key 分组及模型名称；<code>429</code> 或临时服务繁忙时使用适当退避，避免对已成功返回的请求重复提交。</p>
 </article>
-<div class="next-guide"><span>继续阅读</span><a href="/help/api/">注册、创建 Key 与其他使用说明 →</a></div>
+<div class="next-guide"><span>继续阅读</span><a href="/hub/home/help/api/">注册、创建 Key 与其他使用说明 →</a></div>
 </main>
 <aside class="desktop-toc"><p class="nav-label">本页目录</p><nav aria-label="本页目录"><a class="toc-h2" href="#sites">1. 站点与鉴权</a><a class="toc-h2" href="#models">2. 模型说明与价格</a><a class="toc-h2" href="#parameters">3. 通用参数</a><a class="toc-h2" href="#generate">4. 文字生图</a><a class="toc-h2" href="#gif-svg">5. GIF 与 SVG</a><a class="toc-h2" href="#edit">6. 图片编辑</a><a class="toc-h2" href="#results">7. URL 与返回结果</a></nav><a class="back-top" href="#main">↑ 回到顶部</a></aside>
 </div>
-<footer><span>FastAiApi · 图片 API</span><a href="/help/">帮助首页</a><a href="https://fastaiapi.cloud">FastAiApi ↗</a><a href="https://tumeiapi.com">TuMei API ↗</a><span>更新于 2026-11-06</span></footer>
+<footer><span>FastAiApi · 图片 API</span><a href="/hub/home/help/">帮助首页</a><a href="https://fastaiapi.cloud">FastAiApi ↗</a><a href="https://tumeiapi.com">TuMei API ↗</a><span>更新于 2026-11-06</span></footer>
 <dialog id="image-viewer" aria-label="图片大图"><button class="close-viewer" aria-label="关闭大图">×</button><img alt=""><p></p><a target="_blank" rel="noopener">打开原图 ↗</a></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="/help/help.js" defer></script>
+<script src="/hub/home/help/help.js" defer></script>
 </body>
 </html>

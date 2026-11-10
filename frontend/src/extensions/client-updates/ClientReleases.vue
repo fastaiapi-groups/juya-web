@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const loginDestination='/fastaiui/login?redirect='+encodeURIComponent(window.location.pathname+window.location.search)
+import { installerHref } from '../../utils/hub-links'
+const loginDestination='/hub/home/login?redirect='+encodeURIComponent(window.location.pathname+window.location.search)
 import {ref,onMounted,computed} from 'vue'
 import {apiClient} from '../../api/client'
 import ManjuDownloads from './ManjuDownloads.vue'
@@ -8,7 +9,7 @@ const admin=window.location.pathname.includes('/admin/')
 const initial=new URLSearchParams(location.search).get('product_id')
 const product=ref(location.pathname.includes('/downloads/manju')||initial==='xiaoxiao-manju'?'xiaoxiao-manju':'fastaiapi-codexplus')
 const isManju=computed(()=>product.value==='xiaoxiao-manju')
-const downloadPage=computed(()=>'/fastaiui/downloads/'+(isManju.value?'manju':'codexplus'))
+const downloadPage=computed(()=>'/hub/home/downloads/'+(isManju.value?'manju':'codexplus'))
 const allowed=ref(false),loading=ref(true),busy=ref(false),error=ref(''),notice=ref(''),progress=ref(0)
 const releases=ref<Release[]>([]),current=ref<Release|null>(null),installerRelease=ref<Release|null>(null),selected=ref<Release|null>(null)
 const version=ref(''),notes=ref(''),mandatory=ref(false),targets=ref(isManju.value?['renderer/any']:['macos/universal','windows/x64']),reason=ref('')
@@ -39,13 +40,13 @@ async function copy(hash:string){try{await navigator.clipboard.writeText(hash);n
 <template>
 <ManjuDownloads v-if="!admin && isManju" :current="current" :downloads="downloads" :loading="loading" :error="error" :notice="notice" @copy="copy" @dismiss="notice=''"/>
 <div v-else class="client-release-page">
- <header><a class="brand" :href="downloadPage"><span>F</span> FastAiApi <small>客户端</small></a><nav><a href="/fastaiui/recharge">充值中心</a><a v-if="admin" :href="downloadPage">下载页面 ↗</a><a v-else href="https://fastaiapi.cloud/help/codex/" target="_blank" rel="noopener noreferrer">帮助手册</a></nav></header>
+ <header><a class="brand" :href="downloadPage"><span>F</span> FastAiApi <small>客户端</small></a><nav><a href="/hub/home/recharge">充值中心</a><a v-if="admin" :href="downloadPage">下载页面 ↗</a><a v-else href="/hub/home/help/codex/" target="_blank" rel="noopener noreferrer">帮助手册</a></nav></header>
  <main>
   <section class="hero"><div><span class="eyebrow">FASTAIAPI · {{admin?'RELEASE CENTER':'DESKTOP CLIENT'}}</span><h1>{{admin?'客户端版本发布':'把创作带到你的桌面'}}</h1><p>{{admin?'从草稿到发布，安装包与更新清单统一管理。':(isManju?'笑笑漫剧，从剧本到成片的创作工作台。':'FastAiApi 定制 Codex++，连接模型服务，专注每一次创作。')}}</p></div><span class="version-chip">{{current?'稳定版 '+current.version:'暂未发布正式版本'}}</span></section>
   <label v-if="admin" class="product-choice">客户端<select v-model="product" :disabled="busy" @change="selectProduct"><option value="fastaiapi-codexplus">Codex++</option><option value="xiaoxiao-manju">笑笑漫剧</option></select></label>
   <p v-if="loading" class="notice" role="status">正在加载版本信息…</p><p v-if="error" class="notice error" role="alert">{{error}}</p><p v-if="notice" class="notice" role="status">{{notice}}</p>
   <template v-if="!admin">
-   <section v-if="downloads" class="download-grid"><article v-for="asset in downloads!.assets.filter(a=>a.platform!=='renderer')" :key="asset.name" class="panel download-card"><span class="platform-icon">{{asset.platform==='macos'?'⌘':'⊞'}}</span><h2>{{names[asset.platform+'/'+asset.arch]}}</h2><p>v{{downloads!.version}} · {{size(asset.size_bytes)}}</p><a class="primary" :href="asset.url">下载安装包 ↓</a><details><summary>文件校验</summary><code>{{asset.sha256}}</code><button @click="copy(asset.sha256)">复制 SHA-256</button></details></article></section>
+   <section v-if="downloads" class="download-grid"><article v-for="asset in downloads!.assets.filter(a=>a.platform!=='renderer')" :key="asset.name" class="panel download-card"><span class="platform-icon">{{asset.platform==='macos'?'⌘':'⊞'}}</span><h2>{{names[asset.platform+'/'+asset.arch]}}</h2><p>v{{downloads!.version}} · {{size(asset.size_bytes)}}</p><a class="primary" :href="installerHref(asset.url)">下载安装包 ↓</a><details><summary>文件校验</summary><code>{{asset.sha256}}</code><button @click="copy(asset.sha256)">复制 SHA-256</button></details></article></section>
    <section v-else-if="!loading&&!error" class="panel empty"><h2>客户端安装包准备中</h2><p>正式版本发布后，安装包和版本说明将在这里同步展示。</p></section>
    <section v-if="current" class="panel release-notes"><span class="eyebrow">WHAT'S NEW</span><h2>版本更新说明</h2><p>{{current.notes||'本版本包含体验优化与问题修复。'}}</p></section>
    <section class="footnote"><p>已安装的旧版用户，请先从这里下载安装一次新版，后续即可在客户端内接收 FastAiApi 更新。</p><p>需要帮助？QQ：172733456 · 微信：selectthree</p></section>
