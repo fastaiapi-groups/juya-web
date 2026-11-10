@@ -5,9 +5,9 @@
   "platforms": {
     "api": "https://tumeiapi.com",
     "design": "https://canvas.fastaiapi.cloud",
-    "codexplus": "https://fastaiapi.cloud/fastaiui/downloads/codexplus",
+    "codexplus": "https://fastaiapi.cloud/hub/home/downloads/codexplus",
     "fastai": "https://fastaiapi.cloud",
-    "manju": "https://fastaiapi.cloud/fastaiui/downloads/manju"
+    "manju": "https://fastaiapi.cloud/hub/home/downloads/manju"
   },
   "downloads": [],
   "contacts": [
