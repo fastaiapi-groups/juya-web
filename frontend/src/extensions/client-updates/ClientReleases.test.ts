@@ -76,3 +76,22 @@ it('keeps note content as plain text and copies the exact file checksum',async()
  await wrapper.find('button[aria-label="关闭提示"]').trigger('click')
  expect(wrapper.find('[role=status]').exists()).toBe(false)
 })
+it('shows the original publication time and allows editing a published Manju release',async()=>{
+ release={...release,status:'published',published_at:'2026-11-13T01:30:00Z'}
+ vi.mocked(apiClient.post).mockImplementation(async(_url,body:any)=>{
+  release={...release,notes:body.notes,options:{mandatory:body.mandatory}}
+  return {data:release} as any
+ })
+ wrapper=mount(ClientReleases)
+ await flushPromises()
+ const row=wrapper.find('.release-list button')
+ expect(row.find('time').attributes('datetime')).toBe(release.published_at)
+ expect(row.text()).toContain('09:30')
+ await row.trigger('click')
+ expect(wrapper.find('.editor .upload-button').text()).toBe('替换文件')
+ await wrapper.find('.editor input[type=checkbox]').setValue(true)
+ await wrapper.findAll('.editor button').find(button=>button.text()==='保存更新记录与策略')!.trigger('click')
+ await flushPromises()
+ expect(apiClient.post).toHaveBeenCalledWith('/manju-updates/api/client-updates/admin/releases/12/options?product_id=xiaoxiao-manju',{notes:'已保存说明',mandatory:true})
+ expect(wrapper.find('.release-list button').text()).toContain('强制更新')
+})

@@ -13,6 +13,7 @@ export type ClientRelease = {
   version: string
   channel: string
   status: string
+  published_at?: string
   notes: string
   assets: ClientAsset[]
   required_targets: string[]
