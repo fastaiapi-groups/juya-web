@@ -4,9 +4,34 @@ import re
 import sys
 p = Path(sys.argv[1]) if len(sys.argv) == 2 else Path('/etc/caddy/sites/dev.caddy')
 s = p.read_text()
+def route_dashboard_verification(config):
+    for site in ('api.fastaiapi.cloud', 'tumeiapi.com, www.tumeiapi.com'):
+        start = config.index(f'\n{site} {{')
+        end = config.index('\n}', start)
+        block = config[start:end]
+        if '@dashboard_verify' in block:
+            continue
+        assert block.count('    @website path ') == 1, f'Unexpected website matcher for {site}'
+        block = block.replace('    @website path ', """    @dashboard_verify {
+        path /api/verify
+        method POST
+        header Authorization *
+    }
+    handle @dashboard_verify {
+        reverse_proxy 192.200.102.214:1111 {
+            import common_proxy_headers
+        }
+    }
+    @website path """, 1)
+        config = config[:start] + block + config[end:]
+    return config
+
 if '# website-consolidation-v1' in s:
-    print('Website routes already installed')
+    updated = route_dashboard_verification(s)
+    if updated != s:
+        p.write_text(updated)
     raise SystemExit
+
 routes = '''    # website-consolidation-v1; source: fastai-website/deploy/website-routes
     @website path /fastaiui /fastaiui/* /fastaiapi /fastaiapi/* /help /help/* /downloads /downloads/* /merchant /merchant/* /api/merchant/* /api/cards/check /api/activate /api/verify /site-config.json
     handle @website {
@@ -53,5 +78,5 @@ tumeiapi.com, www.tumeiapi.com {
 s=s[:a]+block+s[b:]
 backup=p.with_name('dev.caddy.before-website-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
 backup.write_text(p.read_text())
-p.write_text(s)
+p.write_text(route_dashboard_verification(s))
 print('Website routes prepared; backup:',backup)
