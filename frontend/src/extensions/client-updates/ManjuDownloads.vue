@@ -4,6 +4,8 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import QRCode from 'qrcode'
 import type { ClientAsset, ClientRelease } from './types'
 import './manju-downloads.css'
+import SiteHeader from '../../components/layout/SiteHeader.vue'
+import SiteFooter from '../../components/layout/SiteFooter.vue'
 import androidRelease from './android-release.json'
 
 const props = defineProps<{
@@ -54,19 +56,9 @@ function alternateDownload(value: string): string {
 <template>
   <div class="manju-downloads">
     <a class="md-skip-link" href="#downloads">跳到客户端下载</a>
-    <header class="md-header">
-      <a class="md-brand" href="/hub/home/downloads/manju" aria-label="FastAiApi 笑笑漫剧下载首页">
-        <span class="md-brand-mark" aria-hidden="true">F<span></span></span>
-        <span>FastAiApi <small>笑笑漫剧</small></span>
-      </a>
-      <nav aria-label="页面导航">
-        <a href="#release-notes">更新记录</a>
-        <a href="/hub/home/recharge">充值中心</a>
-        <a class="md-help-link" href="/hub/home/help/codex/" target="_blank" rel="noopener noreferrer">帮助手册 <span aria-hidden="true">↗</span></a>
-      </nav>
-    </header>
+    <SiteHeader section="笑笑漫剧" current="manju"/>
 
-    <main class="md-main">
+    <div class="fa-band md-band">
       <section class="md-hero" aria-labelledby="download-title">
         <div class="md-hero-copy">
           <span class="md-eyebrow"><span class="md-dot"></span> 笑笑漫剧 · AI 影像创作工作台</span>
@@ -105,7 +97,8 @@ function alternateDownload(value: string): string {
           <div class="md-art-track"><span>剧本</span><i></i><span>角色</span><i></i><span>分镜</span><i></i><strong>成片 <span>↗</span></strong></div>
         </div>
       </section>
-
+    </div>
+    <main class="md-main">
       <section id="downloads" class="md-download-section" aria-labelledby="download-section-title">
         <div class="md-section-heading">
           <div><span class="md-eyebrow">GET STARTED</span><h2 id="download-section-title">选好设备，即刻开拍。</h2></div>
@@ -157,7 +150,7 @@ function alternateDownload(value: string): string {
 
       <section class="md-support"><div><span class="md-support-symbol" aria-hidden="true">↗</span><div><h2>创作路上，我们都在。</h2><p>安装或使用遇到问题？随时联系我们。</p></div></div><p>QQ <strong>172733456</strong><span></span>微信 <strong>selectthree</strong></p></section>
     </main>
-    <footer class="md-footer"><span>FastAiApi <span>／</span> 笑笑漫剧</span><p>从灵感出发，让故事发生。</p><a href="#download-title">回到顶部 ↑</a></footer>
+    <SiteFooter/>
     <div v-if="notice" class="md-copy-notice" role="status"><span>{{ notice }}</span><button type="button" aria-label="关闭提示" @click="$emit('dismiss')">×</button></div>
   </div>
 </template>

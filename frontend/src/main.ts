@@ -1,5 +1,6 @@
 import {createApp} from 'vue'
 import App from './App.vue'
+import '../../public/brand.css'
 import './style.css'
 
 const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')

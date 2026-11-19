@@ -3,6 +3,8 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
+# 共享品牌样式：src/main.ts 通过 ../../public/brand.css 引用
+COPY public/brand.css /public/brand.css
 RUN npm run build
 
 FROM nginx:1.28-alpine

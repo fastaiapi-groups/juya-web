@@ -8,6 +8,10 @@ Public routes (no account required):
 
 These are static HTML pages served by the existing Nginx site. The homepage navigation includes a Help docs link in all five supported navigation languages. The tutorials themselves are Simplified Chinese.
 
+## Site design system
+
+All website pages share `public/brand.css` (served at `/hub/home/brand.css`): colour tokens (`--fa-*`), the dark `.fa-header` navigation, `.fa-footer`, `.fa-btn` buttons and the dark `.fa-band` hero. Static pages link it before their own stylesheet; the Vue pages import it in `frontend/src/main.ts` and render `SiteHeader.vue` / `SiteFooter.vue`. Keep the primary navigation identical everywhere (产品 · Codex++ · 笑笑漫剧 · 帮助 · 充值 · 登录) and use the ink + mint palette instead of page-specific colours.
+
 ## Maintenance
 
 Edit the relevant `public/help/**/index.html`; shared styles and interactions are in `help.css` and `help.js`. Keep heading IDs stable because the overview and table of contents link to them. There are no external scripts, fonts or image hosts.

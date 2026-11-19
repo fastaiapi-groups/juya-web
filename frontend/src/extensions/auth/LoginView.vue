@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SiteHeader from '../../components/layout/SiteHeader.vue'
 import { ref, onMounted } from 'vue'
 const emit=defineEmits<{authenticated:[path:string]}>()
 const email=ref(''),password=ref(''),code=ref(''),temporary=ref(''),error=ref(''),busy=ref(false),ready=ref(false),captcha=ref(false)
@@ -28,12 +29,28 @@ async function login(){
 }
 </script>
 <template>
- <main class="website-login"><a href="/hub/home/" class="website-login-brand">FastAiApi</a><section><small>账户中心</small><h1>登录官网</h1><p>使用原官网账号，继续充值或管理客户端发布。</p>
+ <div class="website-login"><SiteHeader section="账户中心" current="login"><span></span></SiteHeader><main><section><small>账户中心</small><h1>登录官网</h1><p>使用原官网账号登录，继续充值或管理客户端发布。</p>
  <p v-if="error" role="alert">{{error}}</p>
  <template v-if="captcha"><p>当前账号服务需要安全验证，请在主站完成登录。</p><a :href="canonicalLogin">前往主站验证登录 →</a></template>
  <form v-else @submit.prevent="login"><template v-if="!temporary"><label>邮箱<input v-model="email" type="email" autocomplete="username" required maxlength="254"/></label><label>密码<input v-model="password" type="password" autocomplete="current-password" required maxlength="128"/></label></template><label v-else>两步验证码<input v-model="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button :disabled="busy||!ready">{{busy?'正在登录…':temporary?'验证并登录':'登录'}}</button></form>
- <a class="website-login-back" href="/hub/home/downloads/manju">返回软件下载</a></section><footer>三个入口使用同一账号服务与权限；请在当前入口登录。</footer></main>
+ <a class="website-login-back" href="/hub/home/">← 返回官网首页</a></section><p class="website-login-note">三个入口使用同一账号服务与权限，请在当前入口登录。</p></main></div>
 </template>
 <style scoped>
-.website-login{min-height:100vh;background:#f5f7f2;color:#29382b;padding:44px 24px;font-family:system-ui,sans-serif;box-sizing:border-box}.website-login-brand{font-size:22px;font-weight:700;text-decoration:none;color:#294b37}.website-login section{max-width:410px;margin:64px auto 30px;padding:36px;background:white;border:1px solid #e4eadd;border-radius:16px}.website-login small{color:#6b8268}.website-login h1{font-size:28px;margin:10px 0}.website-login p{font-size:14px;line-height:1.8;color:#697664}.website-login [role=alert]{color:#a83939}.website-login label{display:block;font-size:14px;margin-top:20px}.website-login input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #d5ddce;border-radius:7px;margin-top:8px;font:inherit}.website-login button{margin:24px 0 20px;width:100%;padding:13px;background:#294b37;color:white;border:0;border-radius:7px;font:inherit;cursor:pointer}.website-login button:disabled{opacity:.5;cursor:wait}.website-login-back,.website-login footer{font-size:13px;color:#697664}.website-login footer{text-align:center}.website-login a{color:#294b37}@media(max-width:480px){.website-login section{padding:24px;margin-top:40px}}
+.website-login{min-height:100vh;background:radial-gradient(900px 420px at 50% -10%,var(--fa-accent-soft),transparent 70%),var(--fa-paper);color:var(--fa-text);font-family:var(--fa-font);color-scheme:light;box-sizing:border-box}
+.website-login main{padding:56px 20px 64px}
+.website-login section{max-width:420px;margin:0 auto 20px;padding:36px;background:#fff;border:1px solid var(--fa-line);border-radius:var(--fa-radius-lg);box-shadow:var(--fa-shadow)}
+.website-login small{display:inline-block;color:var(--fa-accent);font-size:12px;font-weight:700;letter-spacing:2px}
+.website-login h1{font-size:30px;letter-spacing:-.02em;margin:10px 0 6px}
+.website-login p{font-size:15px;line-height:1.75;color:var(--fa-muted);margin:0 0 4px}
+.website-login [role=alert]{color:var(--fa-danger);background:var(--fa-danger-soft);border-radius:10px;padding:10px 12px;margin-top:14px}
+.website-login label{display:block;font-size:14px;font-weight:600;margin-top:20px}
+.website-login input{box-sizing:border-box;width:100%;height:46px;padding:0 14px;border:1px solid var(--fa-line);border-radius:10px;margin-top:8px;font:inherit;background:#fff;color:var(--fa-text)}
+.website-login input:focus{outline:none;border-color:var(--fa-accent);box-shadow:0 0 0 3px var(--fa-accent-soft)}
+.website-login button{margin:26px 0 18px;width:100%;height:48px;background:var(--fa-ink);color:#fff;border:0;border-radius:10px;font:600 15px var(--fa-font);cursor:pointer;transition:background .15s}
+.website-login button:hover:not(:disabled){background:var(--fa-ink-3)}
+.website-login button:disabled{opacity:.5;cursor:wait}
+.website-login section>a{color:var(--fa-accent);font-weight:600}
+.website-login-back{font-size:14px}
+.website-login-note{text-align:center;font-size:13px!important}
+@media(max-width:480px){.website-login main{padding-top:32px}.website-login section{padding:26px 22px}}
 </style>

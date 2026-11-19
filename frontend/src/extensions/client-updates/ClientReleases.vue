@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SiteHeader from '../../components/layout/SiteHeader.vue'
+import SiteFooter from '../../components/layout/SiteFooter.vue'
 import { installerHref } from '../../utils/hub-links'
 const loginDestination='/hub/home/login?redirect='+encodeURIComponent(window.location.pathname+window.location.search)
 import {ref,onMounted,computed} from 'vue'
@@ -43,16 +45,17 @@ async function copy(hash:string){try{await navigator.clipboard.writeText(hash);n
 <template>
 <ManjuDownloads v-if="!admin && isManju" :current="current" :downloads="downloads" :loading="loading" :error="error" :notice="notice" @copy="copy" @dismiss="notice=''"/>
 <div v-else class="client-release-page">
- <header><a class="brand" :href="downloadPage"><span>F</span> FastAiApi <small>客户端</small></a><nav><a href="/hub/home/recharge">充值中心</a><a v-if="admin" :href="downloadPage">下载页面 ↗</a><a v-else href="/hub/home/help/codex/" target="_blank" rel="noopener noreferrer">帮助手册</a></nav></header>
+ <SiteHeader :section="admin?'发布管理':'客户端下载'" :current="admin?undefined:'codexplus'"/>
+ <section class="fa-band page-band"><div class="hero"><div><span class="fa-eyebrow">{{admin?'RELEASE CENTER · 管理员':'CODEX++ · 桌面编程'}}</span><h1>{{admin?'客户端版本发布':'把 AI 编程带到你的桌面'}}</h1><p>{{admin?'从草稿到发布，安装包与更新清单统一管理。':'FastAiApi 定制 Codex++。登录即用，模型自动配置，FastAiApi Key 通用。'}}</p><div v-if="!admin" class="hero-actions"><a class="fa-btn fa-btn-mint" href="#downloads">下载安装包 ↓</a><a class="fa-btn hero-ghost" href="/hub/home/help/codex/">查看上手教程 →</a></div></div><span class="version-chip">{{current?'稳定版 v'+current.version:'暂未发布正式版本'}}</span></div></section>
  <main>
-  <section class="hero"><div><span class="eyebrow">FASTAIAPI · {{admin?'RELEASE CENTER':'DESKTOP CLIENT'}}</span><h1>{{admin?'客户端版本发布':'把创作带到你的桌面'}}</h1><p>{{admin?'从草稿到发布，安装包与更新清单统一管理。':(isManju?'笑笑漫剧，从剧本到成片的创作工作台。':'FastAiApi 定制 Codex++，连接模型服务，专注每一次创作。')}}</p></div><span class="version-chip">{{current?'稳定版 '+current.version:'暂未发布正式版本'}}</span></section>
   <label v-if="admin" class="product-choice">客户端<select v-model="product" :disabled="busy" @change="selectProduct"><option value="fastaiapi-codexplus">Codex++</option><option value="xiaoxiao-manju">笑笑漫剧</option></select></label>
   <p v-if="loading" class="notice" role="status">正在加载版本信息…</p><p v-if="error" class="notice error" role="alert">{{error}}</p><p v-if="notice" class="notice" role="status">{{notice}}</p>
   <template v-if="!admin">
-   <section v-if="downloads" class="download-grid"><article v-for="asset in downloads!.assets.filter(a=>a.platform!=='renderer')" :key="asset.name" class="panel download-card"><span class="platform-icon">{{asset.platform==='macos'?'⌘':'⊞'}}</span><h2>{{names[asset.platform+'/'+asset.arch]}}</h2><p>v{{downloads!.version}} · {{size(asset.size_bytes)}}</p><a class="primary" :href="installerHref(asset.url)">下载安装包 ↓</a><details><summary>文件校验</summary><code>{{asset.sha256}}</code><button @click="copy(asset.sha256)">复制 SHA-256</button></details></article></section>
+   <section v-if="downloads" id="downloads" class="download-grid"><article v-for="asset in downloads!.assets.filter(a=>a.platform!=='renderer')" :key="asset.name" class="panel download-card"><span class="platform-icon">{{asset.platform==='macos'?'⌘':'⊞'}}</span><h2>{{names[asset.platform+'/'+asset.arch]}}</h2><p>v{{downloads!.version}} · {{size(asset.size_bytes)}}</p><a class="primary" :href="installerHref(asset.url)">下载安装包 ↓</a><details><summary>文件校验</summary><code>{{asset.sha256}}</code><button @click="copy(asset.sha256)">复制 SHA-256</button></details></article></section>
    <section v-else-if="!loading&&!error" class="panel empty"><h2>客户端安装包准备中</h2><p>正式版本发布后，安装包和版本说明将在这里同步展示。</p></section>
-   <section v-if="current" class="panel release-notes"><span class="eyebrow">WHAT'S NEW</span><h2>版本更新说明</h2><p>{{current.notes||'本版本包含体验优化与问题修复。'}}</p></section>
-   <section class="footnote"><p>已安装的旧版用户，请先从这里下载安装一次新版，后续即可在客户端内接收 FastAiApi 更新。</p><p>需要帮助？QQ：172733456 · 微信：selectthree</p></section>
+   <ol class="install-steps"><li><span>1</span><div><strong>下载并安装</strong><p>选择你的系统，运行安装包。</p></div></li><li><span>2</span><div><strong>登录 FastAiApi 账号</strong><p>模型服务自动连接，无需手动配置。</p></div></li><li><span>3</span><div><strong>选模型，启动 Codex</strong><p>发一条消息验证，就可以开始了。</p></div></li></ol>
+   <section v-if="current" class="panel release-notes"><span class="eyebrow">更新内容</span><h2>v{{current.version}} 更新说明</h2><p>{{current.notes||'本版本包含体验优化与问题修复。'}}</p></section>
+   <section class="footnote"><p>旧版用户请先在这里安装一次新版，之后在客户端内自动更新。安装包经过签名，可展开“文件校验”核对 SHA-256。</p><p>需要帮助？查看 <a href="/hub/home/help/codex/">Codex++ 上手教程</a>，或联系客服 QQ 172733456 · 微信 selectthree。</p></section>
   </template>
   <template v-else-if="allowed">
    <section class="admin-grid"><aside class="panel"><div class="panel-heading"><h2>发布记录</h2><span>{{releases.length}} 个版本</span></div><div class="release-list"><button v-for="r in releases" :key="r.id" :class="{active:selected?.id===r.id}" :disabled="busy" @click="selected=r"><strong>v{{r.version}}</strong><span class="status" :class="r.status">{{statuses[r.status]}}</span><small>stable · {{r.assets.length}} 个文件 {{r.options?.mandatory?'· 强制更新':''}}</small><small v-if="r.published_at">发布于 <time :datetime="r.published_at">{{publicationDate.format(new Date(r.published_at))}}</time>（北京时间）</small></button><p v-if="!releases.length" class="muted">还没有发布记录，从创建草稿开始。</p></div></aside>
@@ -64,10 +67,98 @@ async function copy(hash:string){try{await navigator.clipboard.writeText(hash);n
    </div></section></div></section>
   </template>
   <section v-else-if="admin&&!loading" class="panel empty"><h2>需要管理员权限</h2><p>请先使用本站管理员账号登录后打开版本管理。</p><a class="primary" :href="loginDestination">前往登录</a></section>
- </main><footer>FastAiApi · 自有站点分发 · 签名与 SHA-256 校验</footer>
+ </main><SiteFooter/>
 </div>
 </template>
 <style scoped>
-.client-release-page{min-height:100vh;background:#f5f8f9;color:#203641;font:14px/1.6 system-ui,sans-serif}.client-release-page *{box-sizing:border-box}header{height:76px;padding:0 max(24px,calc((100vw - 1180px)/2));display:flex;justify-content:space-between;align-items:center;background:white;border-bottom:1px solid #e4ecec}.brand{display:flex;gap:10px;align-items:center;font-weight:700;color:#163e3a;text-decoration:none;font-size:19px}.brand>span{display:grid;place-items:center;width:34px;height:34px;background:#1aaa91;color:white;border-radius:11px}.brand small{font-size:12px;color:#81948f;font-weight:500}nav{display:flex;gap:22px}a{color:#168d78;text-decoration:none}main{max-width:1180px;padding:48px 24px;margin:auto}.hero{display:flex;justify-content:space-between;gap:24px;align-items:center;margin-bottom:34px}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:700;color:#229b87}h1{font-size:34px;letter-spacing:-1px;margin:10px 0}h2{font-size:17px;margin:0}p{color:#7d8e98}.hero p{margin:0}.version-chip,.status{display:inline-flex;align-items:center;white-space:nowrap;padding:5px 10px;border-radius:6px;background:#e7f6f0;color:#248d75;font-size:11px}.panel{border:1px solid #dfe8e8;border-radius:16px;background:white;overflow:hidden}.download-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.download-card{padding:30px}.platform-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#edf7f4;color:#168d78;font-size:30px;margin-bottom:24px}.download-card p{font-size:12px}.primary{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:9px;background:#168f7b;color:white;border:0;cursor:pointer;font:inherit;font-weight:600}.download-card .primary{width:100%;margin:12px 0}.download-card details{font-size:11px;color:#83949d;margin-top:10px}.download-card code{display:block;overflow-wrap:anywhere;margin:8px 0}.release-notes{padding:28px;margin-top:24px}.release-notes p,.notes-preview{white-space:pre-wrap}.footnote{font-size:12px;padding:20px 0}.notice{padding:13px 16px;border:1px solid #b5e1d6;background:#eaf8f2;border-radius:9px;color:#287d65}.error{background:#fff1ed;border-color:#f2ccbf;color:#ad533e}.empty{text-align:center;padding:50px}.admin-grid{display:grid;grid-template-columns:270px minmax(0,1fr);gap:24px}.admin-grid aside{align-self:start}.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:18px 22px;border-bottom:1px solid #edf1f2}.panel-heading>span:not(.status){font-size:11px;color:#8a9ca5}.release-list{padding:10px}.release-list button{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;width:100%;padding:14px;text-align:left;background:transparent;border:1px solid transparent;border-radius:9px;cursor:pointer;color:inherit}.release-list button.active{border-color:#46b29e;background:#f0faf6}.release-list small{width:100%;font-size:10px;color:#82949a}.workspace{display:grid;gap:24px;min-width:0}.form-content{padding:22px;display:grid;gap:18px}label{display:grid;gap:7px;font-size:12px}input:not([type=checkbox]),textarea{width:100%;padding:11px 12px;border:1px solid #dce6e5;border-radius:8px;font:inherit;color:inherit;background:white}textarea{resize:vertical}fieldset{border:0;padding:0;margin:0}legend{font-size:12px;margin-bottom:8px}.target{display:inline-flex;align-items:center;gap:7px;margin-right:18px}.asset-row{display:flex;gap:16px;justify-content:space-between;align-items:center;padding:14px;border:1px solid #e5eeeb;border-radius:9px}.asset-row strong{font-size:12px}.asset-row small{display:block;color:#81969a;font-size:11px}.upload-button,button:not(.primary):not(.release-list button){display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #cfe1da;background:#f5faf7;border-radius:7px;padding:9px 12px;font:inherit;font-size:11px;color:#36836d;cursor:pointer}.upload-button{position:relative;overflow:hidden}.upload-button input{position:absolute;inset:0;opacity:0;cursor:pointer}.signing{border:1px dashed #c7dcd4;border-radius:10px;padding:18px;display:flex;flex-wrap:wrap;gap:10px}.signing h3{width:100%;margin:0;font-size:13px}.signing p{font-size:11px;margin:0 0 6px;width:100%}.signing code{display:block;overflow-wrap:anywhere;font-size:10px;color:#6e8585}.withdraw{border-top:1px solid #edf0ef;padding-top:18px;display:grid;gap:10px}.status.draft{background:#eef2f6;color:#728595}.status.withdrawn{background:#fceee8;color:#b87858}.muted{padding:12px;font-size:12px}.notes-preview{margin:0;font-size:12px}button:disabled,input:disabled{opacity:.5;cursor:default}progress{width:100%;accent-color:#168f7b}footer{text-align:center;font-size:10px;color:#8da19e;padding:24px}a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #22a98e;outline-offset:3px}@media(max-width:760px){.admin-grid{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}h1{font-size:28px}main{padding:28px 16px}header{padding:0 16px}nav{font-size:11px;gap:12px}.panel-heading,.form-content{padding:16px}.brand small{display:none}}
-.product-choice{display:flex;align-items:center;gap:12px;margin:0 0 20px}.product-choice select{padding:10px 14px;border:1px solid #cfe1da;border-radius:9px;background:white;color:#24434b;font:inherit;min-width:180px}
+.client-release-page{min-height:100vh;background:var(--fa-paper);color:var(--fa-text);font:15px/1.65 var(--fa-font)}
+.client-release-page *{box-sizing:border-box}
+a{color:var(--fa-accent);text-decoration:none}
+.page-band{padding:64px 24px 72px}
+.hero{max-width:1180px;margin:auto;display:flex;justify-content:space-between;gap:24px;align-items:flex-end}
+.hero h1{font-size:clamp(32px,4vw,48px);font-weight:700;letter-spacing:-.03em;line-height:1.2;margin:14px 0 12px;color:#fff}
+.hero p{margin:0;color:#a9b8b8;font-size:17px;max-width:620px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.hero-actions .fa-btn-mint{color:var(--fa-ink)}
+.hero-ghost{color:#e6eeec;border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03)}
+.hero-ghost:hover{background:rgba(255,255,255,.08)}
+.version-chip{display:inline-flex;align-items:center;white-space:nowrap;padding:6px 14px;border-radius:99px;background:rgba(139,242,203,.12);border:1px solid rgba(139,242,203,.3);color:var(--fa-mint);font-size:13px;font-weight:600}
+main{max-width:1180px;padding:40px 24px 64px;margin:auto}
+.eyebrow{font-size:12px;letter-spacing:2px;font-weight:700;color:var(--fa-accent)}
+h2{font-size:20px;margin:0}
+p{color:var(--fa-muted)}
+.status{display:inline-flex;align-items:center;white-space:nowrap;padding:3px 10px;border-radius:99px;background:var(--fa-accent-soft);color:var(--fa-accent-strong);font-size:12px}
+.panel{border:1px solid var(--fa-line);border-radius:var(--fa-radius-lg);background:#fff;overflow:hidden}
+.notice+.download-grid,.notice+.notice{margin-top:16px}
+.download-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.download-card{padding:30px;box-shadow:var(--fa-shadow);transition:transform .2s}
+.download-card:hover{transform:translateY(-3px)}
+.platform-icon{display:grid;place-items:center;width:56px;height:56px;border-radius:14px;background:var(--fa-ink);color:var(--fa-mint);font-size:28px;margin-bottom:22px}
+.download-card h2{font-size:22px}
+.download-card p{font-size:14px;margin:6px 0 0}
+.primary{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:10px;background:var(--fa-ink);color:#fff;border:0;cursor:pointer;font:inherit;font-weight:600;transition:background .15s}
+.primary:hover{background:var(--fa-ink-3)}
+.download-card .primary{width:100%;margin:20px 0 6px}
+.download-card details{font-size:13px;color:var(--fa-muted);margin-top:10px}
+.download-card summary{cursor:pointer}
+.download-card code{display:block;overflow-wrap:anywhere;margin:8px 0;font:12px var(--fa-mono);color:var(--fa-body)}
+.install-steps{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.install-steps li{display:flex;gap:14px;padding:20px;border:1px solid var(--fa-line);border-radius:var(--fa-radius);background:#fff}
+.install-steps li>span{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--fa-accent-soft);color:var(--fa-accent);font:700 14px var(--fa-mono)}
+.install-steps strong{font-size:15px}
+.install-steps p{margin:4px 0 0;font-size:14px}
+.release-notes{padding:28px 30px;margin-top:24px}
+.release-notes h2{margin-top:8px}
+.release-notes p,.notes-preview{white-space:pre-wrap;color:var(--fa-body);line-height:1.9}
+.footnote{font-size:14px;padding:24px 0 0}
+.footnote p{margin:6px 0}
+.notice{padding:13px 16px;border:1px solid var(--fa-accent-line);background:var(--fa-accent-soft);border-radius:10px;color:var(--fa-accent-strong)}
+.error{background:var(--fa-danger-soft);border-color:#f3cdb9;color:var(--fa-danger)}
+.empty{text-align:center;padding:50px}
+.admin-grid{display:grid;grid-template-columns:280px minmax(0,1fr);gap:24px}
+.admin-grid aside{align-self:start}
+.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:18px 22px;border-bottom:1px solid var(--fa-line)}
+.panel-heading h2{font-size:17px}
+.panel-heading>span:not(.status){font-size:13px;color:var(--fa-muted)}
+.release-list{padding:10px}
+.release-list button{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;width:100%;padding:14px;text-align:left;background:transparent;border:1px solid transparent;border-radius:10px;cursor:pointer;color:inherit;font:inherit}
+.release-list button:hover{background:var(--fa-paper)}
+.release-list button.active{border-color:var(--fa-accent);background:var(--fa-accent-soft)}
+.release-list small{width:100%;font-size:12px;color:var(--fa-muted)}
+.workspace{display:grid;gap:24px;min-width:0}
+.form-content{padding:22px;display:grid;gap:18px}
+label{display:grid;gap:7px;font-size:14px;font-weight:500}
+input:not([type=checkbox]),textarea,select{width:100%;padding:11px 12px;border:1px solid var(--fa-line);border-radius:10px;font:inherit;color:inherit;background:#fff}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--fa-accent);box-shadow:0 0 0 3px var(--fa-accent-soft)}
+textarea{resize:vertical}
+fieldset{border:0;padding:0;margin:0}
+legend{font-size:14px;margin-bottom:8px}
+.target{display:inline-flex;align-items:center;gap:7px;margin-right:18px}
+.asset-row{display:flex;gap:16px;justify-content:space-between;align-items:center;padding:14px;border:1px solid var(--fa-line);border-radius:10px}
+.asset-row strong{font-size:14px}
+.asset-row small{display:block;color:var(--fa-muted);font-size:12px}
+.upload-button,button:not(.primary):not(.release-list button){display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--fa-accent-line);background:var(--fa-accent-soft);border-radius:9px;padding:9px 14px;font:inherit;font-size:13px;color:var(--fa-accent-strong);cursor:pointer}
+.upload-button{position:relative;overflow:hidden}
+.upload-button input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.signing{border:1px dashed var(--fa-accent-line);border-radius:12px;padding:18px;display:flex;flex-wrap:wrap;gap:10px}
+.signing h3{width:100%;margin:0;font-size:15px}
+.signing p{font-size:13px;margin:0 0 6px;width:100%}
+.signing code{display:block;overflow-wrap:anywhere;font:12px var(--fa-mono);color:var(--fa-muted)}
+.withdraw{border-top:1px solid var(--fa-line);padding-top:18px;display:grid;gap:10px}
+.status.draft{background:#eef2f4;color:var(--fa-muted)}
+.status.withdrawn{background:var(--fa-danger-soft);color:var(--fa-danger)}
+.muted{padding:12px;font-size:13px}
+.notes-preview{margin:0;font-size:14px}
+button:disabled,input:disabled{opacity:.5;cursor:default}
+progress{width:100%;accent-color:var(--fa-accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--fa-accent);outline-offset:3px}
+.product-choice{display:flex;align-items:center;gap:12px;margin:0 0 20px}
+.product-choice select{min-width:180px;width:auto}
+@media(max-width:860px){.install-steps{grid-template-columns:1fr}}
+@media(max-width:760px){.admin-grid{grid-template-columns:1fr}
+.page-band{padding:44px 16px 52px}
+.hero{align-items:flex-start;flex-direction:column}
+main{padding:28px 16px 48px}
+.panel-heading,.form-content{padding:16px}
+}
 </style>

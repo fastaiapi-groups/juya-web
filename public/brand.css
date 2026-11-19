@@ -1,0 +1,61 @@
+/* FastAiApi 统一品牌样式：所有官网页面共享的色彩、字体、页眉、页脚与按钮。 */
+:root{
+  --fa-ink:#0b1115;--fa-ink-2:#121b20;--fa-ink-3:#1b2830;
+  --fa-mint:#8bf2cb;--fa-mint-2:#5ee2b2;
+  --fa-accent:#0b7d63;--fa-accent-strong:#075f4b;--fa-accent-soft:#e5f6ee;--fa-accent-line:#c4e7d7;
+  --fa-paper:#f4f7f5;--fa-surface:#fff;--fa-line:#e0e8e4;--fa-text:#0f1a1e;--fa-body:#3b4b50;--fa-muted:#5f6f74;
+  --fa-danger:#c2410c;--fa-danger-soft:#fff3ec;
+  --fa-radius:14px;--fa-radius-lg:22px;
+  --fa-shadow:0 1px 2px rgba(11,17,21,.04),0 14px 36px -14px rgba(11,17,21,.16);
+  --fa-font:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --fa-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --fa-header-h:64px;
+}
+
+/* 页眉 */
+.fa-header{position:sticky;top:0;z-index:60;height:var(--fa-header-h);background:rgba(11,17,21,.94);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid rgba(255,255,255,.07);font-family:var(--fa-font)}
+.fa-header-inner{max-width:1240px;height:100%;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.fa-header .fa-brand,.fa-footer .fa-brand{display:inline-flex;align-items:center;gap:10px;color:#f2f6f4;text-decoration:none;font-size:18px;font-weight:750;letter-spacing:-.4px;white-space:nowrap}
+.fa-mark{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--fa-mint);color:var(--fa-ink);font-size:16px;font-weight:800;letter-spacing:0;box-shadow:0 0 0 1px rgba(139,242,203,.25),0 6px 18px -6px rgba(139,242,203,.6)}
+.fa-header .fa-brand small{font-size:12px;font-weight:500;color:#8fa0a3;letter-spacing:.5px;padding-left:10px;margin-left:2px;border-left:1px solid rgba(255,255,255,.14)}
+.fa-nav{display:flex;align-items:center;gap:4px;min-width:0}
+.fa-header .fa-nav a{color:#b9c6c5;text-decoration:none;font-size:14px;padding:8px 12px;border-radius:8px;white-space:nowrap;transition:color .15s,background .15s}
+.fa-header .fa-nav a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.fa-header .fa-nav a[aria-current="page"]{color:var(--fa-mint)}
+.fa-header .fa-nav .fa-nav-cta{margin-left:8px;background:var(--fa-mint);color:var(--fa-ink);font-weight:650;padding:8px 16px}
+.fa-header .fa-nav .fa-nav-cta:hover{background:#a6f6d8;color:var(--fa-ink)}
+.fa-header a:focus-visible,.fa-footer a:focus-visible{outline:2px solid var(--fa-mint);outline-offset:2px}
+@media(max-width:860px){
+  .fa-header-inner{padding:0 16px;gap:12px}
+  .fa-header .fa-brand small{display:none}
+  .fa-nav{overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:18px}
+  .fa-nav::-webkit-scrollbar{display:none}
+  .fa-header .fa-nav a{font-size:13px;padding:7px 9px}
+  .fa-header .fa-nav .fa-nav-cta{margin-left:4px;padding:7px 12px}
+}
+
+/* 页脚 */
+.fa-footer{background:var(--fa-ink);color:#8fa0a3;font-family:var(--fa-font);font-size:13px;border-top:1px solid rgba(255,255,255,.06)}
+.fa-footer-inner{max-width:1240px;margin:0 auto;padding:40px 24px 32px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px 40px;align-items:start}
+.fa-footer .fa-footer-inner p{margin:10px 0 0;color:#8fa0a3}
+.fa-footer nav{display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:flex-end}
+.fa-footer .fa-footer-inner nav a{color:#c3cfcd;text-decoration:none}
+.fa-footer .fa-footer-inner nav a:hover{color:var(--fa-mint)}
+.fa-footer-bottom{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.07);font-size:12px;color:#748588}
+@media(max-width:720px){.fa-footer-inner{grid-template-columns:1fr;padding:32px 16px 28px}.fa-footer nav{justify-content:flex-start}}
+
+/* 按钮 */
+.fa-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:1px solid transparent;font:600 14px/1 var(--fa-font);text-decoration:none;cursor:pointer;transition:background .15s,transform .15s,box-shadow .15s}
+.fa-btn:hover{transform:translateY(-1px)}
+.fa-btn.fa-btn-primary{background:var(--fa-ink);color:#fff}
+.fa-btn.fa-btn-primary:hover{background:var(--fa-ink-3)}
+.fa-btn.fa-btn-mint{background:var(--fa-mint);color:var(--fa-ink)}
+.fa-btn.fa-btn-mint:hover{background:#a6f6d8}
+.fa-btn-ghost{background:transparent;color:inherit;border-color:currentColor}
+
+/* 深色标题带：内页首屏统一使用 */
+.fa-band{position:relative;overflow:hidden;background:radial-gradient(900px 420px at 85% -10%,rgba(139,242,203,.16),transparent 65%),radial-gradient(700px 360px at -10% 120%,rgba(94,226,178,.08),transparent 60%),var(--fa-ink);color:#eef4f2}
+.fa-band::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse at 70% 0,#000,transparent 70%);mask-image:radial-gradient(ellipse at 70% 0,#000,transparent 70%);pointer-events:none}
+.fa-band>*{position:relative;z-index:1}
+.fa-eyebrow{display:inline-flex;align-items:center;gap:8px;font:700 11px/1.4 var(--fa-font);letter-spacing:2px;text-transform:uppercase;color:var(--fa-accent)}
+.fa-band .fa-eyebrow{color:var(--fa-mint)}
