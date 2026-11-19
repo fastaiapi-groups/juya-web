@@ -28,10 +28,12 @@
 @media(max-width:860px){
   .fa-header-inner{padding:0 16px;gap:12px}
   .fa-header .fa-brand small{display:none}
-  .fa-nav{overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:18px}
+  .fa-header .fa-brand{font-size:16px;gap:8px}
+  .fa-nav{overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
   .fa-nav::-webkit-scrollbar{display:none}
   .fa-header .fa-nav a{font-size:13px;padding:7px 9px}
-  .fa-header .fa-nav .fa-nav-cta{margin-left:4px;padding:7px 12px}
+  /* 手机端：菜单可横向滑动，登录按钮固定在最右侧始终可见 */
+  .fa-header .fa-nav .fa-nav-cta{position:sticky;right:0;flex:none;margin-left:6px;padding:7px 12px;box-shadow:-18px 0 14px -4px #0b1115}
 }
 
 /* 页脚 */
