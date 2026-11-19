@@ -2,7 +2,7 @@
 import SiteHeader from '../../components/layout/SiteHeader.vue'
 import { ref, onMounted } from 'vue'
 const emit=defineEmits<{authenticated:[path:string]}>()
-const email=ref(''),password=ref(''),code=ref(''),temporary=ref(''),error=ref(''),busy=ref(false),ready=ref(false),captcha=ref(false)
+const username=ref(''),password=ref(''),code=ref(''),temporary=ref(''),error=ref(''),busy=ref(false),ready=ref(false),captcha=ref(false)
 const candidate=(new URLSearchParams(location.search).get('redirect')||'/hub/home/recharge').replace(/^\/fastaiui(?=\/)/,'/hub/home')
 const destination=/^\/(?:fastaiui|hub\/home)\/(?!\/)/.test(candidate)&&!/[\\\r\n]/.test(candidate)&&!candidate.startsWith('/hub/home/login')?candidate:'/hub/home/recharge'
 const canonicalLogin='https://fastaiapi.cloud/login?redirect='+encodeURIComponent(destination)
@@ -17,9 +17,9 @@ async function login(){
  if(busy.value||!ready.value||captcha.value)return
  busy.value=true;error.value=''
  try{
-  const data=await request(temporary.value?'login/2fa':'login',temporary.value?{temp_token:temporary.value,totp_code:code.value}:{email:email.value,password:password.value})
+  const data=await request(temporary.value?'login/2fa':'login',temporary.value?{flow_token:temporary.value,method:'2fa',code:code.value}:{username:username.value,password:password.value})
   password.value=''
-  if(data.requires_2fa===true){if(!data.temp_token)throw Error('两步验证暂不可用，请重新登录');temporary.value=data.temp_token;return}
+  if(data.flow_token){temporary.value=data.flow_token;return}
   if(typeof data.access_token!=='string'||!data.access_token)throw Error('登录响应无效，请重新登录')
   // Existing console bearer-token scheme; business records stay on the server.
   localStorage.setItem('auth_token',data.access_token)
@@ -32,7 +32,7 @@ async function login(){
  <div class="website-login"><SiteHeader section="账户中心" current="login"><span></span></SiteHeader><main><section><small>账户中心</small><h1>登录官网</h1><p>使用原官网账号登录，继续充值或管理客户端发布。</p>
  <p v-if="error" role="alert">{{error}}</p>
  <template v-if="captcha"><p>当前账号服务需要安全验证，请在主站完成登录。</p><a :href="canonicalLogin">前往主站验证登录 →</a></template>
- <form v-else @submit.prevent="login"><template v-if="!temporary"><label>邮箱<input v-model="email" type="email" autocomplete="username" required maxlength="254"/></label><label>密码<input v-model="password" type="password" autocomplete="current-password" required maxlength="128"/></label></template><label v-else>两步验证码<input v-model="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button :disabled="busy||!ready">{{busy?'正在登录…':temporary?'验证并登录':'登录'}}</button></form>
+ <form v-else @submit.prevent="login"><template v-if="!temporary"><label>账号<input v-model="username" type="text" autocomplete="username" required maxlength="254"/></label><label>密码<input v-model="password" type="password" autocomplete="current-password" required maxlength="128"/></label></template><label v-else>两步验证码<input v-model="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button :disabled="busy||!ready">{{busy?'正在登录…':temporary?'验证并登录':'登录'}}</button></form>
  <a class="website-login-back" href="/hub/home/">← 返回官网首页</a></section><p class="website-login-note">三个入口使用同一账号服务与权限，请在当前入口登录。</p></main></div>
 </template>
 <style scoped>

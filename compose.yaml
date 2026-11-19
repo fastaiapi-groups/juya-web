@@ -10,6 +10,7 @@ services:
       - default
       - design-pages
       - account-pages
+      - new-api-network
     ports:
       - "${WEBSITE_BIND:-0.0.0.0}:${WEBSITE_PORT:-6660}:80"
     volumes:
@@ -96,3 +97,7 @@ networks:
   account-pages:
     external: true
     name: sub2api-deploy_sub2api-network
+
+  new-api-network:
+    external: true
+    name: fastaiapi-newapi-sub2api-internal
