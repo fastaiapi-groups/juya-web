@@ -14,6 +14,8 @@ Edit the relevant `public/help/**/index.html`; shared styles and interactions ar
 
 The API tutorial preserves all 43 original operation screenshots. The Codex tutorial preserves its 16 screenshots and adds a branded Windows launch screenshot. Screenshot branding uses FastAiApi and `https://fastaiapi.cloud`; MiniMax H3 uses `https://newapi.fastaiapi.cloud`. Other product marks and original controls remain as shown. Historical OpenClaw and optional IPv6 screenshots are collapsed behind explicit version/usage notes.
 
+Codex++ accepts FastAiApi accounts and API keys directly. The API tutorial section 3, the overview first-steps panel and the side navigation point new users to Codex++ first; manual Codex CLI configuration remains as the alternative.
+
 The current Codex++ release includes the media-api skill. Users do not need to download or install a separate media skill package. The guide includes direct image and video prompts, while main image, Grok and H3 credentials remain configured separately.
 
 Codex++ installer links use the public Lark download entries. The Lark files are configured for direct download without requiring an account. Tutorial text and screenshots remain served locally by this website.
